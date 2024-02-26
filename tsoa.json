@@ -1,0 +1,26 @@
+{
+  "entryFile": "src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": [
+    "src/controllers/*.ts"
+  ],
+  "spec": {
+    "outputDirectory": "docs",
+    "specVersion": 3,
+    "name": "tsoa-ts-sequalize-boilerplate api",
+    "title": "tsoa-ts-sequalize-boilerplate api",
+    "license": "UNLICENSED",
+    "version": "1.0.0",
+    "securityDefinitions": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "routes": {
+    "routesDir": "src",
+    "authenticationModule": "src/middlewares/authentication.ts"
+  }
+}

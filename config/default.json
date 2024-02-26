@@ -1,0 +1,60 @@
+{
+  "applicationName": "TEST API",
+  "env": "development",
+  "server": {
+    "port": 3800,
+    "host": "0.0.0.0"
+  },
+  "database": {
+    "host": "0.0.0.0",
+    "port": 5432,
+    "username": "",
+    "password": "",
+    "database": "",
+    "ssl": true,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "encrypt": true,
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      },
+      "statement_timeout": 120000,
+      "idle_in_transaction_session_timeout": 120000
+    },
+    "omitNull": true,
+    "pool": {
+      "max": 20,
+      "idle": 120000,
+      "acquire": 120000
+    }
+  },
+  "log": {
+    "level": "debug"
+  },
+  "serviceBus": {
+    "namespace": "api-test-peti.servicebus.windows.net"
+  },
+  "postmark": {
+    "from": "no-reply@vilkrig.com",
+    "token": ""
+  },
+  "auth": {
+    "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
+    "authToken": {
+      "key": "U5=aFfuchkT[:ekzi:=5U&DP?]!A+R8Qi4cz",
+      "expiresIn": "15m"
+    },
+    "refreshToken": {
+      "key": "Ei]rpV=n]u7fq+$PSZ7BjqGNpt9N]#+g4tn(",
+      "expiresIn": "30d"
+    },
+    "verifyToken": {
+      "key": "UFTGP]rpV=n])T&OGYLUHD%(FTGOYUHI+$PSZ7BjqGNpt9N(^FOGYUPHIJ^(%*E$DR$IDR&OTFIYGOUL)g4tn(",
+      "expiresIn": "1h"
+    }
+  },
+  "website": {
+    "hostname": ""
+  }
+}
