@@ -6,6 +6,7 @@ import { profilePictureService } from "./profile-picture";
 import { tenantService } from "./tenant";
 import { companyService } from "./company";
 import { contactService } from "./contact";
+import { locationService } from "./location";
 import type { Services } from "../types";
 
 export default (): Services => ({
@@ -16,5 +17,6 @@ export default (): Services => ({
   profilePicture: profilePictureService(),
   tenant: tenantService(),
   company: companyService(),
-  contact: contactService()
+  contact: contactService(),
+  location: locationService()
 });

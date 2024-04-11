@@ -2,7 +2,7 @@ import type { GeneratedSecret } from "speakeasy";
 
 export interface TwoFactorAuthentication {
   id: number
-  userId?: number | null
+  userId: number
   secret: GeneratedSecret | Record<string, never> | null
   createdOn?: Date
   updatedOn?: Date | null

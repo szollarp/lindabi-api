@@ -12,9 +12,9 @@ export class TwoFactorSessionModel extends Model<TwoFactorSession, CreateTwoFact
 
   public readonly updatedOn!: Date;
 
-  declare user?: NonAttribute<User>;
+  declare user: NonAttribute<User>;
 
-  declare userId?: ForeignKey<User["id"]>;
+  declare userId: ForeignKey<User["id"]>;
 
   public getUser!: HasOneGetAssociationMixin<User>;
 

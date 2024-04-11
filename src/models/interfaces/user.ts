@@ -14,7 +14,7 @@ export interface User {
   password?: string
   phoneNumber: string | null
   salt?: string
-  status?: keyof typeof USER_STATUS
+  status?: "active" | "inactive" | "disabled" | "pending"
   enableTwoFactor?: boolean
   country?: string | null
   region?: string | null

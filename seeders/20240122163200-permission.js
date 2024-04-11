@@ -130,6 +130,26 @@ module.exports = {
       name: 'Customer:Delete',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'Location:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Location:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Location:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Location:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Location:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

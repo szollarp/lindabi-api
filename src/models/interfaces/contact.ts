@@ -7,11 +7,11 @@ export interface Contact {
   phoneNumber?: string | null
   status: CONTACT_STATUS.ACTIVE | CONTACT_STATUS.INACTIVE
   notes?: string | null
-  tenantId: number
+  tenantId?: number | null
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
 };
 
-export type CreateContactProperties = Omit<Contact, "id" | "tenantId" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateContactProperties = Omit<Contact, "id" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;

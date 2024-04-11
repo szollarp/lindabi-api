@@ -13,9 +13,9 @@ export class TwoFactorAuthenticationModel extends Model<TwoFactorAuthentication,
 
   public readonly updatedOn!: Date;
 
-  declare user?: NonAttribute<User>;
+  declare user: NonAttribute<User>;
 
-  declare userId?: ForeignKey<User["id"]>;
+  declare userId: ForeignKey<User["id"]>;
 
   public getUser!: HasOneGetAssociationMixin<User>;
 

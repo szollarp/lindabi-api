@@ -158,7 +158,9 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
   public async generateTwoFactorAuthenticationConfig(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean, qrCode: string }> {
     const { context, user } = request;
-    return await context.services.user.generateTwoFactorAuthenticationConfig(context, user.tenant, id);
+    const tenant = user.id === id ? null : user.tenant;
+
+    return await context.services.user.generateTwoFactorAuthenticationConfig(context, tenant, id);
   }
 
   @Tags("User")
@@ -167,7 +169,8 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
   public async enableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { code: string }): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.enableTwoFactorAuthentication(context, user.tenant, id, body);
+    const tenant = user.id === id ? null : user.tenant;
+    return await context.services.user.enableTwoFactorAuthentication(context, tenant, id, body);
   }
 
   @Tags("User")
@@ -176,7 +179,8 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
   public async disableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.disableTwoFactorAuthentication(context, user.tenant, id);
+    const tenant = user.id === id ? null : user.tenant;
+    return await context.services.user.disableTwoFactorAuthentication(context, tenant, id);
   }
 
   /**

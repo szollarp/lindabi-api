@@ -10,11 +10,11 @@ export interface Location {
   zipCode: string
   status: LOCATION_STATUS.ACTIVE | LOCATION_STATUS.INACTIVE
   notes?: string | null
-  tenantId: number
+  tenantId?: number | null
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
 };
 
-export type CreateLocationProperties = Omit<Location, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;
+export type CreateLocationProperties = Omit<Location, "id" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;

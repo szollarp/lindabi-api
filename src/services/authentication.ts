@@ -49,12 +49,12 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!user) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Authentication failed. Please check your email and password.");
       }
 
       const hashedPassword = hashPassword(body.password, user.salt);
       if (hashedPassword !== user.password) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Authentication failed. Please check your email and password.");
       }
 
       if (!user.enableTwoFactor) {
@@ -81,14 +81,16 @@ export const authenticationService = (): AuthenticationService => {
         const session = await user.getTwoFactorSession();
         await session?.destroy({ force: true, transaction: t });
 
-        const nextSession = await user.createTwoFactorSession({ token }, { transaction: t });
+        const nextSession = await context.models.TwoFactorSession.create({
+          token, userId: user.id
+        }, { transaction: t });
+
         await t.commit();
 
         return { twoFactorAuthenticationEnabled: true, session: nextSession.token };
       }
     } catch (error: any) {
       await t.rollback();
-
       context.logger.error("Login error", { error: error.message, type: error.name });
       throw error;
     }
@@ -101,46 +103,47 @@ export const authenticationService = (): AuthenticationService => {
       const twoFactorSession = await context.models.TwoFactorSession.findOne({
         where: {
           token: body.session
-        },
-        include: [{
-          model: context.models.User,
-          attributes: ["id", "name", "email", "status"],
-          as: "user",
-          where: { status: USER_STATUS.ACTIVE },
-          include: [{
-            model: context.models.Role,
-            attributes: ["id", "name"],
-            as: "role",
-            include: [{
-              model: context.models.Permission,
-              attributes: ["id", "name"],
-              as: "permissions"
-            }]
-          }, {
-            model: context.models.TwoFactorAuthentication,
-            attributes: ["id", "secret"],
-            as: "twoFactorAuthentication"
-          }]
-        }]
+        }
       });
 
       if (!twoFactorSession) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Two-factor authentication token is missing or invalid.");
       }
 
-      const { user } = twoFactorSession;
+      const user = await context.models.User.findOne({
+        attributes: ["id", "enableTwoFactor"],
+        where: {
+          id: twoFactorSession.userId
+        },
+        include: [{
+          model: context.models.Role,
+          attributes: ["id", "name"],
+          as: "role",
+          include: [{
+            model: context.models.Permission,
+            attributes: ["id", "name"],
+            as: "permissions"
+          }]
+        }, {
+          model: context.models.TwoFactorAuthentication,
+          attributes: ["id", "secret"],
+          as: "twoFactorAuthentication"
+        }]
+      });
+
       if (!user || !user.enableTwoFactor || !user.twoFactorAuthentication?.secret?.base32) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Two-factor authentication verification code is missing or invalid.");
       }
 
       const isValidOtpToken = verifyOtpToken(user.twoFactorAuthentication.secret.base32, body.token);
       if (!isValidOtpToken) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Invalid Verification code. Please try again.");
       }
 
       await twoFactorSession.destroy({ force: true, transaction: t });
 
       const jwtTokens = await jwt.getJWTTokens(context, user.id);
+
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
         where: { userId: user.id },
         defaults: { token: jwtTokens.refreshToken },
@@ -176,7 +179,7 @@ export const authenticationService = (): AuthenticationService => {
       const authConfig: AuthConfig = context.config.get("auth");
       const decoded = jwt.verify(token, authConfig.verifyToken.key) as DecodedUser;
       if (!decoded) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("The account verification link is invalid or has expired. Please request a new one.");
       }
 
       const user = await context.models.User.findOne({
@@ -184,7 +187,7 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!user) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("The account verification link is invalid or has expired. Please request a new one.");
       }
 
       const accountVerifyToken = await context.models.AccountVerifyToken.findOne({
@@ -192,7 +195,7 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!accountVerifyToken) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("The account verification link is invalid or has expired. Please request a new one.");
       }
 
       const password = hashPassword(body.password, user.salt);
@@ -215,7 +218,7 @@ export const authenticationService = (): AuthenticationService => {
       const headerToken = headers["x-refresh-token"];
       const authConfig: AuthConfig = context.config.get("auth");
       if (!jwt.verify(headerToken, authConfig.refreshToken.key)) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
       const refreshToken = await context.models.RefreshToken.findOne({
@@ -224,14 +227,12 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!refreshToken || !refreshToken.userId) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
+        throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
       const { accessToken } = await jwt.getJWTTokens(context, refreshToken.userId);
       return { accessToken };
     } catch (error: any) {
-      console.log(error);
-      console.log(error.stack);
       context.logger.error("Refresh Token error", { error: error.message, type: error.name });
       throw error;
     }
@@ -247,7 +248,7 @@ export const authenticationService = (): AuthenticationService => {
       return { success: true };
     } catch (error: any) {
       context.logger.error("Logout error", { error: error.message, type: error.name });
-      throw Unauthorized("ERROR_AUTH_FAILED");
+      throw Unauthorized("Failed to logout. The session might have already been closed.");
     }
   };
 
@@ -274,12 +275,13 @@ export const authenticationService = (): AuthenticationService => {
         await t.commit();
 
         await sendForgottenPasswordEmail(context, user);
+      } else {
+        throw Unauthorized("Failed to process forgotten password request. Please try again later.");
       }
 
       return { success: true };
     } catch (error: any) {
       await t.rollback();
-      console.log(error);
 
       context.logger.error("Request Forgotten Password error", { error: error.message, type: error.name, stack: error.stack });
       throw error;
@@ -301,7 +303,7 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!forgottenPasswordToken?.user?.salt) {
-        throw NotAcceptable("ERROR_FORGOTTEN_PASSWORD_TOKEN_INVALID");
+        throw NotAcceptable("The password reset link is invalid or has expired. Please request a new password reset.");
       }
 
       const newPassword = hashPassword(body.password, forgottenPasswordToken.user.salt);

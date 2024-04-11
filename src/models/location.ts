@@ -1,7 +1,8 @@
 import { Model, DataTypes } from "sequelize";
-import type { Sequelize } from "sequelize";
+import type { ForeignKey, NonAttribute, Sequelize } from "sequelize";
 import type { Models } from ".";
 import type { CreateLocationProperties, Location } from "./interfaces/location";
+import type { Tenant } from "./interfaces/tenant";
 import { LOCATION_STATUS } from "../constants";
 
 export class LocationModel extends Model<Location, CreateLocationProperties> implements Location {
@@ -23,7 +24,9 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
 
   public notes?: string | null;
 
-  public tenantId!: number;
+  declare tenant: NonAttribute<Tenant>;
+
+  declare tenantId: ForeignKey<Tenant["id"]>;
 
   public readonly createdOn!: Date;
 

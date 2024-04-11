@@ -138,8 +138,7 @@
 					},
 					"userId": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					},
 					"token": {
 						"type": "string"
@@ -156,6 +155,7 @@
 				},
 				"required": [
 					"id",
+					"userId",
 					"token"
 				],
 				"type": "object",
@@ -222,8 +222,7 @@
 					},
 					"userId": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					},
 					"secret": {
 						"anyOf": [
@@ -248,6 +247,7 @@
 				},
 				"required": [
 					"id",
+					"userId",
 					"secret"
 				],
 				"type": "object",
@@ -463,10 +463,10 @@
 					"status": {
 						"type": "string",
 						"enum": [
-							"ACTIVE",
-							"INACTIVE",
-							"DISABLED",
-							"PENDING"
+							"active",
+							"inactive",
+							"disabled",
+							"pending"
 						]
 					},
 					"enableTwoFactor": {
@@ -588,10 +588,10 @@
 					"status": {
 						"type": "string",
 						"enum": [
-							"ACTIVE",
-							"INACTIVE",
-							"DISABLED",
-							"PENDING"
+							"active",
+							"inactive",
+							"disabled",
+							"pending"
 						]
 					},
 					"enableTwoFactor": {
@@ -689,10 +689,10 @@
 					"status": {
 						"type": "string",
 						"enum": [
-							"ACTIVE",
-							"INACTIVE",
-							"DISABLED",
-							"PENDING"
+							"active",
+							"inactive",
+							"disabled",
+							"pending"
 						]
 					},
 					"enableTwoFactor": {
@@ -1017,6 +1017,120 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"LOCATION_STATUS": {
+				"enum": [
+					"active",
+					"inactive"
+				],
+				"type": "string"
+			},
+			"Partial_Location_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/LOCATION_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Location.Exclude_keyofLocation.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/LOCATION_STATUS"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"status",
+					"country",
+					"city",
+					"address",
+					"zipCode"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Location.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Location.Exclude_keyofLocation.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateLocationProperties": {
+				"$ref": "#/components/schemas/Omit_Location.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
 			"CONTACT_STATUS": {
 				"enum": [
 					"active",
@@ -1069,7 +1183,7 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
-			"Pick_Contact.Exclude_keyofContact.id-or-tenantId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+			"Pick_Contact.Exclude_keyofContact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
 					"email": {
 						"type": "string"
@@ -1087,6 +1201,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
 					"notes": {
 						"type": "string"
 					}
@@ -1098,12 +1216,12 @@
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_Contact.id-or-tenantId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Contact.Exclude_keyofContact.id-or-tenantId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+			"Omit_Contact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Contact.Exclude_keyofContact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"CreateContactProperties": {
-				"$ref": "#/components/schemas/Omit_Contact.id-or-tenantId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+				"$ref": "#/components/schemas/Omit_Contact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
 			"COMPANY_STATUS": {
 				"enum": [
@@ -2523,6 +2641,272 @@
 						}
 					}
 				}
+			}
+		},
+		"/locations": {
+			"get": {
+				"operationId": "GetLocations",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Location_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateLocation",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Location_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateLocationProperties"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteLocations",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:Delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/locations/{id}": {
+			"get": {
+				"operationId": "GetLocation",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Location_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateLocation",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Location_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Location_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteLocation",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Location:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/healthz": {

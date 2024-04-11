@@ -6,7 +6,7 @@ export default (error: Record<string, unknown>, request: Request, response: Resp
   if (error instanceof ValidateError) {
     console.warn(`Caught Validation Error for ${request.path}:`, error.fields);
     return response.status(422).json({
-      message: "Validation Failed",
+      message: "Validation Failed. Please review the provided data and try again.",
       details: error?.fields
     });
   }

@@ -34,7 +34,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public salt!: string;
 
-  public status!: keyof typeof USER_STATUS;
+  public status!: "active" | "inactive" | "disabled" | "pending";
 
   public enableTwoFactor!: boolean;
 

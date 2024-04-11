@@ -9,6 +9,7 @@ import { type TenantService } from "./services/tenant";
 import { type ProfilePictureService } from "./services/profile-picture";
 import { type CompanyService } from "./services/company";
 import { type ContactService } from "./services/contact";
+import { type LocationService } from "./services/location";
 import { type AzureServiceBus } from "./helpers/messages";
 import { type PostmarkService } from "./helpers/postmark";
 import { type Models } from "./models";
@@ -22,6 +23,7 @@ export interface Services {
   tenant: TenantService
   company: CompanyService
   contact: ContactService
+  location: LocationService
 }
 
 export interface Helpers {

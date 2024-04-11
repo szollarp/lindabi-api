@@ -16,12 +16,12 @@ export interface UserService {
   list: (context: Context, tenantId: number) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User>>
   create: (context: Context, tenantId: number, body: CreateUserProperties) => Promise<Partial<User>>
-  update: (context: Context, tenantId: number, id: number, body: UpdateUserProperties) => Promise<Partial<User>>
+  update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
-  generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean, qrCode: string }>
-  enableTwoFactorAuthentication: (context: Context, tenantId: number, id: number, body: { code: string }) => Promise<{ success: boolean }>
-  disableTwoFactorAuthentication: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
+  generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean, qrCode: string }>
+  enableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number, body: { code: string }) => Promise<{ success: boolean }>
+  disableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean }>
   deleteUser: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteUsers: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
 }
@@ -131,7 +131,7 @@ export const userService = (): UserService => {
     }
   };
 
-  const update = async (context: Context, tenantId: number, id: number, body: UpdateUserProperties): Promise<Partial<User>> => {
+  const update = async (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties): Promise<Partial<User>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -224,10 +224,12 @@ export const userService = (): UserService => {
     }
   };
 
-  const generateTwoFactorAuthenticationConfig = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean, qrCode: string }> => {
+  const generateTwoFactorAuthenticationConfig = async (context: Context, tenantId: number | null, id: number): Promise<{ success: boolean, qrCode: string }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
+      const where = !tenantId ? { id } : { id, tenantId };
+      console.log({ where })
       const user = await context.models.User.findOne({
         attributes: ["id", "enableTwoFactor"],
         include: [{
@@ -235,7 +237,7 @@ export const userService = (): UserService => {
           attributes: ["id", "secret", "userId"],
           as: "twoFactorAuthentication"
         }],
-        where: { id, tenantId }
+        where
       });
 
       if (user == null) {
@@ -266,10 +268,11 @@ export const userService = (): UserService => {
     }
   };
 
-  const enableTwoFactorAuthentication = async (context: Context, tenantId: number, id: number, body: { code: string }): Promise<{ success: boolean }> => {
+  const enableTwoFactorAuthentication = async (context: Context, tenantId: number | null, id: number, body: { code: string }): Promise<{ success: boolean }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
+      const where = !tenantId ? { id } : { id, tenantId };
       const user = await context.models.User.findOne({
         attributes: ["id", "enableTwoFactor"],
         include: [{
@@ -277,7 +280,7 @@ export const userService = (): UserService => {
           attributes: ["id", "secret", "userId"],
           as: "twoFactorAuthentication"
         }],
-        where: { id, tenantId }
+        where
       });
 
       if (!user?.twoFactorAuthentication?.secret?.base32) {
@@ -302,13 +305,14 @@ export const userService = (): UserService => {
     }
   };
 
-  const disableTwoFactorAuthentication = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean }> => {
+  const disableTwoFactorAuthentication = async (context: Context, tenantId: number | null, id: number): Promise<{ success: boolean }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
+      const where = !tenantId ? { id } : { id, tenantId };
       const user = await context.models.User.findOne({
         attributes: ["id", "enableTwoFactor"],
-        where: { id, tenantId }
+        where
       });
 
       if (!user) {
