@@ -89,7 +89,8 @@
 					"user",
 					"tenant",
 					"contact",
-					"company"
+					"company",
+					null
 				],
 				"nullable": true
 			},
