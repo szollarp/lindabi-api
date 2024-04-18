@@ -86,6 +86,6 @@ export const companyService = (): CompanyService => {
     createCompany,
     updateCompany,
     deleteCompany,
-    deleteCompanies
+    deleteCompanies,
   };
 };

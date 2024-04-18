@@ -7,8 +7,8 @@
   "spec": {
     "outputDirectory": "docs",
     "specVersion": 3,
-    "name": "tsoa-ts-sequalize-boilerplate api",
-    "title": "tsoa-ts-sequalize-boilerplate api",
+    "name": "Vilkrig x Alpinnovacio CRM API",
+    "title": "Vilkrig x Alpinnovacio CRM API",
     "license": "UNLICENSED",
     "version": "1.0.0",
     "securityDefinitions": {

@@ -9,6 +9,7 @@ export interface LocationService {
   updateLocation: (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Location>) => Promise<Partial<Location> | null>
   deleteLocation: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteLocations: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
+  addToCompany: (context: Context, tenantId: number, id: number, body: { id: number }) => Promise<{ success: boolean }>
 }
 
 export const locationService = (): LocationService => {
@@ -65,12 +66,34 @@ export const locationService = (): LocationService => {
     return { success: true };
   };
 
+  const addToCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {
+    const location = await context.models.Location.findOne({
+      where: { tenantId, id }
+    });
+
+    if (!location) {
+      return { success: false };
+    }
+
+    const company = await context.models.Company.findOne({
+      where: { tenantId, id: body.id }
+    });
+
+    if (!company) {
+      return { success: false };
+    }
+
+    await company.addLocation(location);
+    return { success: true };
+  };
+
   return {
     getLocations,
     getLocation,
     createLocation,
     updateLocation,
     deleteLocation,
-    deleteLocations
+    deleteLocations,
+    addToCompany
   };
 };
