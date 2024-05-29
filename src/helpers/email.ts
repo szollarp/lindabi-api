@@ -5,10 +5,12 @@ import type { Context } from "../types";
 export const sendForgottenPasswordEmail = async (context: Context, user: UserModel): Promise<void> => {
   const { email, name } = user;
   const forgottenPasswordToken = await user.getForgottenPasswordToken();
+  const { hostname }: { hostname: string } = context.config.get("website");
+  const actionUrl = `${hostname}/${WEBSITE_ENDPOINTS.SET_PASSWORD}?token=${forgottenPasswordToken.token}`;
 
   const message = JSON.stringify({
     to: email,
-    variables: { action_url: forgottenPasswordToken, name, product_name: context.config.get("applicationName") },
+    variables: { actionUrl, name, productName: context.config.get("applicationName") },
     template: "password-reset"
   });
 

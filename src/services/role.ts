@@ -55,8 +55,11 @@ export const roleService = (): RoleService => {
       });
 
       for (const role of roles) {
-        const permissions = data.find((value) => value.id === role.id)?.permissions.map((permission) => permission.id);
-        await role.setPermissions(permissions);
+        const roleData = data.find((value) => value.id === role.id);
+        const permissionIds: number[] = roleData?.permissions.map((permission) => permission.id) || [];
+        if (permissionIds.length > 0) {
+          await role.setPermissions(permissionIds);
+        }
       }
 
       return data;

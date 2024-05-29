@@ -1,9 +1,10 @@
 import { Model, DataTypes } from "sequelize";
-import type { ForeignKey, NonAttribute, Sequelize } from "sequelize";
+import type { ForeignKey, HasManyGetAssociationsMixin, NonAttribute, Sequelize } from "sequelize";
 import type { CreateContactProperties, Contact } from "./interfaces/contact";
 import type { Tenant } from "./interfaces/tenant";
 import { CONTACT_STATUS } from "../constants";
 import type { Models } from ".";
+import { CompanyModel } from "./company";
 
 export class ContactModel extends Model<Contact, CreateContactProperties> implements Contact {
   public id!: number;
@@ -31,6 +32,8 @@ export class ContactModel extends Model<Contact, CreateContactProperties> implem
   public readonly updatedBy!: number | null;
 
   public static associate: (models: Models) => void;
+
+  public getCompanies!: HasManyGetAssociationsMixin<CompanyModel[]>;
 };
 
 export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
@@ -97,7 +100,9 @@ export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
 
   ContactModel.associate = (models) => {
     ContactModel.belongsToMany(models.Company, {
-      through: "company_contacts"
+      foreignKey: "contact_id",
+      through: "company_contacts",
+      as: "companies"
     });
   };
 

@@ -1,5 +1,5 @@
 import type { COMPANY_STATUS, COMPANY_TYPE } from "../../constants";
-import type { ProfilePicture } from "./profile-picture";
+import { Image } from "./image";
 
 export interface Company {
   id: number
@@ -17,13 +17,14 @@ export interface Company {
   registrationNumber?: string | null
   bankAccount?: string | null
   prefix?: string | null
-  logo?: ProfilePicture | null
+  offerNum?: string | null
   tenantId?: number | null
   notes?: string | null
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
+  images?: Image[]
 };
 
 export type CreateCompanyProperties = Omit<Company, "id" | "createdOn" | "updatedBy" | "updatedOn">;

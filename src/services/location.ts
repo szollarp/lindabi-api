@@ -10,6 +10,7 @@ export interface LocationService {
   deleteLocation: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteLocations: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
   addToCompany: (context: Context, tenantId: number, id: number, body: { id: number }) => Promise<{ success: boolean }>
+  removeFromCompany: (context: Context, tenantId: number, id: number, body: { id: number }) => Promise<{ success: boolean }>
 }
 
 export const locationService = (): LocationService => {
@@ -28,11 +29,7 @@ export const locationService = (): LocationService => {
   };
 
   const createLocation = async (context: Context, tenantId: number, createdBy: number, data: CreateLocationProperties): Promise<Partial<Location> | null> => {
-    try {
-      return await context.models.Location.create({ ...data, tenantId, createdBy });
-    } catch (error) {
-      console.error(error);
-    }
+    return await context.models.Location.create({ ...data, tenantId, createdBy });
   };
 
   const updateLocation = async (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Location>): Promise<Partial<Location> | null> => {
@@ -67,24 +64,55 @@ export const locationService = (): LocationService => {
   };
 
   const addToCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {
-    const location = await context.models.Location.findOne({
-      where: { tenantId, id }
-    });
+    try {
+      const location = await context.models.Location.findOne({
+        where: { tenantId, id }
+      });
 
-    if (!location) {
-      return { success: false };
+      if (!location) {
+        return { success: false };
+      }
+
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id: body.id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      await company.addLocation(location);
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
     }
+  };
 
-    const company = await context.models.Company.findOne({
-      where: { tenantId, id: body.id }
-    });
+  const removeFromCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {
+    try {
+      const location = await context.models.Location.findOne({
+        where: { tenantId, id }
+      });
 
-    if (!company) {
-      return { success: false };
+      if (!location) {
+        return { success: false };
+      }
+
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id: body.id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      await company.removeLocation(location);
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
     }
-
-    await company.addLocation(location);
-    return { success: true };
   };
 
   return {
@@ -94,6 +122,7 @@ export const locationService = (): LocationService => {
     updateLocation,
     deleteLocation,
     deleteLocations,
-    addToCompany
+    addToCompany,
+    removeFromCompany
   };
 };

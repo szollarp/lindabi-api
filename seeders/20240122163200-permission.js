@@ -150,6 +150,26 @@ module.exports = {
       name: 'Location:Delete',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'Tender:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

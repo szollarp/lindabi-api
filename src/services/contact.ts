@@ -9,35 +9,35 @@ export interface ContactService {
   updateContact: (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Contact>) => Promise<Partial<Contact> | null>
   deleteContact: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteContacts: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
+  addToCompany: (context: Context, tenantId: number, id: number, body: { id: number }) => Promise<{ success: boolean }>
+  removeFromCompany: (context: Context, tenantId: number, id: number, body: { id: number }) => Promise<{ success: boolean }>
 }
 
 export const contactService = (): ContactService => {
   const getContacts = async (context: Context, tenantId: number): Promise<Array<Partial<Contact>>> => {
-    const contacts = await context.models.Contact.findAll({
+    return await context.models.Contact.findAll({
       attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
       where: { tenantId }
     });
-
-    return contacts;
   };
 
   const getContact = async (context: Context, tenantId: number, id: number): Promise<Partial<Contact> | null> => {
-    const Contact = await context.models.Contact.findOne({
+    return await context.models.Contact.findOne({
       attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
-      where: { tenantId, id }
+      where: { tenantId, id },
+      include: [
+        {
+          model: context.models.Company,
+          as: "companies",
+          attributes: ["id", "name", "country", "city", "address", "zipCode"],
+          through: { attributes: [] }
+        }
+      ]
     });
-
-    return Contact;
   };
 
   const createContact = async (context: Context, tenantId: number, createdBy: number, data: CreateContactProperties): Promise<Partial<Contact> | null> => {
-    try {
-      const Contact = await context.models.Contact.create({ ...data, tenantId, createdBy });
-
-      return Contact;
-    } catch (error) {
-      console.error(error);
-    }
+    return await context.models.Contact.create({ ...data, tenantId, createdBy });
   };
 
   const updateContact = async (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Contact>): Promise<Partial<Contact> | null> => {
@@ -72,12 +72,66 @@ export const contactService = (): ContactService => {
     return { success: true };
   };
 
+  const addToCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {
+    try {
+      const contact = await context.models.Contact.findOne({
+        where: { tenantId, id }
+      });
+
+      if (!contact) {
+        return { success: false };
+      }
+
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id: body.id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      await company.addContact(contact);
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
+  const removeFromCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {
+    try {
+      const contact = await context.models.Contact.findOne({
+        where: { tenantId, id }
+      });
+
+      if (!contact) {
+        return { success: false };
+      }
+
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id: body.id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      await company.removeContact(contact);
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
   return {
     getContacts,
     getContact,
     createContact,
     updateContact,
     deleteContact,
-    deleteContacts
+    deleteContacts,
+    addToCompany,
+    removeFromCompany
   };
 };

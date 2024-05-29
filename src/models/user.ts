@@ -1,7 +1,9 @@
 import { Model, DataTypes } from "sequelize";
 import type {
   Sequelize, Association, HasOneGetAssociationMixin, HasOneCreateAssociationMixin, NonAttribute,
-  ForeignKey, HasManyAddAssociationMixin, HasOneSetAssociationMixin
+  ForeignKey, HasManyAddAssociationMixin, HasOneSetAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyCreateAssociationMixin
 } from "sequelize";
 import { USER_STATUS } from "../constants";
 import type { AccountVerifyTokenModel } from "./account-verify-token";
@@ -9,17 +11,18 @@ import type { RefreshTokenModel } from "./refresh-token";
 import type { ForgottenPasswordTokenModel } from "./forgotten-password-token";
 import type { CreateUserProperties, User } from "./interfaces/user";
 import type { Role } from "./interfaces/role";
-import type { ProfilePictureModel } from "./profile-picture";
 import type { AccountVerifyToken } from "./interfaces/account-verify-token";
 import type { ForgottenPasswordToken } from "./interfaces/forgotten-password-token";
 import type { RefreshToken } from "./interfaces/refresh-token";
-import type { ProfilePicture } from "./interfaces/profile-picture";
 import type { TwoFactorSession } from "./interfaces/two-factor-session";
 import type { TwoFactorSessionModel } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./interfaces/two-factor-authentication";
 import type { TwoFactorAuthenticationModel } from "./two-factor-authentication";
 import type { Tenant } from "./interfaces/tenant";
+import type { Image } from "./interfaces/image";
+import type { ImageModel } from "./image";
 import type { Models } from ".";
+
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -34,7 +37,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public salt!: string;
 
-  public status!: "active" | "inactive" | "disabled" | "pending";
+  public status!: USER_STATUS.ACTIVE | USER_STATUS.INACTIVE | USER_STATUS.DISABLED | USER_STATUS.PENDING;
 
   public enableTwoFactor!: boolean;
 
@@ -124,20 +127,20 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare twoFactorAuthenticationId?: ForeignKey<TwoFactorAuthentication["id"]>;
 
-  public createProfilePicture!: HasOneCreateAssociationMixin<ProfilePictureModel>;
+  public createImage!: HasManyCreateAssociationMixin<ImageModel>;
 
-  public getProfilePicture!: HasOneGetAssociationMixin<ProfilePictureModel>;
+  public getImages!: HasManyGetAssociationsMixin<ImageModel>;
 
-  declare profilePicture?: NonAttribute<ProfilePicture>;
+  declare images?: NonAttribute<Image[]>;
 
-  declare profilePictureId?: ForeignKey<ProfilePicture["id"]>;
+  declare imageIds?: ForeignKey<Image["id"][]>;
 
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
     twoFactorSession: Association<UserModel, TwoFactorSessionModel>
     twoFactorAuthentication: Association<UserModel, TwoFactorAuthenticationModel>
-    profilePicture: Association<UserModel, ProfilePictureModel>
+    images: Association<UserModel, ImageModel>
   };
 }
 
@@ -286,12 +289,12 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       as: "twoFactorAuthentication"
     });
 
-    UserModel.hasOne(models.ProfilePicture, {
+    UserModel.hasMany(models.Image, {
       foreignKey: "owner_id",
-      as: "profilePicture",
       scope: {
         ownerType: "user"
-      }
+      },
+      as: "images"
     });
   };
 

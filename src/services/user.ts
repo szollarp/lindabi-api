@@ -32,15 +32,16 @@ const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "countr
 export const userService = (): UserService => {
   const list = async (context: Context, tenantId: number): Promise<Array<Partial<User>>> => {
     try {
-      console.log("tenantId", tenantId);
       const users = await context.models.User.findAll({
         where: { tenantId },
         attributes: USER_ATTRIBUTES,
         include: [{
-          model: context.models.ProfilePicture,
+          model: context.models.Image,
           attributes: ["image", "mimeType"],
-          as: "profilePicture",
-          foreignKey: "ownerId"
+          as: "images",
+          foreignKey: "ownerId",
+          where: { type: "avatar" },
+          required: false
         }, {
           model: context.models.Role,
           attributes: ["id", "name"],
@@ -100,9 +101,9 @@ export const userService = (): UserService => {
             as: "subscriptions"
           }]
         }, {
-          model: context.models.ProfilePicture,
+          model: context.models.Image,
           attributes: ["image", "mimeType"],
-          as: "profilePicture",
+          as: "images",
           foreignKey: "ownerId"
         }, {
           model: context.models.Role,
@@ -140,9 +141,10 @@ export const userService = (): UserService => {
         attributes: USER_ATTRIBUTES,
         where,
         include: [{
-          model: context.models.ProfilePicture,
+          model: context.models.Image,
+          where: { type: "logo" },
           attributes: ["image", "mimeType"],
-          as: "profilePicture"
+          as: "images"
         }]
       });
 
@@ -156,7 +158,6 @@ export const userService = (): UserService => {
       return user;
     } catch (error) {
       await t.rollback();
-      console.log(error);
       context.logger.error(error);
       throw error;
     }
@@ -196,7 +197,11 @@ export const userService = (): UserService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      const user = await context.models.User.findOne({ attributes: ["id", "email"], where: { id, tenantId } });
+      const user = await context.models.User.findOne({
+        attributes: ["id", "email", "name"],
+        where: { id, tenantId }
+      });
+
       if (user == null) throw Unauthorized("ERROR_AUTH_FAILED");
 
       const storedToken = await user.getAccountVerifyToken({
@@ -229,7 +234,6 @@ export const userService = (): UserService => {
 
     try {
       const where = !tenantId ? { id } : { id, tenantId };
-      console.log({ where })
       const user = await context.models.User.findOne({
         attributes: ["id", "enableTwoFactor"],
         include: [{
@@ -245,7 +249,7 @@ export const userService = (): UserService => {
       }
 
       const secret = generateSecret();
-      const qrCode = await generateQR(secret.otpauth_url);
+      const qrCode = await generateQR(secret.otpauth_url!);
       const [twoFactorAuthentication, created] = await context.models.TwoFactorAuthentication.findOrCreate({
         where: { userId: user.id },
         defaults: { secret, userId: user.id },
@@ -260,7 +264,6 @@ export const userService = (): UserService => {
 
       return { success: true, qrCode };
     } catch (error: any) {
-      console.log(error);
       await t.rollback();
 
       context.logger.error("Generate Two-Factor Authentication error", { error: error.message, type: error.name, stack: error.stack });
@@ -297,7 +300,6 @@ export const userService = (): UserService => {
 
       return { success: true };
     } catch (error: any) {
-      console.log(error);
       await t.rollback();
 
       context.logger.error("Enable Two-Factor Authentication error", { error: error.message, type: error.name, stack: error.stack });
@@ -325,10 +327,11 @@ export const userService = (): UserService => {
 
       return { success: true };
     } catch (error: any) {
-      console.log(error);
       await t.rollback();
 
-      context.logger.error("Disable Two-Factor Authentication error", { error: error.message, type: error.name, stack: error.stack });
+      context.logger.error("Disable Two-Factor Authentication error", {
+        error: error.message, type: error.name, stack: error.stack
+      });
       throw error;
     }
   };

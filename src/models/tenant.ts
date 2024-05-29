@@ -1,16 +1,15 @@
 import { Model, DataTypes } from "sequelize";
 import type {
-  Association, ForeignKey, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasOneCreateAssociationMixin,
-  HasOneGetAssociationMixin, NonAttribute, Sequelize
+  Association, ForeignKey, HasManyAddAssociationMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, NonAttribute, Sequelize
 } from "sequelize";
 import type { CreateTenantProperties, Tenant } from "./interfaces/tenant";
 import type { Models } from ".";
 import type { SubscriptionModel } from "./subscription";
 import type { Subscription } from "./interfaces/subscription";
-import type { ProfilePictureModel } from "./profile-picture";
-import type { ProfilePicture } from "./interfaces/profile-picture";
 import type { User } from "./interfaces/user";
 import type { UserModel } from "./user";
+import type { ImageModel } from "./image";
+import type { Image } from "./interfaces/image";
 import { TENANT_STATUS } from "../constants";
 
 export class TenantModel extends Model<Tenant, CreateTenantProperties> implements Tenant {
@@ -20,7 +19,7 @@ export class TenantModel extends Model<Tenant, CreateTenantProperties> implement
 
   public email!: string;
 
-  public status!: keyof typeof TENANT_STATUS;
+  public status!: TENANT_STATUS.ACTIVE | TENANT_STATUS.INACTIVE
 
   public country!: string;
 
@@ -54,13 +53,15 @@ export class TenantModel extends Model<Tenant, CreateTenantProperties> implement
 
   public createSubscription!: HasManyCreateAssociationMixin<SubscriptionModel>;
 
-  public createLogo!: HasOneCreateAssociationMixin<ProfilePictureModel>;
+  public addSubscription!: HasManyAddAssociationMixin<SubscriptionModel, number>;
 
-  public getLogo!: HasOneGetAssociationMixin<ProfilePictureModel>;
+  public createImage!: HasManyCreateAssociationMixin<ImageModel>;
 
-  declare logo?: NonAttribute<ProfilePicture>;
+  public getImages!: HasManyCreateAssociationMixin<ImageModel>;
 
-  declare logoId?: ForeignKey<ProfilePicture["id"]>;
+  declare images?: NonAttribute<Image[]>;
+
+  declare imageIds?: ForeignKey<Image["id"][]>;
 
   public users?: NonAttribute<User[]>;
 
@@ -70,7 +71,7 @@ export class TenantModel extends Model<Tenant, CreateTenantProperties> implement
 
   public static associations: {
     subscription: Association<TenantModel, SubscriptionModel>
-    logo: Association<TenantModel, ProfilePictureModel>
+    images: Association<TenantModel, ImageModel>
     user: Association<TenantModel, UserModel>
   };
 };
@@ -161,12 +162,12 @@ export const TenantFactory = (sequelize: Sequelize): typeof TenantModel => {
       as: "subscriptions"
     });
 
-    TenantModel.hasOne(models.ProfilePicture, {
+    TenantModel.hasMany(models.Image, {
       foreignKey: "owner_id",
-      as: "logo",
       scope: {
         ownerType: "tenant"
-      }
+      },
+      as: "images"
     });
 
     TenantModel.hasMany(models.User, {

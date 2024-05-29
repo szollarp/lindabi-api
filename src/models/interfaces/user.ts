@@ -1,11 +1,11 @@
 import type { USER_STATUS } from "../../constants";
 import type { AccountVerifyToken } from "./account-verify-token";
 import type { ForgottenPasswordToken } from "./forgotten-password-token";
-import type { ProfilePicture } from "./profile-picture";
 import type { Role } from "./role";
 import type { TwoFactorSession } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./two-factor-authentication";
 import type { Tenant } from "./tenant";
+import type { Image } from "./image";
 
 export interface User {
   id: number
@@ -14,7 +14,7 @@ export interface User {
   password?: string
   phoneNumber: string | null
   salt?: string
-  status?: "active" | "inactive" | "disabled" | "pending"
+  status?: USER_STATUS.ACTIVE | USER_STATUS.INACTIVE | USER_STATUS.DISABLED | USER_STATUS.PENDING
   enableTwoFactor?: boolean
   country?: string | null
   region?: string | null
@@ -31,8 +31,6 @@ export interface User {
   accountVerifyTokenId?: number | null
   forgottenPasswordToken?: ForgottenPasswordToken
   forgottenPasswordTokenId?: number | null
-  profilePicture?: ProfilePicture
-  profilePictureId?: number | null
   twoFactorSession?: TwoFactorSession
   twoFactorSessionId?: number | null
   twoFactorAuthentication?: TwoFactorAuthentication
@@ -42,6 +40,7 @@ export interface User {
   tenant?: Tenant
   tenantId?: number | null
   lastLoggedIn?: Date | null
+  images?: Image[]
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;

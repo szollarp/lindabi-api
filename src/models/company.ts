@@ -5,14 +5,14 @@ import type {
 } from "sequelize";
 import type { Company, CreateCompanyProperties } from "./interfaces/company";
 import { COMPANY_STATUS, COMPANY_TYPE } from "../constants";
-import type { ProfilePictureModel } from "./profile-picture";
-import type { ProfilePicture } from "./interfaces/profile-picture";
 import type { LocationModel } from "./location";
 import type { ContactModel } from "./contact";
 import type { Location } from "./interfaces/location";
 import type { Contact } from "./interfaces/contact";
 import type { Models } from ".";
 import type { Tenant } from "./interfaces/tenant";
+import type { Image } from "./interfaces/image";
+import type { ImageModel } from "./image";
 
 export class CompanyModel extends Model<Company, CreateCompanyProperties> implements Company {
   public id!: number;
@@ -45,6 +45,8 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   public prefix?: string | null;
 
+  public offerNum?: string | null;
+
   public notes?: string | null;
 
   public readonly createdOn!: Date;
@@ -57,13 +59,13 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   declare tenantId?: ForeignKey<Tenant["id"]>;
 
-  public createLogo!: HasOneGetAssociationMixin<ProfilePictureModel>;
+  public createLogo!: HasOneGetAssociationMixin<ImageModel>;
 
-  public getLogo!: HasOneGetAssociationMixin<ProfilePictureModel>;
+  public getLogo!: HasOneGetAssociationMixin<ImageModel>;
 
-  declare logo?: NonAttribute<ProfilePicture>;
+  declare logo?: NonAttribute<Image>;
 
-  declare logoId?: ForeignKey<ProfilePicture["id"]>;
+  declare logoId?: ForeignKey<Image["id"]>;
 
   public createLocation!: HasManyCreateAssociationMixin<LocationModel>;
 
@@ -88,7 +90,7 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
   public static associate: (models: Models) => void;
 
   public static associations: {
-    logo: Association<CompanyModel, ProfilePictureModel>
+    logo: Association<CompanyModel, ImageModel>
     locations: Association<CompanyModel, LocationModel>
     contacts: Association<CompanyModel, ContactModel>
   };
@@ -153,6 +155,11 @@ export const CompanyFactory = (sequelize: Sequelize): typeof CompanyModel => {
         allowNull: true,
         defaultValue: null
       },
+      offerNum: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
       default: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
@@ -203,19 +210,33 @@ export const CompanyFactory = (sequelize: Sequelize): typeof CompanyModel => {
 
   CompanyModel.associate = (models) => {
     CompanyModel.belongsToMany(models.Contact, {
-      through: "company_contacts"
+      foreignKey: "company_id",
+      through: "company_contacts",
+      as: "contacts"
     });
 
     CompanyModel.belongsToMany(models.Location, {
-      through: "company_locations"
+      foreignKey: "company_id",
+      through: "company_locations",
+      as: "locations"
     });
 
-    CompanyModel.hasOne(models.ProfilePicture, {
+    CompanyModel.hasMany(models.Image, {
       foreignKey: "owner_id",
-      as: "logo",
       scope: {
         ownerType: "company"
-      }
+      },
+      as: "images",
+    });
+
+    CompanyModel.hasMany(models.Tender, {
+      foreignKey: "contractorId",
+      as: "tendersAsContractor"
+    });
+
+    CompanyModel.hasMany(models.Tender, {
+      foreignKey: "customerId",
+      as: "tendersAsCustomer"
     });
   };
 

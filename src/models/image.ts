@@ -1,9 +1,11 @@
 import { Model, DataTypes, type Sequelize } from "sequelize";
-import type { CreateProfilePictureProperties, ProfilePicture } from "./interfaces/profile-picture";
+import { CreateImageProperties, Image } from "./interfaces/image";
 import type { Models } from ".";
 
-export class ProfilePictureModel extends Model<ProfilePicture, CreateProfilePictureProperties> implements ProfilePicture {
+export class ImageModel extends Model<Image, CreateImageProperties> implements Image {
   public id!: number;
+
+  public type!: "logo" | "stamp" | "signature" | "avatar";
 
   public image!: string;
 
@@ -15,19 +17,23 @@ export class ProfilePictureModel extends Model<ProfilePicture, CreateProfilePict
 
   public ownerId?: number | null;
 
-  public ownerType?: "user" | "tenant" | "contact" | "procurer" | "executor" | null;
+  public ownerType?: "user" | "tenant" | "contact" | "company" | null;
 
   public static associate: (models: Models) => void;
 }
 
-export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictureModel => {
-  ProfilePictureModel.init(
+export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
+  ImageModel.init(
     {
       id: {
         unique: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
         autoIncrement: true
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false
       },
       image: {
         type: DataTypes.BLOB("long"),
@@ -60,7 +66,7 @@ export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictu
     },
     {
       sequelize,
-      tableName: "profile_pictures",
+      tableName: "images",
       timestamps: true,
       createdAt: "created_on",
       updatedAt: "updated_on",
@@ -69,8 +75,8 @@ export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictu
     }
   );
 
-  ProfilePictureModel.associate = (models) => {
-    ProfilePictureModel.belongsTo(models.User, {
+  ImageModel.associate = (models) => {
+    ImageModel.belongsTo(models.User, {
       foreignKey: "owner_id",
       as: "user",
       scope: {
@@ -78,7 +84,7 @@ export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictu
       }
     });
 
-    ProfilePictureModel.belongsTo(models.Tenant, {
+    ImageModel.belongsTo(models.Tenant, {
       foreignKey: "owner_id",
       as: "tenant",
       scope: {
@@ -86,7 +92,7 @@ export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictu
       }
     });
 
-    ProfilePictureModel.belongsTo(models.Company, {
+    ImageModel.belongsTo(models.Company, {
       foreignKey: "owner_id",
       as: "company",
       scope: {
@@ -95,5 +101,5 @@ export const ProfilePictureFactory = (sequelize: Sequelize): typeof ProfilePictu
     });
   };
 
-  return ProfilePictureModel;
+  return ImageModel;
 };

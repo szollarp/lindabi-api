@@ -7,6 +7,15 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"USER_STATUS": {
+				"enum": [
+					"active",
+					"inactive",
+					"disabled",
+					"pending"
+				],
+				"type": "string"
+			},
 			"AccountVerifyToken": {
 				"properties": {
 					"id": {
@@ -79,54 +88,6 @@
 				"required": [
 					"id",
 					"token"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ProfilePictureOwnerType": {
-				"type": "string",
-				"enum": [
-					"user",
-					"tenant",
-					"contact",
-					"company",
-					null
-				],
-				"nullable": true
-			},
-			"ProfilePicture": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"ownerType": {
-						"$ref": "#/components/schemas/ProfilePictureOwnerType"
-					},
-					"image": {
-						"type": "string"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					}
-				},
-				"required": [
-					"image",
-					"mimeType"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -301,6 +262,67 @@
 				],
 				"type": "string"
 			},
+			"ImageType": {
+				"type": "string",
+				"enum": [
+					"logo",
+					"stamp",
+					"signature",
+					"avatar"
+				]
+			},
+			"ImageOwnerType": {
+				"type": "string",
+				"enum": [
+					"user",
+					"tenant",
+					"contact",
+					"company",
+					null
+				],
+				"nullable": true
+			},
+			"Image": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"$ref": "#/components/schemas/ImageType"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"ownerType": {
+						"$ref": "#/components/schemas/ImageOwnerType"
+					},
+					"image": {
+						"type": "string"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					}
+				},
+				"required": [
+					"type",
+					"image",
+					"mimeType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Tenant": {
 				"properties": {
 					"id": {
@@ -349,14 +371,6 @@
 						"type": "string",
 						"nullable": true
 					},
-					"logo": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ProfilePicture"
-							}
-						],
-						"nullable": true
-					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -374,6 +388,12 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -462,13 +482,7 @@
 						"type": "string"
 					},
 					"status": {
-						"type": "string",
-						"enum": [
-							"active",
-							"inactive",
-							"disabled",
-							"pending"
-						]
+						"$ref": "#/components/schemas/USER_STATUS"
 					},
 					"enableTwoFactor": {
 						"type": "boolean"
@@ -526,13 +540,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"profilePicture": {
-						"$ref": "#/components/schemas/ProfilePicture"
-					},
-					"profilePictureId": {
-						"type": "number",
-						"format": "double"
-					},
 					"twoFactorSession": {
 						"$ref": "#/components/schemas/TwoFactorSession"
 					},
@@ -564,6 +571,12 @@
 					"lastLoggedIn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"type": "object",
@@ -587,13 +600,7 @@
 						"type": "string"
 					},
 					"status": {
-						"type": "string",
-						"enum": [
-							"active",
-							"inactive",
-							"disabled",
-							"pending"
-						]
+						"$ref": "#/components/schemas/USER_STATUS"
 					},
 					"enableTwoFactor": {
 						"type": "boolean"
@@ -621,13 +628,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"profilePicture": {
-						"$ref": "#/components/schemas/ProfilePicture"
-					},
-					"profilePictureId": {
-						"type": "number",
-						"format": "double"
-					},
 					"twoFactorSession": {
 						"$ref": "#/components/schemas/TwoFactorSession"
 					},
@@ -659,6 +659,12 @@
 					"lastLoggedIn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -688,13 +694,7 @@
 						"type": "string"
 					},
 					"status": {
-						"type": "string",
-						"enum": [
-							"active",
-							"inactive",
-							"disabled",
-							"pending"
-						]
+						"$ref": "#/components/schemas/USER_STATUS"
 					},
 					"enableTwoFactor": {
 						"type": "boolean"
@@ -719,13 +719,6 @@
 						"format": "double"
 					},
 					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"profilePicture": {
-						"$ref": "#/components/schemas/ProfilePicture"
-					},
-					"profilePictureId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -756,6 +749,12 @@
 					"tenantId": {
 						"type": "number",
 						"format": "double"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -772,14 +771,17 @@
 			"UpdateUserProperties": {
 				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_"
 			},
-			"Pick_ProfilePicture.Exclude_keyofProfilePicture.id-or-createdOn-or-updatedOn__": {
+			"Pick_Image.Exclude_keyofImage.id-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"type": {
+						"$ref": "#/components/schemas/ImageType"
+					},
 					"ownerId": {
 						"type": "number",
 						"format": "double"
 					},
 					"ownerType": {
-						"$ref": "#/components/schemas/ProfilePictureOwnerType"
+						"$ref": "#/components/schemas/ImageOwnerType"
 					},
 					"image": {
 						"type": "string"
@@ -789,18 +791,19 @@
 					}
 				},
 				"required": [
+					"type",
 					"image",
 					"mimeType"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_ProfilePicture.id-or-createdOn-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_ProfilePicture.Exclude_keyofProfilePicture.id-or-createdOn-or-updatedOn__",
+			"Omit_Image.id-or-createdOn-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Image.Exclude_keyofImage.id-or-createdOn-or-updatedOn__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
-			"CreateProfilePictureProperties": {
-				"$ref": "#/components/schemas/Omit_ProfilePicture.id-or-createdOn-or-updatedOn_"
+			"CreateImageProperties": {
+				"$ref": "#/components/schemas/Omit_Image.id-or-createdOn-or-updatedOn_"
 			},
 			"UpdatePasswordProperties": {
 				"properties": {
@@ -817,6 +820,587 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"TENDER_STATUS": {
+				"enum": [
+					"inquiry",
+					"pending",
+					"awaiting offer",
+					"awaiting approval",
+					"final",
+					"sent",
+					"ordered",
+					"invalid"
+				],
+				"type": "string"
+			},
+			"TENDER_CURRENCY": {
+				"enum": [
+					"huf",
+					"eur",
+					"usd"
+				],
+				"type": "string"
+			},
+			"COMPANY_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"COMPANY_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CONTRACTOR": {
+				"enum": [
+					"contractor"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CUSTOMER": {
+				"enum": [
+					"customer"
+				],
+				"type": "string"
+			},
+			"Company": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string",
+						"nullable": true
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/COMPANY_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/COMPANY_STATUS.INACTIVE"
+							}
+						]
+					},
+					"type": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/COMPANY_TYPE.CONTRACTOR"
+							},
+							{
+								"$ref": "#/components/schemas/COMPANY_TYPE.CUSTOMER"
+							}
+						]
+					},
+					"default": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"registrationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"prefix": {
+						"type": "string",
+						"nullable": true
+					},
+					"offerNum": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode",
+					"status",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LOCATION_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"LOCATION_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"Location": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/LOCATION_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/LOCATION_STATUS.INACTIVE"
+							}
+						]
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CONTACT_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"CONTACT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"Contact": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string",
+						"nullable": true
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
+							}
+						]
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TenderItem": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"surcharge": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"discount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"tenderId",
+					"name",
+					"quantity",
+					"unit",
+					"vatKey",
+					"currency",
+					"materialNetUnitAmount",
+					"materialNetAmount",
+					"materialAmount",
+					"feeNetUnitAmount",
+					"feeNetAmount",
+					"feeAmount",
+					"totalMaterialNetAmount",
+					"totalFeeNetAmount",
+					"totalNetAmount",
+					"totalAmount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_Tender_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string"
+					},
+					"number": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENDER_STATUS"
+					},
+					"fee": {
+						"type": "number",
+						"format": "double"
+					},
+					"returned": {
+						"type": "boolean"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"currency": {
+						"$ref": "#/components/schemas/TENDER_CURRENCY"
+					},
+					"surcharge": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"validTo": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"openDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"inquiry": {
+						"type": "string"
+					},
+					"survey": {
+						"type": "string"
+					},
+					"locationDescription": {
+						"type": "string"
+					},
+					"toolRequirements": {
+						"type": "string"
+					},
+					"otherComment": {
+						"type": "string"
+					},
+					"customerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"locationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"location": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/TenderItem"
+						},
+						"type": "array"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
 			},
 			"TENANT_STATUS": {
 				"enum": [
@@ -864,9 +1448,6 @@
 					"bankAccount": {
 						"type": "string"
 					},
-					"logo": {
-						"$ref": "#/components/schemas/ProfilePicture"
-					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -882,6 +1463,12 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"type": "object",
@@ -913,6 +1500,12 @@
 					"zipCode": {
 						"type": "string"
 					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					},
 					"taxNumber": {
 						"type": "string"
 					},
@@ -921,9 +1514,6 @@
 					},
 					"bankAccount": {
 						"type": "string"
-					},
-					"logo": {
-						"$ref": "#/components/schemas/ProfilePicture"
 					}
 				},
 				"required": [
@@ -1286,8 +1876,8 @@
 					"prefix": {
 						"type": "string"
 					},
-					"logo": {
-						"$ref": "#/components/schemas/ProfilePicture"
+					"offerNum": {
+						"type": "string"
 					},
 					"tenantId": {
 						"type": "number",
@@ -1311,22 +1901,16 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
 					}
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
-			},
-			"COMPANY_TYPE.CONTRACTOR": {
-				"enum": [
-					"contractor"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.CUSTOMER": {
-				"enum": [
-					"customer"
-				],
-				"type": "string"
 			},
 			"Pick_Company.Exclude_keyofCompany.id-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
@@ -1362,6 +1946,18 @@
 						"type": "number",
 						"format": "double"
 					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					},
+					"type": {
+						"$ref": "#/components/schemas/COMPANY_TYPE"
+					},
+					"notes": {
+						"type": "string"
+					},
 					"taxNumber": {
 						"type": "string"
 					},
@@ -1371,19 +1967,13 @@
 					"bankAccount": {
 						"type": "string"
 					},
-					"logo": {
-						"$ref": "#/components/schemas/ProfilePicture"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"type": {
-						"$ref": "#/components/schemas/COMPANY_TYPE"
-					},
 					"default": {
 						"type": "boolean"
 					},
 					"prefix": {
+						"type": "string"
+					},
+					"offerNum": {
 						"type": "string"
 					}
 				},
@@ -1405,6 +1995,12 @@
 			},
 			"CreateCompanyProperties": {
 				"$ref": "#/components/schemas/Omit_Company.id-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"CreateImagesProperties": {
+				"items": {
+					"$ref": "#/components/schemas/CreateImageProperties"
+				},
+				"type": "array"
 			},
 			"LoginResponse": {
 				"properties": {
@@ -1873,7 +2469,7 @@
 				]
 			}
 		},
-		"/users/{id}/profile-picture": {
+		"/users/{id}/avatar": {
 			"put": {
 				"operationId": "UpdateUserProfilePicture",
 				"responses": {
@@ -1927,7 +2523,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProfilePictureProperties",
+								"$ref": "#/components/schemas/CreateImageProperties",
 								"description": "The properties to update the profile picture."
 							}
 						}
@@ -2081,8 +2677,7 @@
 					{
 						"jwtToken": [
 							"User:Update",
-							"Me:*",
-							"Tenant"
+							"Me:*"
 						]
 					}
 				],
@@ -2128,8 +2723,7 @@
 					{
 						"jwtToken": [
 							"User:Update",
-							"Me:*",
-							"Tenant"
+							"Me:*"
 						]
 					}
 				],
@@ -2192,13 +2786,197 @@
 					{
 						"jwtToken": [
 							"User:Update",
-							"Me:*",
-							"Tenant"
+							"Me:*"
 						]
 					}
 				],
 				"parameters": [
 					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders": {
+			"get": {
+				"operationId": "GetTenders",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Tender_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all tenders within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Tender:List\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tender:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"delete": {
+				"operationId": "DeleteTenders",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple tenders based on the provided array of IDs. This operation requires\nauthentication and \"Tender:Delete\" permission. The deletion affects only the tenders\nassociated with the authenticated user's tenant.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of tender IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of tender IDs to delete."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tenders/{id}": {
+			"get": {
+				"operationId": "GetTender",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Tender_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteTender",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a single tender identified by their ID. This endpoint is secured with JWT authentication\nand requires \"Tender:Delete\" permission. The operation is restricted to tenders within the\nauthenticated user's tenant.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the tender to delete.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -2543,7 +3321,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProfilePictureProperties",
+								"$ref": "#/components/schemas/CreateImageProperties",
 								"description": "Contains the image file and metadata for the logo."
 							}
 						}
@@ -2576,8 +3354,8 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Permission:List",
-							"Tenant"
+							"Tenant",
+							"Permission:List"
 						]
 					}
 				],
@@ -2609,8 +3387,8 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Permission:List",
-							"Tenant"
+							"Tenant",
+							"Permission:List"
 						]
 					}
 				],
@@ -2640,8 +3418,8 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Permission:Update",
-							"Tenant"
+							"Tenant",
+							"Permission:Update"
 						]
 					}
 				],
@@ -2688,6 +3466,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:List"
 						]
 					}
@@ -2720,6 +3499,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:Create"
 						]
 					}
@@ -2767,6 +3547,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:Delete"
 						]
 					}
@@ -2825,6 +3606,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:Get"
 						]
 					}
@@ -2868,6 +3650,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:Update"
 						]
 					}
@@ -2926,6 +3709,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Location:Delete"
 						]
 					}
@@ -2967,18 +3751,29 @@
 						}
 					}
 				},
-				"description": "Associates a location with a company by adding the location to the company's list of locations. \nRequires a valid JWT token with \"Location:Create\" permission.",
+				"description": "Associates a location with a company by adding the location to the company's list of locations. \nRequires a valid JWT token with \"Location:List\" permission.",
 				"tags": [
 					"Location"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Location:Create"
+							"Tenant",
+							"Location:List"
 						]
 					}
 				],
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
 				"requestBody": {
 					"description": "An object containing the ID of the location to add to a company.",
 					"required": true,
@@ -2996,6 +3791,75 @@
 								],
 								"type": "object",
 								"description": "An object containing the ID of the location to add to a company."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/locations/{id}/remove-from-company": {
+			"delete": {
+				"operationId": "RemoveFromCompany",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Remove a specified location associations from a company. \nRequires a valid JWT token with \"Location:List\" permission.",
+				"tags": [
+					"Location"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Location:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "An object containing the ID of the location to remove from a company.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"id"
+								],
+								"type": "object",
+								"description": "An object containing the ID of the location to remove from a company."
 							}
 						}
 					}
@@ -3050,6 +3914,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:List"
 						]
 					}
@@ -3082,6 +3947,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:Create"
 						]
 					}
@@ -3129,6 +3995,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:Delete"
 						]
 					}
@@ -3187,6 +4054,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:Get"
 						]
 					}
@@ -3230,6 +4098,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:Update"
 						]
 					}
@@ -3288,6 +4157,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Contact:Delete"
 						]
 					}
@@ -3306,9 +4176,9 @@
 				]
 			}
 		},
-		"/contacts/{id}/logo": {
-			"put": {
-				"operationId": "UpdateLogo",
+		"/contacts/{id}/add-to-company": {
+			"post": {
+				"operationId": "AddToCompany",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -3316,12 +4186,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"uploaded": {
+										"success": {
 											"type": "boolean"
 										}
 									},
 									"required": [
-										"uploaded"
+										"success"
 									],
 									"type": "object"
 								}
@@ -3329,20 +4199,20 @@
 						}
 					}
 				},
-				"description": "Updates or uploads a logo for a specific contact. This operation is protected and requires\n\"Contact:Update\" permission. The logo is linked to the contact based on their ID.",
+				"description": "Associates a contact with a company by adding the contact to the company's list of contacts. \nRequires a valid JWT token with \"Contact:List\" permission.",
 				"tags": [
 					"Contact"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Contact:Update"
+							"Tenant",
+							"Contact:List"
 						]
 					}
 				],
 				"parameters": [
 					{
-						"description": "The ID of the contact to update the logo for.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3353,13 +4223,91 @@
 					}
 				],
 				"requestBody": {
-					"description": "Contains the logo file and associated metadata.",
+					"description": "An object containing the ID of the contact to add to a company.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProfilePictureProperties",
-								"description": "Contains the logo file and associated metadata."
+								"properties": {
+									"id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"id"
+								],
+								"type": "object",
+								"description": "An object containing the ID of the contact to add to a company."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/contacts/{id}/remove-from-company": {
+			"delete": {
+				"operationId": "RemoveFromCompany",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Remove a specified contact associations from a company. \nRequires a valid JWT token with \"Contact:List\" permission.",
+				"tags": [
+					"Contact"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Contact:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "An object containing the ID of the contact to remove from a company.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"id"
+								],
+								"type": "object",
+								"description": "An object containing the ID of the contact to remove from a company."
 							}
 						}
 					}
@@ -3391,6 +4339,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:List"
 						]
 					}
@@ -3431,6 +4380,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Create"
 						]
 					}
@@ -3478,6 +4428,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Delete"
 						]
 					}
@@ -3536,6 +4487,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Get"
 						]
 					}
@@ -3579,6 +4531,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Update"
 						]
 					}
@@ -3637,6 +4590,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Delete"
 						]
 					}
@@ -3655,9 +4609,9 @@
 				]
 			}
 		},
-		"/companies/{id}/logo": {
-			"put": {
-				"operationId": "UpdateLogo",
+		"/companies/{id}/image": {
+			"post": {
+				"operationId": "UpdateImage",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -3685,6 +4639,7 @@
 				"security": [
 					{
 						"jwtToken": [
+							"Tenant",
 							"Company:Update"
 						]
 					}
@@ -3707,8 +4662,65 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProfilePictureProperties",
+								"$ref": "#/components/schemas/CreateImageProperties",
 								"description": "Contains the image file and metadata for the logo."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/companies/{id}/images": {
+			"post": {
+				"operationId": "UpdateImages",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Company"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Company:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateImagesProperties"
 							}
 						}
 					}

@@ -30,6 +30,23 @@ export enum CONTACT_STATUS {
   INACTIVE = "inactive",
 };
 
+export enum TENDER_STATUS {
+  INQUIRY = "inquiry",
+  PENDING = "pending",
+  AWAITING_OFFER = "awaiting offer",
+  AWAITING_APPROVAL = "awaiting approval",
+  FINALIZED = "final",
+  SENT = "sent",
+  ORDERED = "ordered",
+  INVALID = "invalid"
+};
+
+export enum TENDER_CURRENCY {
+  HUF = "huf",
+  EUR = "eur",
+  USD = "usd"
+};
+
 export const ERROR_MESSAGES = {
   USER_REGISTRATION: "Couldn't sign up a new user. Please check your information and try again.",
   LOGIN_FAILED: "Login failed: User with provided email or password not found or not active.",
@@ -40,5 +57,6 @@ export const ERROR_MESSAGES = {
 };
 
 export const WEBSITE_ENDPOINTS = {
-  ACCOUNT_VERIFY: "/auth/verify-account"
+  ACCOUNT_VERIFY: "auth/verify-account",
+  SET_PASSWORD: "auth/reset-password"
 };

@@ -7,12 +7,14 @@ import { ForgottenPasswordTokenFactory, type ForgottenPasswordTokenModel } from 
 import { RefreshTokenFactory, type RefreshTokenModel } from "./refresh-token";
 import { TwoFactorSessionModelFactory, type TwoFactorSessionModel } from "./two-factor-session";
 import { TwoFactorAuthenticationModelFactory, type TwoFactorAuthenticationModel } from "./two-factor-authentication";
-import { ProfilePictureFactory, type ProfilePictureModel } from "./profile-picture";
 import { TenantFactory, type TenantModel } from "./tenant";
 import { SubscriptionFactory, type SubscriptionModel } from "./subscription";
 import { ContactFactory, type ContactModel } from "./contact";
 import { CompanyFactory, type CompanyModel } from "./company";
 import { LocationFactory, type LocationModel } from "./location";
+import { ImageFactory, type ImageModel } from "./image";
+import { TenderFactory, type TenderModel } from "./tender";
+import { TenderItemFactory, type TenderItemModel } from "./tender-item";
 
 export interface Models {
   sequelize: Sequelize
@@ -24,12 +26,14 @@ export interface Models {
   RefreshToken: typeof RefreshTokenModel
   TwoFactorSession: typeof TwoFactorSessionModel
   TwoFactorAuthentication: typeof TwoFactorAuthenticationModel
-  ProfilePicture: typeof ProfilePictureModel
   Tenant: typeof TenantModel
   Subscription: typeof SubscriptionModel
   Contact: typeof ContactModel
   Company: typeof CompanyModel
   Location: typeof LocationModel
+  Image: typeof ImageModel
+  Tender: typeof TenderModel
+  TenderItem: typeof TenderItemModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
@@ -44,12 +48,14 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     RefreshToken: RefreshTokenFactory(sequelize),
     TwoFactorSession: TwoFactorSessionModelFactory(sequelize),
     TwoFactorAuthentication: TwoFactorAuthenticationModelFactory(sequelize),
-    ProfilePicture: ProfilePictureFactory(sequelize),
     Tenant: TenantFactory(sequelize),
     Subscription: SubscriptionFactory(sequelize),
     Contact: ContactFactory(sequelize),
     Company: CompanyFactory(sequelize),
     Location: LocationFactory(sequelize),
+    Image: ImageFactory(sequelize),
+    Tender: TenderFactory(sequelize),
+    TenderItem: TenderItemFactory(sequelize),
     sequelize
   };
 

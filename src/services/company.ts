@@ -14,32 +14,49 @@ export interface CompanyService {
 
 export const companyService = (): CompanyService => {
   const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> => {
-    const companies = await context.models.Company.findAll({
-      attributes: ["id", "name", "status", "taxNumber", "prefix"],
+    return await context.models.Company.findAll({
+      attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode"],
       where: { tenantId, type },
       include: [{
-        model: context.models.ProfilePicture,
-        attributes: ["image", "mimeType"],
-        as: "logo",
+        model: context.models.Image,
+        attributes: ["image", "mimeType", "type"],
+        as: "images",
         foreignKey: "ownerId"
+      },
+      {
+        model: context.models.Location,
+        attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
+        as: "locations",
+        through: { attributes: [] }
+      }, {
+        model: context.models.Contact,
+        attributes: ["id", "name", "email", "phoneNumber", "status"],
+        as: "contacts",
+        through: { attributes: [] }
       }]
     });
-
-    return companies;
   };
 
   const getCompany = async (context: Context, tenantId: number, id: number): Promise<Partial<Company> | null> => {
-    const company = await context.models.Company.findOne({
+    return await context.models.Company.findOne({
       where: { tenantId, id },
       include: [{
-        model: context.models.ProfilePicture,
-        attributes: ["image", "mimeType"],
-        as: "logo",
+        model: context.models.Image,
+        attributes: ["image", "mimeType", "type"],
+        as: "images",
         foreignKey: "ownerId"
+      }, {
+        model: context.models.Location,
+        attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
+        as: "locations",
+        through: { attributes: [] }
+      }, {
+        model: context.models.Contact,
+        attributes: ["id", "name", "email", "phoneNumber", "status"],
+        as: "contacts",
+        through: { attributes: [] }
       }]
     });
-
-    return company;
   };
 
   const createCompany = async (context: Context, tenantId: number, createdBy: number, data: CreateCompanyProperties): Promise<Partial<Company> | null> => {

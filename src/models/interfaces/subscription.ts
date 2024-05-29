@@ -10,4 +10,4 @@ export interface Subscription {
   updatedBy?: number | null
 };
 
-export type CreateSubscriptionProperties = Omit<Subscription, "id" | "tenantId" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;
+export type CreateSubscriptionProperties = Omit<Subscription, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;

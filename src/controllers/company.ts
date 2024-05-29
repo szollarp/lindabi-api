@@ -3,9 +3,9 @@ import {
   Security, Body, Put, Path, Post, Delete, Query
 } from "tsoa";
 import type { CreateCompanyProperties, Company } from "../models/interfaces/company";
-import type { CreateProfilePictureProperties } from "../models/interfaces/profile-picture";
 import type { ContextualRequest } from "../types";
 import type { COMPANY_TYPE } from "../constants";
+import { CreateImageProperties, CreateImagesProperties } from "../models/interfaces/image";
 
 @Route("companies")
 export class CompanyController extends Controller {
@@ -22,7 +22,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Company:List"])
+  @Security("jwtToken", ["Tenant", "Company:List"])
   public async getCompanies(@Request() request: ContextualRequest, @Query() type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> {
     const { context, user } = request;
     return await context.services.company.getCompanies(context, user.tenant, type);
@@ -38,7 +38,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Company:Get"])
+  @Security("jwtToken", ["Tenant", "Company:Get"])
   public async getCompany(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Company> | null> {
     const { context, user } = request;
     return await context.services.company.getCompany(context, user.tenant, id);
@@ -54,7 +54,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Company:Create"])
+  @Security("jwtToken", ["Tenant", "Company:Create"])
   public async createCompany(@Request() request: ContextualRequest, @Body() body: CreateCompanyProperties): Promise<Partial<Company> | null> {
     const { context, user } = request;
     return await context.services.company.createCompany(context, user.tenant, user.id, body);
@@ -72,7 +72,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Company:Update"])
+  @Security("jwtToken", ["Tenant", "Company:Update"])
   public async updateCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Company>): Promise<Partial<Company> | null> {
     const { context, user } = request;
     return await context.services.company.updateCompany(context, user.tenant, id, user.id, body);
@@ -88,11 +88,29 @@ export class CompanyController extends Controller {
    */
   @Tags("Company")
   @SuccessResponse("200", "OK")
-  @Put("{id}/logo")
-  @Security("jwtToken", ["Company:Update"])
-  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateProfilePictureProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  @Post("{id}/image")
+  @Security("jwtToken", ["Tenant", "Company:Update"])
+  public async updateImage(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.profilePicture.upload(context, id, user.tenant, body, "company");
+    return await context.services.image.upload(context, id, body, "company");
+  }
+
+  @Tags("Company")
+  @SuccessResponse("200", "OK")
+  @Post("{id}/images")
+  @Security("jwtToken", ["Tenant", "Company:Update"])
+  public async updateImages(@Request() request: ContextualRequest, @Body() images: CreateImagesProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+    const { context, user } = request;
+
+    try {
+      for (const image of images) {
+        await context.services.image.upload(context, id, image, "company");
+      }
+
+      return { uploaded: true };
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -105,7 +123,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Company:Delete"])
+  @Security("jwtToken", ["Tenant", "Company:Delete"])
   public async deleteCompanies(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.company.deleteCompanies(context, user.tenant, body);
@@ -121,7 +139,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Company:Delete"])
+  @Security("jwtToken", ["Tenant", "Company:Delete"])
   public async deleteCompany(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.company.deleteCompany(context, user.tenant, id);

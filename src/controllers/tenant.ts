@@ -1,7 +1,7 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete } from "tsoa";
 import type { CreateTenantProperties, Tenant } from "../models/interfaces/tenant";
-import type { CreateProfilePictureProperties } from "../models/interfaces/profile-picture";
 import type { ContextualRequest } from "../types";
+import { CreateImageProperties } from "../models/interfaces/image";
 
 @Route("tenants")
 export class TenantController extends Controller {
@@ -81,9 +81,9 @@ export class TenantController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/logo")
   @Security("jwtToken", ["Tenant:Update"])
-  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateProfilePictureProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.profilePicture.upload(context, id, user.tenant, body, "tenant");
+    return await context.services.image.upload(context, id, body, "tenant");
   }
 
   /**

@@ -6,24 +6,26 @@ import { type AuthenticationService } from "./services/authentication";
 import { type UserService } from "./services/user";
 import { type RoleService } from "./services/role";
 import { type TenantService } from "./services/tenant";
-import { type ProfilePictureService } from "./services/profile-picture";
+import { type ImageService } from "./services/image";
 import { type CompanyService } from "./services/company";
 import { type ContactService } from "./services/contact";
 import { type LocationService } from "./services/location";
 import { type AzureServiceBus } from "./helpers/messages";
 import { type PostmarkService } from "./helpers/postmark";
+import { type TenderService } from "./services/tender";
 import { type Models } from "./models";
 
 export interface Services {
   version: VersionService
   authentication: AuthenticationService
-  profilePicture: ProfilePictureService
+  image: ImageService
   user: UserService
   role: RoleService
   tenant: TenantService
   company: CompanyService
   contact: ContactService
   location: LocationService
+  tender: TenderService
 }
 
 export interface Helpers {

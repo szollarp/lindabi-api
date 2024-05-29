@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import type { Context } from "../types";
 import type { CreateTenantProperties, Tenant } from "../models/interfaces/tenant";
+import { TenantModel } from "../models/tenant";
 
 export interface TenantService {
   getTenants: (context: Context) => Promise<Array<Partial<Tenant>>>
@@ -16,9 +17,9 @@ export const tenantService = (): TenantService => {
     const tenants = await context.models.Tenant.findAll({
       attributes: ["id", "name", "status", "taxNumber", "registrationNumber"],
       include: [{
-        model: context.models.ProfilePicture,
-        attributes: ["image", "mimeType"],
-        as: "logo",
+        model: context.models.Image,
+        attributes: ["image", "mimeType", "type"],
+        as: "images",
         foreignKey: "ownerId"
       }, {
         model: context.models.Subscription,
@@ -34,9 +35,9 @@ export const tenantService = (): TenantService => {
     return await context.models.Tenant.findByPk(id, {
       attributes: ["id", "name", "status", "taxNumber", "email", "country", "region", "city", "address", "zipCode", "registrationNumber", "bankAccount"],
       include: [{
-        model: context.models.ProfilePicture,
-        attributes: ["image", "mimeType"],
-        as: "logo",
+        model: context.models.Image,
+        attributes: ["image", "mimeType", "type"],
+        as: "images",
         foreignKey: "ownerId"
       }, {
         model: context.models.Subscription,
@@ -47,9 +48,29 @@ export const tenantService = (): TenantService => {
   };
 
   const createTenant = async (context: Context, data: CreateTenantProperties): Promise<Partial<Tenant> | null> => {
-    const tenant = await context.models.Tenant.create(data);
+    const dateStart = new Date();
+    const dateEnd = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
 
-    return tenant;
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const tenant = await context.models.Tenant.create(data, { transaction: t });
+      await context.models.Subscription.create({
+        name: "Master data", dateStart, dateEnd, tenantId: tenant.id
+      }, { transaction: t });
+
+      await context.models.Subscription.create({
+        name: "Tender", dateStart, dateEnd, tenantId: tenant.id
+      }, { transaction: t });
+
+      await t.commit();
+      return tenant;
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const updateTenant = async (context: Context, id: number, data: Partial<Tenant>): Promise<Partial<Tenant> | null> => {

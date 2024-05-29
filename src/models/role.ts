@@ -17,11 +17,11 @@ export class RoleModel extends Model<Role, CreateRoleProperties> implements Role
 
   public addPermission!: HasManyAddAssociationMixin<PermissionModel, number>;
 
-  public addPermissions!: HasManyAddAssociationMixin<PermissionModel[], number[]>;
+  public addPermissions!: HasManyAddAssociationMixin<PermissionModel, number>;
 
   public removePermission!: HasManyRemoveAssociationMixin<PermissionModel, number>;
 
-  public setPermissions!: HasManySetAssociationsMixin<PermissionModel[], number[]>;
+  public setPermissions!: HasManySetAssociationsMixin<PermissionModel, number>;
 
   declare tenant?: NonAttribute<Tenant>;
 

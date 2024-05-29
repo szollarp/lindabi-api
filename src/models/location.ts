@@ -114,6 +114,7 @@ export const LocationFactory = (sequelize: Sequelize): typeof LocationModel => {
 
   LocationModel.associate = (models) => {
     LocationModel.belongsToMany(models.Company, {
+      foreignKey: "location_id",
       through: "company_locations"
     });
   };

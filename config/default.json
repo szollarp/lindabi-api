@@ -1,5 +1,5 @@
 {
-  "applicationName": "TEST API",
+  "applicationName": "LINDABI",
   "env": "development",
   "server": {
     "port": 3800,
@@ -55,6 +55,6 @@
     }
   },
   "website": {
-    "hostname": ""
+    "hostname": "http://localhost:8083"
   }
 }

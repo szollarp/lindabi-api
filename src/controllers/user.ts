@@ -1,7 +1,7 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete } from "tsoa";
 import type { CreateUserProperties, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
-import type { CreateProfilePictureProperties } from "../models/interfaces/profile-picture";
 import type { ContextualRequest } from "../types";
+import { CreateImageProperties } from "../models/interfaces/image";
 
 @Route("users")
 export class UserController extends Controller {
@@ -102,11 +102,11 @@ export class UserController extends Controller {
    */
   @Tags("User")
   @SuccessResponse("200", "OK")
-  @Put("{id}/profile-picture")
+  @Put("{id}/avatar")
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
-  public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateProfilePictureProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.profilePicture.upload(context, user.tenant, id, body, "user");
+    return await context.services.image.upload(context, id, body, "user");
   }
 
   /**
@@ -155,7 +155,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Post("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("jwtToken", ["User:Update", "Me:*"])
   public async generateTwoFactorAuthenticationConfig(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean, qrCode: string }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -166,7 +166,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("jwtToken", ["User:Update", "Me:*"])
   public async enableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { code: string }): Promise<{ success: boolean }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -176,7 +176,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("jwtToken", ["User:Update", "Me:*"])
   public async disableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;

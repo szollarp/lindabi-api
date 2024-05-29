@@ -15,7 +15,7 @@ export class RoleController extends Controller {
   @Tags("Role")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Permission:List", "Tenant"])
+  @Security("jwtToken", ["Tenant", "Permission:List"])
   public async getRoles(@Request() request: ContextualRequest): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
     return await context.services.role.getRoles(context, user.tenant);
@@ -32,7 +32,7 @@ export class RoleController extends Controller {
   @Tags("Role")
   @SuccessResponse("200", "OK")
   @Get("/permissions")
-  @Security("jwtToken", ["Permission:List", "Tenant"])
+  @Security("jwtToken", ["Tenant", "Permission:List"])
   public async getPermissions(@Request() request: ContextualRequest): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
     return await context.services.role.getPermissions(context, user.tenant);
@@ -50,7 +50,7 @@ export class RoleController extends Controller {
   @Tags("Role")
   @SuccessResponse("200", "OK")
   @Put("/permissions")
-  @Security("jwtToken", ["Permission:Update", "Tenant"])
+  @Security("jwtToken", ["Tenant", "Permission:Update"])
   public async updatePermissions(@Request() request: ContextualRequest, @Body() body: SetRolePermissionsProperties[]): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
     return await context.services.role.updatePermissions(context, user.tenant, body);

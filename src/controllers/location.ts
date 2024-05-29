@@ -18,7 +18,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Location:List"])
+  @Security("jwtToken", ["Tenant", "Location:List"])
   public async getLocations(@Request() request: ContextualRequest): Promise<Array<Partial<Location>>> {
     const { context, user } = request;
     return await context.services.location.getLocations(context, user.tenant);
@@ -34,7 +34,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Location:Get"])
+  @Security("jwtToken", ["Tenant", "Location:Get"])
   public async getLocation(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Location> | null> {
     const { context, user } = request;
     return await context.services.location.getLocation(context, user.tenant, id);
@@ -50,7 +50,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Location:Create"])
+  @Security("jwtToken", ["Tenant", "Location:Create"])
   public async createLocation(@Request() request: ContextualRequest, @Body() body: CreateLocationProperties): Promise<Partial<Location> | null> {
     const { context, user } = request;
     return await context.services.location.createLocation(context, user.tenant, user.id, body);
@@ -67,7 +67,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Location:Update"])
+  @Security("jwtToken", ["Tenant", "Location:Update"])
   public async updateLocation(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Location>): Promise<Partial<Location> | null> {
     const { context, user } = request;
     return await context.services.location.updateLocation(context, user.tenant, id, user.id, body);
@@ -83,7 +83,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Location:Delete"])
+  @Security("jwtToken", ["Tenant", "Location:Delete"])
   public async deleteLocations(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.location.deleteLocations(context, user.tenant, body);
@@ -99,7 +99,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Location:Delete"])
+  @Security("jwtToken", ["Tenant", "Location:Delete"])
   public async deleteLocation(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.location.deleteLocation(context, user.tenant, id);
@@ -107,7 +107,7 @@ export class LocationController extends Controller {
 
   /**
    * Associates a location with a company by adding the location to the company's list of locations. 
-   * Requires a valid JWT token with "Location:Create" permission.
+   * Requires a valid JWT token with "Location:List" permission.
    *
    * @param body An object containing the ID of the location to add to a company.
    * @returns An object indicating whether the operation was successful.
@@ -115,9 +115,25 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Post("{id}/add-to-company")
-  @Security("jwtToken", ["Location:Create"])
-  public async addToCompany(@Request() request: ContextualRequest, @Body() body: { id: number }): Promise<{ success: boolean }> {
+  @Security("jwtToken", ["Tenant", "Location:List"])
+  public async addToCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.location.addToCompany(context, user.tenant, user.id, body);
+    return await context.services.location.addToCompany(context, user.tenant, id, body);
+  }
+
+  /**
+   * Remove a specified location associations from a company. 
+   * Requires a valid JWT token with "Location:List" permission.
+   *
+   * @param body An object containing the ID of the location to remove from a company.
+   * @returns An object indicating whether the operation was successful.
+   */
+  @Tags("Location")
+  @SuccessResponse("200", "OK")
+  @Delete("{id}/remove-from-company")
+  @Security("jwtToken", ["Tenant", "Location:List"])
+  public async removeFromCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.location.removeFromCompany(context, user.tenant, id, body);
   }
 };

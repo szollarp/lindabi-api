@@ -1,5 +1,5 @@
 import type { TENANT_STATUS } from "../../constants";
-import type { ProfilePicture } from "./profile-picture";
+import type { Image } from "./image";
 
 export interface Tenant {
   id: number
@@ -14,11 +14,11 @@ export interface Tenant {
   taxNumber: string
   registrationNumber: string
   bankAccount?: string | null
-  logo?: ProfilePicture | null
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
+  images?: Image[]
 };
 
 export type CreateTenantProperties = Omit<Tenant, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;

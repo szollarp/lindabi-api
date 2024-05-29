@@ -273,10 +273,7 @@ export const authenticationService = (): AuthenticationService => {
         }
 
         await t.commit();
-
         await sendForgottenPasswordEmail(context, user);
-      } else {
-        throw Unauthorized("Failed to process forgotten password request. Please try again later.");
       }
 
       return { success: true };

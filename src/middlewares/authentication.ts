@@ -50,7 +50,7 @@ const hasMePermission = (user: User, permissions: string[], requestPath: string)
   return id === requestPathId;
 };
 
-export const expressAuthentication = async (request: Request, securityName: string, permissions?: string[]): Promise<DecodedUser> => {
+export const expressAuthentication = async (request: Request, securityName: string, inputPermissions?: string[]): Promise<DecodedUser> => {
   let isSystemAdmin = false;
   const { context, path } = request;
 
@@ -65,7 +65,11 @@ export const expressAuthentication = async (request: Request, securityName: stri
   }
 
   const tenant = getTenant(request);
+  if (inputPermissions?.includes("Tenant") && !tenant) {
+    throw new Forbidden("You do not have permission to access this resource.");
+  }
 
+  const permissions = inputPermissions?.filter((permission) => permission !== "Tenant");
   if (permissions !== null && permissions !== undefined && permissions.length > 0) {
     const user = await context.models.User.findOne({
       attributes: ["id", "tenantId"],

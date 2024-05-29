@@ -3,8 +3,8 @@ import {
   Security, Body, Put, Path, Post, Delete
 } from "tsoa";
 import type { CreateContactProperties, Contact } from "../models/interfaces/contact";
-import type { CreateProfilePictureProperties } from "../models/interfaces/profile-picture";
 import type { ContextualRequest } from "../types";
+import { CreateImageProperties } from "../models/interfaces/image";
 
 @Route("contacts")
 export class ContactController extends Controller {
@@ -18,7 +18,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Contact:List"])
+  @Security("jwtToken", ["Tenant", "Contact:List"])
   public async getContacts(@Request() request: ContextualRequest): Promise<Array<Partial<Contact>>> {
     const { context, user } = request;
     return await context.services.contact.getContacts(context, user.tenant);
@@ -35,7 +35,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Contact:Get"])
+  @Security("jwtToken", ["Tenant", "Contact:Get"])
   public async getContact(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     return await context.services.contact.getContact(context, user.tenant, id);
@@ -53,7 +53,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Contact:Create"])
+  @Security("jwtToken", ["Tenant", "Contact:Create"])
   public async createContact(@Request() request: ContextualRequest, @Body() body: CreateContactProperties): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     return await context.services.contact.createContact(context, user.tenant, user.id, body);
@@ -70,27 +70,10 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Contact:Update"])
+  @Security("jwtToken", ["Tenant", "Contact:Update"])
   public async updateContact(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Contact>): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     return await context.services.contact.updateContact(context, user.tenant, id, user.id, body);
-  }
-
-  /**
-   * Updates or uploads a logo for a specific contact. This operation is protected and requires
-   * "Contact:Update" permission. The logo is linked to the contact based on their ID.
-   *
-   * @param id The ID of the contact to update the logo for.
-   * @param body Contains the logo file and associated metadata.
-   * @returns An object indicating whether the logo upload was successful.
-   */
-  @Tags("Contact")
-  @SuccessResponse("200", "OK")
-  @Put("{id}/logo")
-  @Security("jwtToken", ["Contact:Update"])
-  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateProfilePictureProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
-    const { context, user } = request;
-    return await context.services.profilePicture.upload(context, id, user.tenant, body, "Contact");
   }
 
   /**
@@ -104,7 +87,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Contact:Delete"])
+  @Security("jwtToken", ["Tenant", "Contact:Delete"])
   public async deleteContacts(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.deleteContacts(context, user.tenant, body);
@@ -121,9 +104,41 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Contact:Delete"])
+  @Security("jwtToken", ["Tenant", "Contact:Delete"])
   public async deleteContact(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.deleteContact(context, user.tenant, id);
+  }
+
+  /**
+   * Associates a contact with a company by adding the contact to the company's list of contacts. 
+   * Requires a valid JWT token with "Contact:List" permission.
+   *
+   * @param body An object containing the ID of the contact to add to a company.
+   * @returns An object indicating whether the operation was successful.
+   */
+  @Tags("Contact")
+  @SuccessResponse("200", "OK")
+  @Post("{id}/add-to-company")
+  @Security("jwtToken", ["Tenant", "Contact:List"])
+  public async addToCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.contact.addToCompany(context, user.tenant, id, body);
+  }
+
+  /**
+   * Remove a specified contact associations from a company. 
+   * Requires a valid JWT token with "Contact:List" permission.
+   *
+   * @param body An object containing the ID of the contact to remove from a company.
+   * @returns An object indicating whether the operation was successful.
+   */
+  @Tags("Contact")
+  @SuccessResponse("200", "OK")
+  @Delete("{id}/remove-from-company")
+  @Security("jwtToken", ["Tenant", "Contact:List"])
+  public async removeFromCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.contact.removeFromCompany(context, user.tenant, id, body);
   }
 };
