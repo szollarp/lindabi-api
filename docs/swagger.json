@@ -1996,12 +1996,6 @@
 			"CreateCompanyProperties": {
 				"$ref": "#/components/schemas/Omit_Company.id-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
-			"CreateImagesProperties": {
-				"items": {
-					"$ref": "#/components/schemas/CreateImageProperties"
-				},
-				"type": "array"
-			},
 			"LoginResponse": {
 				"properties": {
 					"accessToken": {
@@ -4664,63 +4658,6 @@
 							"schema": {
 								"$ref": "#/components/schemas/CreateImageProperties",
 								"description": "Contains the image file and metadata for the logo."
-							}
-						}
-					}
-				}
-			}
-		},
-		"/companies/{id}/images": {
-			"post": {
-				"operationId": "UpdateImages",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Company"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Company:Update"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateImagesProperties"
 							}
 						}
 					}

@@ -60,9 +60,7 @@ export const companyService = (): CompanyService => {
   };
 
   const createCompany = async (context: Context, tenantId: number, createdBy: number, data: CreateCompanyProperties): Promise<Partial<Company> | null> => {
-    const company = await context.models.Company.create({ ...data, tenantId, createdBy });
-
-    return company;
+    return await context.models.Company.create({ ...data, tenantId, createdBy });
   };
 
   const updateCompany = async (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Company>): Promise<Partial<Company> | null> => {

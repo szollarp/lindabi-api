@@ -95,24 +95,6 @@ export class CompanyController extends Controller {
     return await context.services.image.upload(context, id, body, "company");
   }
 
-  @Tags("Company")
-  @SuccessResponse("200", "OK")
-  @Post("{id}/images")
-  @Security("jwtToken", ["Tenant", "Company:Update"])
-  public async updateImages(@Request() request: ContextualRequest, @Body() images: CreateImagesProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
-    const { context, user } = request;
-
-    try {
-      for (const image of images) {
-        await context.services.image.upload(context, id, image, "company");
-      }
-
-      return { uploaded: true };
-    } catch (error) {
-      throw error;
-    }
-  }
-
   /**
    * Deletes multiple companies based on their IDs. This is a secured endpoint that validates the user's authentication
    * and permissions. The operation uses the user's tenant information for authorization.
