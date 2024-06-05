@@ -4,7 +4,6 @@ import {
 } from "tsoa";
 import type { CreateContactProperties, Contact } from "../models/interfaces/contact";
 import type { ContextualRequest } from "../types";
-import { CreateImageProperties } from "../models/interfaces/image";
 
 @Route("contacts")
 export class ContactController extends Controller {

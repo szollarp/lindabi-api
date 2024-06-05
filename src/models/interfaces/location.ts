@@ -17,4 +17,4 @@ export interface Location {
   updatedBy?: number | null
 };
 
-export type CreateLocationProperties = Omit<Location, "id" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateLocationProperties = Omit<Location, "id" | "createdOn" | "updatedBy" | "updatedOn">;

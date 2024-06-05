@@ -5,7 +5,7 @@ import type {
 } from "sequelize";
 import { TENDER_STATUS, TENDER_CURRENCY } from "../constants";
 import { CreateTenderProperties, Tender } from "./interfaces/tender";
-import { Image } from "./interfaces/image";
+import { Document } from "./interfaces/document";
 import { Location } from "./interfaces/location";
 import { Contact } from "./interfaces/contact";
 import { Company } from "./interfaces/company";
@@ -14,8 +14,12 @@ import { CompanyModel } from "./company";
 import { LocationModel } from "./location";
 import { ContactModel } from "./contact";
 import { TenantModel } from "./tenant";
-import { ImageModel } from "./image";
+import { DocumentModel } from "./document";
+import { Journey } from "./interfaces/journey";
+import { JourneyModel } from "./journey";
 import type { Models } from ".";
+import { TenderItemModel } from "./tender-item";
+import { TenderItem } from "./interfaces/tender-item";
 
 export class TenderModel extends Model<Tender, CreateTenderProperties> implements Tender {
   public id!: number;
@@ -40,11 +44,11 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public validTo!: Date | null;
 
-  public dueDate!: Date | null;
+  public dueDate?: Date | null;
 
   public openDate!: Date | null;
 
-  public startDate!: Date | null;
+  public startDate?: Date | null;
 
   public notes!: string | null;
 
@@ -90,13 +94,27 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public getContact!: HasOneGetAssociationMixin<ContactModel>;
 
-  public getImages!: HasManyGetAssociationsMixin<ImageModel[]>;
+  public getDocuments!: HasManyGetAssociationsMixin<DocumentModel[]>;
 
-  public createImage!: HasManyCreateAssociationMixin<ImageModel>;
+  public createDocument!: HasManyCreateAssociationMixin<DocumentModel>;
 
-  declare images?: NonAttribute<Image[]>;
+  declare documents?: NonAttribute<Document[]>;
 
-  declare imageIds?: ForeignKey<Image["id"][]>;
+  declare documentIds?: ForeignKey<Document["id"][]>;
+
+  public journeys?: NonAttribute<Journey[]>;
+
+  public getJourneys!: HasManyGetAssociationsMixin<Journey[]>;
+
+  public createJourney!: HasManyCreateAssociationMixin<JourneyModel>;
+
+  public getItems!: HasManyGetAssociationsMixin<TenderItemModel[]>;
+
+  public createItem!: HasManyCreateAssociationMixin<TenderItemModel>;
+
+  declare items?: NonAttribute<TenderItem[]>;
+
+  declare itemsIds?: ForeignKey<TenderItem["id"][]>;
 
   public tenantId!: ForeignKey<Tenant["id"]>;
 
@@ -113,12 +131,13 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
   public static associate: (models: Models) => void;
 
   public static associations: {
-    images: Association<TenderModel, ImageModel>,
+    documents: Association<TenderModel, DocumentModel>,
     tenant: Association<TenderModel, TenantModel>,
     customer: Association<TenderModel, CompanyModel>,
     contractor: Association<TenderModel, CompanyModel>,
     location: Association<TenderModel, LocationModel>,
     contact: Association<TenderModel, ContactModel>
+    items: Association<TenderModel, TenderItemModel>,
   };
 };
 
@@ -267,12 +286,12 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
   });
 
   TenderModel.associate = (models) => {
-    TenderModel.hasMany(models.Image, {
+    TenderModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "tender"
       },
-      as: "images"
+      as: "documents"
     });
 
     TenderModel.hasMany(models.TenderItem, {
@@ -303,6 +322,14 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     TenderModel.belongsTo(models.Contact, {
       foreignKey: "contactId",
       as: "contact"
+    });
+
+    TenderModel.hasMany(models.Journey, {
+      foreignKey: "owner_id",
+      scope: {
+        ownerType: "tender"
+      },
+      as: "journeys",
     });
   };
 

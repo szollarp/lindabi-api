@@ -1,7 +1,7 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete } from "tsoa";
 import type { CreateTenantProperties, Tenant } from "../models/interfaces/tenant";
 import type { ContextualRequest } from "../types";
-import { CreateImageProperties } from "../models/interfaces/image";
+import { CreateDocumentProperties } from "../models/interfaces/document";
 
 @Route("tenants")
 export class TenantController extends Controller {
@@ -74,16 +74,16 @@ export class TenantController extends Controller {
    * and the "Tenant:Update" permission.The logo is associated with the tenant based on their ID.
    *
    * @param id The ID of the tenant to update the logo for.
-   * @param body Contains the image file and metadata for the logo.
+   * @param body Contains the image data and metadata for the logo.
    * @returns An object indicating the success of the logo upload operation.
    */
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Put("{id}/logo")
   @Security("jwtToken", ["Tenant:Update"])
-  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.image.upload(context, id, body, "tenant");
+    return await context.services.document.upload(context, id, body, "tenant");
   }
 
   /**

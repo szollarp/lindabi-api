@@ -15,61 +15,83 @@ export interface ContactService {
 
 export const contactService = (): ContactService => {
   const getContacts = async (context: Context, tenantId: number): Promise<Array<Partial<Contact>>> => {
-    return await context.models.Contact.findAll({
-      attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
-      where: { tenantId }
-    });
+    try {
+      return await context.models.Contact.findAll({
+        attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
+        where: { tenantId }
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const getContact = async (context: Context, tenantId: number, id: number): Promise<Partial<Contact> | null> => {
-    return await context.models.Contact.findOne({
-      attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
-      where: { tenantId, id },
-      include: [
-        {
-          model: context.models.Company,
-          as: "companies",
-          attributes: ["id", "name", "country", "city", "address", "zipCode"],
-          through: { attributes: [] }
-        }
-      ]
-    });
+    try {
+      return await context.models.Contact.findOne({
+        attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
+        where: { tenantId, id },
+        include: [
+          {
+            model: context.models.Company,
+            as: "companies",
+            attributes: ["id", "name", "country", "city", "address", "zipCode"],
+            through: { attributes: [] }
+          }
+        ]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const createContact = async (context: Context, tenantId: number, createdBy: number, data: CreateContactProperties): Promise<Partial<Contact> | null> => {
-    return await context.models.Contact.create({ ...data, tenantId, createdBy });
+    try {
+      return await context.models.Contact.create({ ...data, tenantId, createdBy });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const updateContact = async (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Contact>): Promise<Partial<Contact> | null> => {
-    const Contact = await context.models.Contact.findOne({
-      where: { tenantId, id }
-    });
+    try {
+      const Contact = await context.models.Contact.findOne({
+        where: { tenantId, id }
+      });
 
-    if (!Contact) {
-      return null;
+      if (!Contact) {
+        return null;
+      }
+
+      await Contact.update({ ...data, updatedBy });
+
+      return Contact;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
     }
-
-    await Contact.update({ ...data, updatedBy });
-
-    return Contact;
   };
 
   const deleteContact = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean }> => {
-    const t = await context.models.sequelize.transaction();
-
-    await context.models.Contact.destroy({ where: { id, tenantId }, transaction: t, force: true });
-    await t.commit();
-
-    return { success: true };
+    try {
+      await context.models.Contact.destroy({ where: { id, tenantId }, force: true });
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const deleteContacts = async (context: Context, tenantId: number, body: { ids: number[] }): Promise<{ success: boolean }> => {
-    const t = await context.models.sequelize.transaction();
-
-    await context.models.Contact.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, transaction: t, force: true });
-    await t.commit();
-
-    return { success: true };
+    try {
+      await context.models.Contact.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, force: true });
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const addToCompany = async (context: Context, tenantId: number, id: number, body: { id: number }): Promise<{ success: boolean }> => {

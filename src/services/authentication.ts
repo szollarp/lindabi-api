@@ -20,7 +20,7 @@ export interface AuthenticationService {
   loginTwoFactor: (context: Context, body: Login2FaRequest) => Promise<LoginResponse>
   logout: (context: Context, cookies: Record<string, string>) => Promise<LogoutResponse>
   verifyAccount: (context: Context, body: VerifyAccountRequest, v: string) => Promise<VerifyAccountResponse>
-  refreshToken: (context: Context, cookies: Record<string, string>) => Promise<RefreshTokenResponse>
+  refreshToken: (context: Context, cookies: Record<string, string>, user: DecodedUser) => Promise<RefreshTokenResponse>
   requestForgottenPassword: (context: Context, body: ForgottenPasswordRequest) => Promise<ForgottenPasswordResponse>
   resetPassword: (context: Context, body: ResetPasswordRequest, v: string) => Promise<ResetPasswordResponse>
 }
@@ -31,7 +31,7 @@ export const authenticationService = (): AuthenticationService => {
 
     try {
       const user = await context.models.User.findOne({
-        attributes: ["id", "password", "salt", "enableTwoFactor"],
+        attributes: ["id", "password", "salt", "enableTwoFactor", "name"],
         where: {
           email: body.email.toLowerCase(),
           status: USER_STATUS.ACTIVE
@@ -58,7 +58,10 @@ export const authenticationService = (): AuthenticationService => {
       }
 
       if (!user.enableTwoFactor) {
-        const jwtTokens = await jwt.getJWTTokens(context, user.id);
+        const jwtTokens = await jwt.getJWTTokens(context, {
+          id: user.id,
+          name: user.name
+        });
 
         const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
           where: { userId: user.id },
@@ -111,7 +114,7 @@ export const authenticationService = (): AuthenticationService => {
       }
 
       const user = await context.models.User.findOne({
-        attributes: ["id", "enableTwoFactor"],
+        attributes: ["id", "enableTwoFactor", "name"],
         where: {
           id: twoFactorSession.userId
         },
@@ -142,7 +145,10 @@ export const authenticationService = (): AuthenticationService => {
 
       await twoFactorSession.destroy({ force: true, transaction: t });
 
-      const jwtTokens = await jwt.getJWTTokens(context, user.id);
+      const jwtTokens = await jwt.getJWTTokens(context, {
+        id: user.id,
+        name: user.name
+      });
 
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
         where: { userId: user.id },
@@ -213,7 +219,7 @@ export const authenticationService = (): AuthenticationService => {
     }
   };
 
-  const refreshToken = async (context: Context, headers: Record<string, string>): Promise<RefreshTokenResponse> => {
+  const refreshToken = async (context: Context, headers: Record<string, string>, user: DecodedUser): Promise<RefreshTokenResponse> => {
     try {
       const headerToken = headers["x-refresh-token"];
       const authConfig: AuthConfig = context.config.get("auth");
@@ -222,15 +228,21 @@ export const authenticationService = (): AuthenticationService => {
       }
 
       const refreshToken = await context.models.RefreshToken.findOne({
-        attributes: ["token", "userId"],
-        where: { token: headerToken }
+        attributes: ["token"],
+        where: { token: headerToken },
+        include: [{
+          model: context.models.User,
+          attributes: ["name", "id"],
+          as: "user",
+          required: true
+        }]
       });
 
-      if (!refreshToken || !refreshToken.userId) {
+      if (!refreshToken || !refreshToken.user) {
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
-      const { accessToken } = await jwt.getJWTTokens(context, refreshToken.userId);
+      const { accessToken } = await jwt.getJWTTokens(context, refreshToken.user);
       return { accessToken };
     } catch (error: any) {
       context.logger.error("Refresh Token error", { error: error.message, type: error.name });

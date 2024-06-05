@@ -14,85 +14,106 @@ export interface CompanyService {
 
 export const companyService = (): CompanyService => {
   const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> => {
-    return await context.models.Company.findAll({
-      attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode"],
-      where: { tenantId, type },
-      include: [{
-        model: context.models.Image,
-        attributes: ["image", "mimeType", "type"],
-        as: "images",
-        foreignKey: "ownerId"
-      },
-      {
-        model: context.models.Location,
-        attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
-        as: "locations",
-        through: { attributes: [] }
-      }, {
-        model: context.models.Contact,
-        attributes: ["id", "name", "email", "phoneNumber", "status"],
-        as: "contacts",
-        through: { attributes: [] }
-      }]
-    });
+    try {
+      return await context.models.Company.findAll({
+        attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode"],
+        where: { tenantId, type },
+        include: [{
+          model: context.models.Document,
+          attributes: ["data", "mimeType", "type"],
+          as: "documents",
+          foreignKey: "ownerId"
+        },
+        {
+          model: context.models.Location,
+          attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
+          as: "locations",
+          through: { attributes: [] }
+        }, {
+          model: context.models.Contact,
+          attributes: ["id", "name", "email", "phoneNumber", "status"],
+          as: "contacts",
+          through: { attributes: [] }
+        }]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const getCompany = async (context: Context, tenantId: number, id: number): Promise<Partial<Company> | null> => {
-    return await context.models.Company.findOne({
-      where: { tenantId, id },
-      include: [{
-        model: context.models.Image,
-        attributes: ["image", "mimeType", "type"],
-        as: "images",
-        foreignKey: "ownerId"
-      }, {
-        model: context.models.Location,
-        attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
-        as: "locations",
-        through: { attributes: [] }
-      }, {
-        model: context.models.Contact,
-        attributes: ["id", "name", "email", "phoneNumber", "status"],
-        as: "contacts",
-        through: { attributes: [] }
-      }]
-    });
+    try {
+      return await context.models.Company.findOne({
+        where: { tenantId, id },
+        include: [{
+          model: context.models.Document,
+          attributes: ["data", "mimeType", "type"],
+          as: "documents",
+          foreignKey: "ownerId"
+        }, {
+          model: context.models.Location,
+          attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
+          as: "locations",
+          through: { attributes: [] }
+        }, {
+          model: context.models.Contact,
+          attributes: ["id", "name", "email", "phoneNumber", "status"],
+          as: "contacts",
+          through: { attributes: [] }
+        }]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const createCompany = async (context: Context, tenantId: number, createdBy: number, data: CreateCompanyProperties): Promise<Partial<Company> | null> => {
-    return await context.models.Company.create({ ...data, tenantId, createdBy });
+    try {
+      return await context.models.Company.create({ ...data, tenantId, createdBy });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const updateCompany = async (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Company>): Promise<Partial<Company> | null> => {
-    const company = await context.models.Company.findOne({
-      where: { tenantId, id }
-    });
+    try {
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id }
+      });
 
-    if (!company) {
-      return null;
+      if (!company) {
+        return null;
+      }
+
+      await company.update({ ...data, updatedBy });
+      return company;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
     }
-
-    await company.update({ ...data, updatedBy });
-
-    return company;
   };
 
   const deleteCompany = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean }> => {
-    const t = await context.models.sequelize.transaction();
-
-    await context.models.Company.destroy({ where: { id, tenantId }, transaction: t, force: true });
-    await t.commit();
-
-    return { success: true };
+    try {
+      await context.models.Company.destroy({ where: { id, tenantId }, force: true });
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const deleteCompanies = async (context: Context, tenantId: number, body: { ids: number[] }): Promise<{ success: boolean }> => {
-    const t = await context.models.sequelize.transaction();
-
-    await context.models.Company.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, transaction: t, force: true });
-    await t.commit();
-
-    return { success: true };
+    try {
+      await context.models.Company.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, force: true });
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   return {

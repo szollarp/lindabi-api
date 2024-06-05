@@ -17,33 +17,21 @@ export class TenderItemModel extends Model<TenderItem, CreateTenderItemPropertie
 
   public unit!: string;
 
-  public vatKey!: string;
-
-  public currency!: TENDER_CURRENCY;
-
-  public surcharge!: number | null;
-
-  public discount!: number | null;
-
   public materialNetUnitAmount!: number;
 
   public materialNetAmount!: number;
 
-  public materialAmount!: number;
+  public materialActualNetAmount!: number;
+
+  public totalMaterialAmount!: number;
 
   public feeNetUnitAmount!: number;
 
   public feeNetAmount!: number;
 
-  public feeAmount!: number;
+  public feeActualNetAmount!: number;
 
-  public totalMaterialNetAmount!: number;
-
-  public totalFeeNetAmount!: number;
-
-  public totalNetAmount!: number;
-
-  public totalAmount!: number;
+  public totalFeeAmount!: number;
 
   public tenderId!: ForeignKey<Tender["id"]>;
 
@@ -84,24 +72,6 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
       type: DataTypes.STRING,
       allowNull: false
     },
-    vatKey: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    currency: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    surcharge: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: null
-    },
-    discount: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: null
-    },
     materialNetUnitAmount: {
       type: DataTypes.DECIMAL,
       allowNull: false
@@ -110,7 +80,11 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    materialAmount: {
+    materialActualNetAmount: {
+      type: DataTypes.DECIMAL,
+      allowNull: false
+    },
+    totalMaterialAmount: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
@@ -122,23 +96,11 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    feeAmount: {
+    feeActualNetAmount: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
-    totalMaterialNetAmount: {
-      type: DataTypes.DECIMAL,
-      allowNull: false
-    },
-    totalFeeNetAmount: {
-      type: DataTypes.DECIMAL,
-      allowNull: false
-    },
-    totalNetAmount: {
-      type: DataTypes.DECIMAL,
-      allowNull: false
-    },
-    totalAmount: {
+    totalFeeAmount: {
       type: DataTypes.DECIMAL,
       allowNull: false
     },
@@ -173,7 +135,10 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
   });
 
   TenderItemModel.associate = (models) => {
-    TenderItemModel.belongsTo(models.Tender);
+    TenderItemModel.belongsTo(models.Tender, {
+      foreignKey: "tenderId",
+      as: "tender"
+    });
   };
 
   return TenderItemModel;

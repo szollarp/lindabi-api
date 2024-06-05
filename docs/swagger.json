@@ -262,34 +262,47 @@
 				],
 				"type": "string"
 			},
-			"ImageType": {
+			"DocumentType": {
 				"type": "string",
 				"enum": [
 					"logo",
 					"stamp",
 					"signature",
-					"avatar"
+					"avatar",
+					"survey",
+					"other",
+					"plan",
+					"pdf"
 				]
 			},
-			"ImageOwnerType": {
+			"DocumentOwnerType": {
 				"type": "string",
 				"enum": [
 					"user",
 					"tenant",
 					"contact",
 					"company",
+					"tender",
 					null
 				],
 				"nullable": true
 			},
-			"Image": {
+			"Document": {
 				"properties": {
 					"id": {
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string",
+						"nullable": true
+					},
+					"preview": {
+						"type": "string",
+						"nullable": true
+					},
 					"type": {
-						"$ref": "#/components/schemas/ImageType"
+						"$ref": "#/components/schemas/DocumentType"
 					},
 					"ownerId": {
 						"type": "number",
@@ -297,13 +310,18 @@
 						"nullable": true
 					},
 					"ownerType": {
-						"$ref": "#/components/schemas/ImageOwnerType"
+						"$ref": "#/components/schemas/DocumentOwnerType"
 					},
-					"image": {
+					"data": {
 						"type": "string"
 					},
 					"mimeType": {
 						"type": "string"
+					},
+					"size": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
 					},
 					"createdOn": {
 						"type": "string",
@@ -317,7 +335,7 @@
 				},
 				"required": [
 					"type",
-					"image",
+					"data",
 					"mimeType"
 				],
 				"type": "object",
@@ -389,9 +407,9 @@
 						"format": "double",
 						"nullable": true
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -572,9 +590,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -660,9 +678,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -750,9 +768,9 @@
 						"type": "number",
 						"format": "double"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -771,39 +789,49 @@
 			"UpdateUserProperties": {
 				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_"
 			},
-			"Pick_Image.Exclude_keyofImage.id-or-createdOn-or-updatedOn__": {
+			"Pick_Document.Exclude_keyofDocument.id-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"preview": {
+						"type": "string"
+					},
 					"type": {
-						"$ref": "#/components/schemas/ImageType"
+						"$ref": "#/components/schemas/DocumentType"
 					},
 					"ownerId": {
 						"type": "number",
 						"format": "double"
 					},
 					"ownerType": {
-						"$ref": "#/components/schemas/ImageOwnerType"
+						"$ref": "#/components/schemas/DocumentOwnerType"
 					},
-					"image": {
+					"data": {
 						"type": "string"
 					},
 					"mimeType": {
 						"type": "string"
+					},
+					"size": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"type",
-					"image",
+					"data",
 					"mimeType"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_Image.id-or-createdOn-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Image.Exclude_keyofImage.id-or-createdOn-or-updatedOn__",
+			"Omit_Document.id-or-createdOn-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Document.Exclude_keyofDocument.id-or-createdOn-or-updatedOn__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
-			"CreateImageProperties": {
-				"$ref": "#/components/schemas/Omit_Image.id-or-createdOn-or-updatedOn_"
+			"CreateDocumentProperties": {
+				"$ref": "#/components/schemas/Omit_Document.id-or-createdOn-or-updatedOn_"
 			},
 			"UpdatePasswordProperties": {
 				"properties": {
@@ -966,9 +994,9 @@
 						"format": "double",
 						"nullable": true
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -1154,10 +1182,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
 					"name": {
 						"type": "string"
 					},
@@ -1168,22 +1192,6 @@
 					"unit": {
 						"type": "string"
 					},
-					"vatKey": {
-						"type": "string"
-					},
-					"currency": {
-						"type": "string"
-					},
-					"surcharge": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"discount": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
 					"materialNetUnitAmount": {
 						"type": "number",
 						"format": "double"
@@ -1192,7 +1200,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"materialAmount": {
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
 						"type": "number",
 						"format": "double"
 					},
@@ -1204,23 +1216,15 @@
 						"type": "number",
 						"format": "double"
 					},
-					"feeAmount": {
+					"feeActualNetAmount": {
 						"type": "number",
 						"format": "double"
 					},
-					"totalMaterialNetAmount": {
+					"totalFeeAmount": {
 						"type": "number",
 						"format": "double"
 					},
-					"totalFeeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalAmount": {
+					"tenderId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -1245,22 +1249,18 @@
 				},
 				"required": [
 					"id",
-					"tenderId",
 					"name",
 					"quantity",
 					"unit",
-					"vatKey",
-					"currency",
 					"materialNetUnitAmount",
 					"materialNetAmount",
-					"materialAmount",
+					"materialActualNetAmount",
+					"totalMaterialAmount",
 					"feeNetUnitAmount",
 					"feeNetAmount",
-					"feeAmount",
-					"totalMaterialNetAmount",
-					"totalFeeNetAmount",
-					"totalNetAmount",
-					"totalAmount"
+					"feeActualNetAmount",
+					"totalFeeAmount",
+					"tenderId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1376,9 +1376,9 @@
 						},
 						"type": "array"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					},
@@ -1401,6 +1401,455 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"Partial_TenderItem_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"quantity",
+					"unit",
+					"materialNetUnitAmount",
+					"materialNetAmount",
+					"materialActualNetAmount",
+					"totalMaterialAmount",
+					"feeNetUnitAmount",
+					"feeNetAmount",
+					"feeActualNetAmount",
+					"totalFeeAmount",
+					"tenderId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_TenderItem.id-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_TenderItem.Exclude_keyofTenderItem.id-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTenderItemProperties": {
+				"$ref": "#/components/schemas/Omit_TenderItem.id-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_TenderItem-or-null_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Partial_Document_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"preview": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/DocumentType"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"ownerType": {
+						"$ref": "#/components/schemas/DocumentOwnerType"
+					},
+					"data": {
+						"type": "string"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"size": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Record_string.unknown_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"Partial_Journey_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"activity": {
+						"type": "string"
+					},
+					"property": {
+						"type": "string"
+					},
+					"existed": {
+						"type": "string"
+					},
+					"updated": {
+						"type": "string"
+					},
+					"notes": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"ownerType": {
+						"type": "string"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"username": {
+						"type": "string"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"number": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENDER_STATUS"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"survey": {
+						"type": "string"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"type": {
+						"type": "string"
+					},
+					"fee": {
+						"type": "number",
+						"format": "double"
+					},
+					"returned": {
+						"type": "boolean"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"currency": {
+						"$ref": "#/components/schemas/TENDER_CURRENCY"
+					},
+					"surcharge": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"validTo": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"openDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"inquiry": {
+						"type": "string"
+					},
+					"locationDescription": {
+						"type": "string"
+					},
+					"toolRequirements": {
+						"type": "string"
+					},
+					"otherComment": {
+						"type": "string"
+					},
+					"customerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"locationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"location": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/TenderItem"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"status",
+					"type",
+					"returned",
+					"vatKey",
+					"currency"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTenderProperties": {
+				"$ref": "#/components/schemas/Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
 			"TENANT_STATUS": {
 				"enum": [
@@ -1464,9 +1913,9 @@
 						"type": "number",
 						"format": "double"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -1500,9 +1949,9 @@
 					"zipCode": {
 						"type": "string"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					},
@@ -1669,7 +2118,7 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
-			"Pick_Location.Exclude_keyofLocation.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+			"Pick_Location.Exclude_keyofLocation.id-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -1715,12 +2164,12 @@
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_Location.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Location.Exclude_keyofLocation.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+			"Omit_Location.id-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Location.Exclude_keyofLocation.id-or-createdOn-or-updatedBy-or-updatedOn__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"CreateLocationProperties": {
-				"$ref": "#/components/schemas/Omit_Location.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+				"$ref": "#/components/schemas/Omit_Location.id-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
 			"CONTACT_STATUS": {
 				"enum": [
@@ -1902,9 +2351,9 @@
 						"type": "number",
 						"format": "double"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					}
@@ -1946,9 +2395,9 @@
 						"type": "number",
 						"format": "double"
 					},
-					"images": {
+					"documents": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
 					},
@@ -2517,7 +2966,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateImageProperties",
+								"$ref": "#/components/schemas/CreateDocumentProperties",
 								"description": "The properties to update the profile picture."
 							}
 						}
@@ -2828,6 +3277,50 @@
 				],
 				"parameters": []
 			},
+			"post": {
+				"operationId": "CreateTender",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Tender_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new tender with the provided properties. This operation is secured and\nrequires a JWT token with \"Tender:Create\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tender:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties required to create a new tender.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTenderProperties",
+								"description": "The properties required to create a new tender."
+							}
+						}
+					}
+				}
+			},
 			"delete": {
 				"operationId": "DeleteTenders",
 				"responses": {
@@ -2934,6 +3427,61 @@
 					}
 				]
 			},
+			"put": {
+				"operationId": "UpdateTender",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Tender_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the information of an existing tender, identified by their ID. Access to this\nendpoint is restricted to authenticated requests with \"Tender:Update\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial tender object containing the fields to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Tender_",
+								"description": "A partial tender object containing the fields to update."
+							}
+						}
+					}
+				}
+			},
 			"delete": {
 				"operationId": "DeleteTender",
 				"responses": {
@@ -2977,6 +3525,586 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders/{id}/items": {
+			"get": {
+				"operationId": "GetTenderItems",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_TenderItem_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "AddTenderItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_TenderItem_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTenderItemProperties"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tenders/{id}/items/{itemId}": {
+			"put": {
+				"operationId": "UpdateTenderItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_TenderItem-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_TenderItem_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "RemoveTenderItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders/{id}/items-copy/{sourceTenderId}": {
+			"put": {
+				"operationId": "CopyTenderItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "sourceTenderId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders/{id}/documents": {
+			"get": {
+				"operationId": "GetTenderDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Document_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UploadTenderDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial document objects containing the data to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/CreateDocumentProperties"
+								},
+								"type": "array",
+								"description": "A partial document objects containing the data to update."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tenders/{id}/documents/{documentId}": {
+			"get": {
+				"operationId": "GetTenderDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Document_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender document by its document ID within a tender.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to retrieve.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "RemoveTenderDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a specific document from a tender by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"Tender:Update\" permission,\nensuring that only authorized users can delete documents.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender from which the document will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders/{id}/journeys": {
+			"get": {
+				"operationId": "GetTenderJourneys",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Journey_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves journey information associated with a specific tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tenders/{id}/documents-by-type": {
+			"delete": {
+				"operationId": "RemoveAllTenderDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes all documents of a specific type associated with a tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The type of documents to remove.",
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -3310,13 +4438,104 @@
 					}
 				],
 				"requestBody": {
-					"description": "Contains the image file and metadata for the logo.",
+					"description": "Contains the image data and metadata for the logo.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateImageProperties",
-								"description": "Contains the image file and metadata for the logo."
+								"$ref": "#/components/schemas/CreateDocumentProperties",
+								"description": "Contains the image data and metadata for the logo."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/statistics/overview": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"invoiceNum": {
+											"type": "number",
+											"format": "double"
+										},
+										"tenderNum": {
+											"type": "number",
+											"format": "double"
+										},
+										"userNum": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"invoiceNum",
+										"tenderNum",
+										"userNum"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves the statistics of the API. This method is used for monitoring\nand tracking the usage of the API.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/search/global": {
+			"put": {
+				"operationId": "Search",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all tenants within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Tenant:List\" permission.",
+				"tags": [
+					"Search"
+				],
+				"security": [
+					{
+						"jwtToken": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"keyword": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"keyword"
+								],
+								"type": "object"
 							}
 						}
 					}
@@ -4603,9 +5822,9 @@
 				]
 			}
 		},
-		"/companies/{id}/image": {
+		"/companies/{id}/document": {
 			"post": {
-				"operationId": "UpdateImage",
+				"operationId": "UpdateDocument",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -4651,13 +5870,13 @@
 					}
 				],
 				"requestBody": {
-					"description": "Contains the image file and metadata for the logo.",
+					"description": "Contains the image data and metadata for the logo.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateImageProperties",
-								"description": "Contains the image file and metadata for the logo."
+								"$ref": "#/components/schemas/CreateDocumentProperties",
+								"description": "Contains the image data and metadata for the logo."
 							}
 						}
 					}

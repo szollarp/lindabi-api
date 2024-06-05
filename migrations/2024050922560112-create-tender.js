@@ -31,7 +31,7 @@ module.exports = {
         type: Sequelize.DataTypes.BOOLEAN,
         defaultValue: false
       },
-      vatKey: {
+      vat_key: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
       },

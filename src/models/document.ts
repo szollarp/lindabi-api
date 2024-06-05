@@ -1,13 +1,19 @@
 import { Model, DataTypes, type Sequelize } from "sequelize";
-import { CreateImageProperties, Image } from "./interfaces/image";
+import { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "./interfaces/document";
 import type { Models } from ".";
 
-export class ImageModel extends Model<Image, CreateImageProperties> implements Image {
+export class DocumentModel extends Model<Document, CreateDocumentProperties> implements Document {
   public id!: number;
 
-  public type!: "logo" | "stamp" | "signature" | "avatar";
+  public name?: string | null;
 
-  public image!: string;
+  public size?: number | null;
+
+  public preview?: string | null;
+
+  public type!: DocumentType;
+
+  public data!: string;
 
   public mimeType!: string;
 
@@ -17,13 +23,13 @@ export class ImageModel extends Model<Image, CreateImageProperties> implements I
 
   public ownerId?: number | null;
 
-  public ownerType?: "user" | "tenant" | "contact" | "company" | null;
+  public ownerType?: DocumentOwnerType;
 
   public static associate: (models: Models) => void;
 }
 
-export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
-  ImageModel.init(
+export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
+  DocumentModel.init(
     {
       id: {
         unique: true,
@@ -31,16 +37,29 @@ export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
         type: DataTypes.INTEGER,
         autoIncrement: true
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      preview: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      size: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
+      },
       type: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      image: {
+      data: {
         type: DataTypes.BLOB("long"),
         allowNull: false,
         get() {
-          const image = this.getDataValue("image");
-          return image !== null ? Buffer.from(image).toString() : null;
+          const data = this.getDataValue("data");
+          return data !== null ? Buffer.from(data).toString() : null;
         }
       },
       mimeType: {
@@ -66,7 +85,7 @@ export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
     },
     {
       sequelize,
-      tableName: "images",
+      tableName: "documents",
       timestamps: true,
       createdAt: "created_on",
       updatedAt: "updated_on",
@@ -75,8 +94,8 @@ export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
     }
   );
 
-  ImageModel.associate = (models) => {
-    ImageModel.belongsTo(models.User, {
+  DocumentModel.associate = (models) => {
+    DocumentModel.belongsTo(models.User, {
       foreignKey: "owner_id",
       as: "user",
       scope: {
@@ -84,7 +103,7 @@ export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
       }
     });
 
-    ImageModel.belongsTo(models.Tenant, {
+    DocumentModel.belongsTo(models.Tenant, {
       foreignKey: "owner_id",
       as: "tenant",
       scope: {
@@ -92,14 +111,22 @@ export const ImageFactory = (sequelize: Sequelize): typeof ImageModel => {
       }
     });
 
-    ImageModel.belongsTo(models.Company, {
+    DocumentModel.belongsTo(models.Company, {
       foreignKey: "owner_id",
       as: "company",
       scope: {
         ownerType: "company"
       }
     });
+
+    DocumentModel.belongsTo(models.Company, {
+      foreignKey: "owner_id",
+      as: "tender",
+      scope: {
+        ownerType: "tender"
+      }
+    });
   };
 
-  return ImageModel;
+  return DocumentModel;
 };

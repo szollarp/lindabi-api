@@ -21,24 +21,6 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
       },
-      vat_key: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false
-      },
-      currency: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false
-      },
-      surcharge: {
-        type: Sequelize.DataTypes.DECIMAL,
-        allowNull: true,
-        defaultValue: null
-      },
-      discount: {
-        type: Sequelize.DataTypes.DECIMAL,
-        allowNull: true,
-        defaultValue: null
-      },
       material_net_unit_amount: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
@@ -47,7 +29,7 @@ module.exports = {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },
-      material_amount: {
+      material_actual_net_amount: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },
@@ -59,23 +41,15 @@ module.exports = {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },
-      fee_amount: {
+      fee_actual_net_amount: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },
-      total_material_net_amount: {
+      total_material_amount: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },
-      total_fee_net_amount: {
-        type: Sequelize.DataTypes.DECIMAL,
-        allowNull: false
-      },
-      total_net_amount: {
-        type: Sequelize.DataTypes.DECIMAL,
-        allowNull: false
-      },
-      total_amount: {
+      total_fee_amount: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: false
       },

@@ -36,9 +36,9 @@ export const userService = (): UserService => {
         where: { tenantId },
         attributes: USER_ATTRIBUTES,
         include: [{
-          model: context.models.Image,
-          attributes: ["image", "mimeType"],
-          as: "images",
+          model: context.models.Document,
+          attributes: ["data", "mimeType"],
+          as: "documents",
           foreignKey: "ownerId",
           where: { type: "avatar" },
           required: false
@@ -52,7 +52,7 @@ export const userService = (): UserService => {
       return users;
     } catch (error) {
       context.logger.error(error);
-      throw NotAcceptable("ERROR_USER_LIST");
+      throw error;
     }
   };
 
@@ -80,8 +80,8 @@ export const userService = (): UserService => {
     } catch (error: any) {
       await t.rollback();
 
-      context.logger.error(error.stack);
-      throw NotAcceptable("ERROR_USER_CREATE");
+      context.logger.error(error);
+      throw error;
     }
   };
 
@@ -101,9 +101,9 @@ export const userService = (): UserService => {
             as: "subscriptions"
           }]
         }, {
-          model: context.models.Image,
-          attributes: ["image", "mimeType"],
-          as: "images",
+          model: context.models.Document,
+          attributes: ["data", "mimeType"],
+          as: "documents",
           foreignKey: "ownerId"
         }, {
           model: context.models.Role,
@@ -126,7 +126,6 @@ export const userService = (): UserService => {
 
       return user;
     } catch (error) {
-      console.error(error);
       context.logger.error(error);
       throw error;
     }
@@ -141,10 +140,10 @@ export const userService = (): UserService => {
         attributes: USER_ATTRIBUTES,
         where,
         include: [{
-          model: context.models.Image,
+          model: context.models.Document,
           where: { type: "logo" },
-          attributes: ["image", "mimeType"],
-          as: "images"
+          attributes: ["data", "mimeType"],
+          as: "documents",
         }]
       });
 
@@ -266,7 +265,7 @@ export const userService = (): UserService => {
     } catch (error: any) {
       await t.rollback();
 
-      context.logger.error("Generate Two-Factor Authentication error", { error: error.message, type: error.name, stack: error.stack });
+      context.logger.error(error);
       throw error;
     }
   };
@@ -302,7 +301,7 @@ export const userService = (): UserService => {
     } catch (error: any) {
       await t.rollback();
 
-      context.logger.error("Enable Two-Factor Authentication error", { error: error.message, type: error.name, stack: error.stack });
+      context.logger.error(error);
       throw error;
     }
   };
@@ -328,10 +327,7 @@ export const userService = (): UserService => {
       return { success: true };
     } catch (error: any) {
       await t.rollback();
-
-      context.logger.error("Disable Two-Factor Authentication error", {
-        error: error.message, type: error.name, stack: error.stack
-      });
+      context.logger.error(error);
       throw error;
     }
   };
@@ -346,7 +342,6 @@ export const userService = (): UserService => {
       return { success: true };
     } catch (error) {
       await t.rollback();
-
       context.logger.error(error);
       throw error;
     }
@@ -362,7 +357,6 @@ export const userService = (): UserService => {
       return { success: true };
     } catch (error) {
       await t.rollback();
-
       context.logger.error(error);
       throw error;
     }

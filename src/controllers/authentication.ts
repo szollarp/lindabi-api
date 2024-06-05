@@ -95,8 +95,8 @@ export class AuthenticationController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("refresh-token")
   public async refresh(@Request() request: ContextualRequest): Promise<RefreshTokenResponse> {
-    const { context, headers } = request;
-    return await context.services.authentication.refreshToken(context, headers as Record<string, string>);
+    const { context, headers, user } = request;
+    return await context.services.authentication.refreshToken(context, headers as Record<string, string>, user);
   }
 
   /**

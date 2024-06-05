@@ -29,7 +29,7 @@ export const roleService = (): RoleService => {
       return roles;
     } catch (error) {
       context.logger.error(error);
-      throw NotAcceptable("ERROR_ROLE_FETCH");
+      throw error;
     }
   };
 
@@ -43,7 +43,7 @@ export const roleService = (): RoleService => {
       return permissions;
     } catch (error) {
       context.logger.error(error);
-      throw NotAcceptable("ERROR_ROLE_FETCH");
+      throw error;
     }
   };
 
@@ -65,7 +65,7 @@ export const roleService = (): RoleService => {
       return data;
     } catch (error) {
       context.logger.error(error);
-      throw NotAcceptable("ERROR_ROLE_FETCH");
+      throw error;
     }
   };
 

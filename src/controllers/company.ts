@@ -5,7 +5,7 @@ import {
 import type { CreateCompanyProperties, Company } from "../models/interfaces/company";
 import type { ContextualRequest } from "../types";
 import type { COMPANY_TYPE } from "../constants";
-import { CreateImageProperties, CreateImagesProperties } from "../models/interfaces/image";
+import { CreateDocumentProperties } from "../models/interfaces/document";
 
 @Route("companies")
 export class CompanyController extends Controller {
@@ -82,17 +82,17 @@ export class CompanyController extends Controller {
    * Uploads or updates a company's logo. This action is protected and requires authentication and specific permissions.
    * The logo is linked to the company's profile based on the company ID.
    *
-   * @param body Contains the image file and metadata for the logo.
+   * @param body Contains the image data and metadata for the logo.
    * @param id The company ID to associate the logo with.
    * @returns An object indicating the success of the upload operation.
    */
   @Tags("Company")
   @SuccessResponse("200", "OK")
-  @Post("{id}/image")
+  @Post("{id}/document")
   @Security("jwtToken", ["Tenant", "Company:Update"])
-  public async updateImage(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async updateDocument(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.image.upload(context, id, body, "company");
+    return await context.services.document.upload(context, id, body, "company");
   }
 
   /**

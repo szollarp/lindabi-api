@@ -11,8 +11,8 @@ import type { Location } from "./interfaces/location";
 import type { Contact } from "./interfaces/contact";
 import type { Models } from ".";
 import type { Tenant } from "./interfaces/tenant";
-import type { Image } from "./interfaces/image";
-import type { ImageModel } from "./image";
+import type { Document } from "./interfaces/document";
+import type { DocumentModel } from "./document";
 
 export class CompanyModel extends Model<Company, CreateCompanyProperties> implements Company {
   public id!: number;
@@ -59,13 +59,13 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   declare tenantId?: ForeignKey<Tenant["id"]>;
 
-  public createLogo!: HasOneGetAssociationMixin<ImageModel>;
+  public createDocument!: HasOneGetAssociationMixin<DocumentModel>;
 
-  public getLogo!: HasOneGetAssociationMixin<ImageModel>;
+  public getDocument!: HasOneGetAssociationMixin<DocumentModel>;
 
-  declare logo?: NonAttribute<Image>;
+  declare document?: NonAttribute<Document>;
 
-  declare logoId?: ForeignKey<Image["id"]>;
+  declare documentId?: ForeignKey<Document["id"]>;
 
   public createLocation!: HasManyCreateAssociationMixin<LocationModel>;
 
@@ -90,7 +90,7 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
   public static associate: (models: Models) => void;
 
   public static associations: {
-    logo: Association<CompanyModel, ImageModel>
+    logo: Association<CompanyModel, DocumentModel>
     locations: Association<CompanyModel, LocationModel>
     contacts: Association<CompanyModel, ContactModel>
   };
@@ -221,12 +221,12 @@ export const CompanyFactory = (sequelize: Sequelize): typeof CompanyModel => {
       as: "locations"
     });
 
-    CompanyModel.hasMany(models.Image, {
+    CompanyModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "company"
       },
-      as: "images",
+      as: "documents",
     });
 
     CompanyModel.hasMany(models.Tender, {

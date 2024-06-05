@@ -12,9 +12,10 @@ import { SubscriptionFactory, type SubscriptionModel } from "./subscription";
 import { ContactFactory, type ContactModel } from "./contact";
 import { CompanyFactory, type CompanyModel } from "./company";
 import { LocationFactory, type LocationModel } from "./location";
-import { ImageFactory, type ImageModel } from "./image";
+import { DocumentFactory, type DocumentModel } from "./document";
 import { TenderFactory, type TenderModel } from "./tender";
 import { TenderItemFactory, type TenderItemModel } from "./tender-item";
+import { JourneyFactory, type JourneyModel } from "./journey";
 
 export interface Models {
   sequelize: Sequelize
@@ -31,9 +32,10 @@ export interface Models {
   Contact: typeof ContactModel
   Company: typeof CompanyModel
   Location: typeof LocationModel
-  Image: typeof ImageModel
+  Document: typeof DocumentModel
   Tender: typeof TenderModel
   TenderItem: typeof TenderItemModel
+  Journey: typeof JourneyModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
@@ -53,9 +55,10 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Contact: ContactFactory(sequelize),
     Company: CompanyFactory(sequelize),
     Location: LocationFactory(sequelize),
-    Image: ImageFactory(sequelize),
+    Document: DocumentFactory(sequelize),
     Tender: TenderFactory(sequelize),
     TenderItem: TenderItemFactory(sequelize),
+    Journey: JourneyFactory(sequelize),
     sequelize
   };
 

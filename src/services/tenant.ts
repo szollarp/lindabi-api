@@ -12,39 +12,56 @@ export interface TenantService {
   deleteTenants: (context: Context, body: { ids: number[] }) => Promise<{ success: boolean }>
 }
 
+try {
+
+} catch (error) {
+  context.logger.error(error);
+  throw error;
+}
+
 export const tenantService = (): TenantService => {
   const getTenants = async (context: Context): Promise<Array<Partial<Tenant>>> => {
-    const tenants = await context.models.Tenant.findAll({
-      attributes: ["id", "name", "status", "taxNumber", "registrationNumber"],
-      include: [{
-        model: context.models.Image,
-        attributes: ["image", "mimeType", "type"],
-        as: "images",
-        foreignKey: "ownerId"
-      }, {
-        model: context.models.Subscription,
-        attributes: ["id", "name", "dateStart", "dateEnd"],
-        as: "subscriptions"
-      }]
-    });
+    try {
+      const tenants = await context.models.Tenant.findAll({
+        attributes: ["id", "name", "status", "taxNumber", "registrationNumber"],
+        include: [{
+          model: context.models.Document,
+          attributes: ["data", "mimeType", "type"],
+          as: "documents",
+          foreignKey: "ownerId"
+        }, {
+          model: context.models.Subscription,
+          attributes: ["id", "name", "dateStart", "dateEnd"],
+          as: "subscriptions"
+        }]
+      });
 
-    return tenants;
+      return tenants;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const getTenant = async (context: Context, id: number): Promise<Partial<Tenant> | null> => {
-    return await context.models.Tenant.findByPk(id, {
-      attributes: ["id", "name", "status", "taxNumber", "email", "country", "region", "city", "address", "zipCode", "registrationNumber", "bankAccount"],
-      include: [{
-        model: context.models.Image,
-        attributes: ["image", "mimeType", "type"],
-        as: "images",
-        foreignKey: "ownerId"
-      }, {
-        model: context.models.Subscription,
-        attributes: ["id", "name", "dateStart", "dateEnd"],
-        as: "subscriptions"
-      }]
-    });
+    try {
+      return await context.models.Tenant.findByPk(id, {
+        attributes: ["id", "name", "status", "taxNumber", "email", "country", "region", "city", "address", "zipCode", "registrationNumber", "bankAccount"],
+        include: [{
+          model: context.models.Document,
+          attributes: ["data", "mimeType", "type"],
+          as: "documents",
+          foreignKey: "ownerId"
+        }, {
+          model: context.models.Subscription,
+          attributes: ["id", "name", "dateStart", "dateEnd"],
+          as: "subscriptions"
+        }]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
   };
 
   const createTenant = async (context: Context, data: CreateTenantProperties): Promise<Partial<Tenant> | null> => {
@@ -74,15 +91,19 @@ export const tenantService = (): TenantService => {
   };
 
   const updateTenant = async (context: Context, id: number, data: Partial<Tenant>): Promise<Partial<Tenant> | null> => {
-    const tenant = await context.models.Tenant.findByPk(id);
+    try {
+      const tenant = await context.models.Tenant.findByPk(id);
 
-    if (!tenant) {
-      return null;
+      if (!tenant) {
+        return null;
+      }
+
+      await tenant.update(data);
+      return tenant;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
     }
-
-    await tenant.update(data);
-
-    return tenant;
   };
 
   const deleteTenant = async (context: Context, id: number): Promise<{ success: boolean }> => {
@@ -95,7 +116,6 @@ export const tenantService = (): TenantService => {
       return { success: true };
     } catch (error) {
       await t.rollback();
-
       context.logger.error(error);
       throw error;
     }
@@ -111,7 +131,6 @@ export const tenantService = (): TenantService => {
       return { success: true };
     } catch (error) {
       await t.rollback();
-
       context.logger.error(error);
       throw error;
     }

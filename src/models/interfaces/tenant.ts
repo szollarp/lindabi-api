@@ -1,5 +1,5 @@
 import type { TENANT_STATUS } from "../../constants";
-import type { Image } from "./image";
+import type { Document } from "./document";
 
 export interface Tenant {
   id: number
@@ -18,7 +18,7 @@ export interface Tenant {
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
-  images?: Image[]
+  documents?: Document[]
 };
 
 export type CreateTenantProperties = Omit<Tenant, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;

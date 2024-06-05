@@ -29,11 +29,11 @@ export const pickUserData = (user: User): Partial<User> => {
   return { id, name, country, region, city, email, enableTwoFactor, phoneNumber, status, address, zipCode };
 };
 
-export const getJWTTokens = async (context: Context, userId: number): Promise<GetJwtTokens> => {
+export const getJWTTokens = async (context: Context, user: { id: number, name: string }): Promise<GetJwtTokens> => {
   const { refreshToken: refreshTokenConfig, authToken: authTokenConfig }: AuthConfig = context.config.get("auth");
 
-  const refreshToken = generate({}, refreshTokenConfig.key, refreshTokenConfig.expiresIn);
-  const accessToken = generate({ user: { id: userId } }, authTokenConfig.key, authTokenConfig.expiresIn);
+  const refreshToken = generate({ user }, refreshTokenConfig.key, refreshTokenConfig.expiresIn);
+  const accessToken = generate({ user }, authTokenConfig.key, authTokenConfig.expiresIn);
 
   return { accessToken, refreshToken };
 };

@@ -19,8 +19,8 @@ import type { TwoFactorSessionModel } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./interfaces/two-factor-authentication";
 import type { TwoFactorAuthenticationModel } from "./two-factor-authentication";
 import type { Tenant } from "./interfaces/tenant";
-import type { Image } from "./interfaces/image";
-import type { ImageModel } from "./image";
+import type { Document } from "./interfaces/document";
+import type { DocumentModel } from "./document";
 import type { Models } from ".";
 
 
@@ -127,20 +127,20 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare twoFactorAuthenticationId?: ForeignKey<TwoFactorAuthentication["id"]>;
 
-  public createImage!: HasManyCreateAssociationMixin<ImageModel>;
+  public createDocument!: HasManyCreateAssociationMixin<DocumentModel>;
 
-  public getImages!: HasManyGetAssociationsMixin<ImageModel>;
+  public getDocuments!: HasManyGetAssociationsMixin<DocumentModel>;
 
-  declare images?: NonAttribute<Image[]>;
+  declare documents?: NonAttribute<Document[]>;
 
-  declare imageIds?: ForeignKey<Image["id"][]>;
+  declare documentIds?: ForeignKey<Document["id"][]>;
 
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
     twoFactorSession: Association<UserModel, TwoFactorSessionModel>
     twoFactorAuthentication: Association<UserModel, TwoFactorAuthenticationModel>
-    images: Association<UserModel, ImageModel>
+    documents: Association<UserModel, DocumentModel>
   };
 }
 
@@ -289,12 +289,12 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       as: "twoFactorAuthentication"
     });
 
-    UserModel.hasMany(models.Image, {
+    UserModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "user"
       },
-      as: "images"
+      as: "documents"
     });
   };
 

@@ -1,7 +1,7 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete } from "tsoa";
 import type { CreateUserProperties, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
-import { CreateImageProperties } from "../models/interfaces/image";
+import { CreateDocumentProperties } from "../models/interfaces/document";
 
 @Route("users")
 export class UserController extends Controller {
@@ -104,9 +104,9 @@ export class UserController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/avatar")
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
-  public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateImageProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.image.upload(context, id, body, "user");
+    return await context.services.document.upload(context, id, body, "user");
   }
 
   /**

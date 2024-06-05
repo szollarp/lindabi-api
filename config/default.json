@@ -1,5 +1,9 @@
 {
   "applicationName": "LINDABI",
+  "company": {
+    "name": "ALPINNOVÁCIÓ Kft.",
+    "address": "2335 Taksony, Vezér utca 2/A."
+  },
   "env": "development",
   "server": {
     "port": 3800,

@@ -58,5 +58,36 @@ export const ERROR_MESSAGES = {
 
 export const WEBSITE_ENDPOINTS = {
   ACCOUNT_VERIFY: "auth/verify-account",
-  SET_PASSWORD: "auth/reset-password"
+  SET_PASSWORD: "auth/reset-password",
+  LOGIN: "auth/login"
 };
+
+export const JOURNEY_PROPERTY_MAP = {
+  "type": "Type of the Work",
+  "status": "Status",
+  "fee": "Survey fee",
+  "returned": "Returned",
+  "customerId": "Customer",
+  "locationId": "Location",
+  "contactId": "Contact",
+  "contractorId": "Contractor",
+  "vatKey": "VAT",
+  "surcharge": "Surcharge",
+  "currency": "Currency",
+  "discount": "Discount",
+  "validTo": "Validity at",
+  "dueDate": "Offer deadline",
+  "openDate": "Issue date",
+  "startDate": "Expected start of work",
+  "notes": "Notes",
+  "survey": "Survey images",
+  "plan": "Plan images",
+  "pdf": "Pdf documents",
+  "other": "Other documents",
+  "inquiry": "Inquiry",
+  "toolRequirements": "Tool requirement",
+  "locationDescription": "Location description",
+  "otherComment": "Other comment",
+};
+
+export const JOURNEY_DATE_PROPERTIES = ["dueDate", "openDate", "startDate", "validTo"];

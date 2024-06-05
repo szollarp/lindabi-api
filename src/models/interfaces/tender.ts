@@ -4,7 +4,7 @@ import type { Contact } from "./contact"
 import type { Location } from "./location"
 import type { Tenant } from "./tenant"
 import type { TenderItem } from "./tender-item"
-import type { Image } from "./image";
+import type { Document } from "./document";
 
 export interface Tender {
   id: number
@@ -38,11 +38,11 @@ export interface Tender {
   tenant?: Tenant
   tenantId?: number | null
   items?: TenderItem[]
-  images?: Image[]
+  documents?: Document[]
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
 };
 
-export type CreateTenderProperties = Omit<Tender, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;
+export type CreateTenderProperties = Omit<Tender, "id" | "createdOn" | "updatedBy" | "updatedOn">;

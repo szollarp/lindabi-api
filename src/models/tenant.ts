@@ -8,8 +8,8 @@ import type { SubscriptionModel } from "./subscription";
 import type { Subscription } from "./interfaces/subscription";
 import type { User } from "./interfaces/user";
 import type { UserModel } from "./user";
-import type { ImageModel } from "./image";
-import type { Image } from "./interfaces/image";
+import type { DocumentModel } from "./document";
+import type { Document } from "./interfaces/document";
 import { TENANT_STATUS } from "../constants";
 
 export class TenantModel extends Model<Tenant, CreateTenantProperties> implements Tenant {
@@ -55,13 +55,13 @@ export class TenantModel extends Model<Tenant, CreateTenantProperties> implement
 
   public addSubscription!: HasManyAddAssociationMixin<SubscriptionModel, number>;
 
-  public createImage!: HasManyCreateAssociationMixin<ImageModel>;
+  public createDocument!: HasManyCreateAssociationMixin<DocumentModel>;
 
-  public getImages!: HasManyCreateAssociationMixin<ImageModel>;
+  public getDocuments!: HasManyCreateAssociationMixin<DocumentModel>;
 
-  declare images?: NonAttribute<Image[]>;
+  declare documents?: NonAttribute<Document[]>;
 
-  declare imageIds?: ForeignKey<Image["id"][]>;
+  declare documentIds?: ForeignKey<Document["id"][]>;
 
   public users?: NonAttribute<User[]>;
 
@@ -71,7 +71,7 @@ export class TenantModel extends Model<Tenant, CreateTenantProperties> implement
 
   public static associations: {
     subscription: Association<TenantModel, SubscriptionModel>
-    images: Association<TenantModel, ImageModel>
+    documents: Association<TenantModel, DocumentModel>
     user: Association<TenantModel, UserModel>
   };
 };
@@ -162,12 +162,12 @@ export const TenantFactory = (sequelize: Sequelize): typeof TenantModel => {
       as: "subscriptions"
     });
 
-    TenantModel.hasMany(models.Image, {
+    TenantModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "tenant"
       },
-      as: "images"
+      as: "documents"
     });
 
     TenantModel.hasMany(models.User, {

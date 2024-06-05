@@ -5,7 +5,7 @@ import type { Role } from "./role";
 import type { TwoFactorSession } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./two-factor-authentication";
 import type { Tenant } from "./tenant";
-import type { Image } from "./image";
+import type { Document } from "./document";
 
 export interface User {
   id: number
@@ -40,7 +40,7 @@ export interface User {
   tenant?: Tenant
   tenantId?: number | null
   lastLoggedIn?: Date | null
-  images?: Image[]
+  documents?: Document[]
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;
