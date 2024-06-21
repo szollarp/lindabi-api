@@ -3,3 +3,4 @@ node_modules
 src/routes.ts
 config/local.*
 .env
+tmp

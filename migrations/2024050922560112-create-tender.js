@@ -25,7 +25,7 @@ module.exports = {
       fee: {
         type: Sequelize.DataTypes.DECIMAL,
         allowNull: true,
-        defaultValue: null
+        defaultValue: 0
       },
       returned: {
         type: Sequelize.DataTypes.BOOLEAN,

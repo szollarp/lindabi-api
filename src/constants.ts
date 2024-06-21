@@ -38,7 +38,8 @@ export enum TENDER_STATUS {
   FINALIZED = "final",
   SENT = "sent",
   ORDERED = "ordered",
-  INVALID = "invalid"
+  INVALID = "invalid",
+  UNDER_SURVEY = "under survey"
 };
 
 export enum TENDER_CURRENCY {

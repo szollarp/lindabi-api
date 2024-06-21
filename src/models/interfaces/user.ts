@@ -41,6 +41,7 @@ export interface User {
   tenantId?: number | null
   lastLoggedIn?: Date | null
   documents?: Document[]
+  notifications?: Record<string, boolean>
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;

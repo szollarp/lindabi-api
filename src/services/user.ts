@@ -18,6 +18,7 @@ export interface UserService {
   create: (context: Context, tenantId: number, body: CreateUserProperties) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
+  updateNotifications: (context: Context, id: number, body: Record<string, boolean>) => Promise<{ success: boolean }>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean, qrCode: string }>
   enableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number, body: { code: string }) => Promise<{ success: boolean }>
@@ -27,7 +28,7 @@ export interface UserService {
 }
 
 const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "country", "region", "city", "address",
-  "zipCode", "createdOn", "updatedOn", "lastLoggedIn", "enableTwoFactor", "roleId", "tenantId"];
+  "zipCode", "createdOn", "updatedOn", "lastLoggedIn", "enableTwoFactor", "roleId", "tenantId", "notifications"];
 
 export const userService = (): UserService => {
   const list = async (context: Context, tenantId: number): Promise<Array<Partial<User>>> => {
@@ -35,6 +36,7 @@ export const userService = (): UserService => {
       const users = await context.models.User.findAll({
         where: { tenantId },
         attributes: USER_ATTRIBUTES,
+        order: [["id", "ASC"]],
         include: [{
           model: context.models.Document,
           attributes: ["data", "mimeType"],
@@ -136,14 +138,16 @@ export const userService = (): UserService => {
 
     try {
       const where = !tenantId ? { id } : { id, tenantId };
+      console.log({ where });
       const user = await context.models.User.findOne({
         attributes: USER_ATTRIBUTES,
         where,
         include: [{
           model: context.models.Document,
-          where: { type: "logo" },
+          where: { type: "avatar" },
           attributes: ["data", "mimeType"],
           as: "documents",
+          required: false
         }]
       });
 
@@ -191,6 +195,20 @@ export const userService = (): UserService => {
       throw error;
     }
   };
+
+  const updateNotifications = async (context: Context, id: number, body: Record<string, boolean>): Promise<{ success: boolean }> => {
+    try {
+      const user = await context.models.User.findOne({
+        where: { id }
+      });
+
+      await user?.update({ notifications: body });
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
 
   const resendVerificationEmail = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean }> => {
     const t = await context.models.sequelize.transaction();
@@ -373,6 +391,7 @@ export const userService = (): UserService => {
     generateTwoFactorAuthenticationConfig,
     disableTwoFactorAuthentication,
     deleteUser,
-    deleteUsers
+    deleteUsers,
+    updateNotifications
   };
 };

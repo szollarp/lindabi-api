@@ -27,6 +27,7 @@
   "dependencies": {
     "@azure/identity": "^4.2.0",
     "@azure/service-bus": "^7.9.4",
+    "@react-pdf/renderer": "^3.4.4",
     "@types/jsonwebtoken": "^9.0.6",
     "body-parser": "^1.20.2",
     "class-validator": "^0.14.1",
@@ -43,6 +44,8 @@
     "pg-hstore": "^2.3.4",
     "postmark": "^4.0.2",
     "qrcode": "^1.5.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sequelize": "^6.37.3",
     "speakeasy": "^2.0.0",
     "swagger-ui-express": "^5.0.1",

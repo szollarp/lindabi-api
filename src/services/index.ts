@@ -11,6 +11,7 @@ import { tenderService } from "./tender";
 import { statisticsService } from "./statistics";
 import { searchService } from "./search";
 import { journeyService } from "./journey";
+import { notificationService } from "./notification"
 
 import type { Services } from "../types";
 
@@ -28,4 +29,5 @@ export default (): Services => ({
   statistics: statisticsService(),
   search: searchService(),
   journey: journeyService(),
+  notification: notificationService()
 });

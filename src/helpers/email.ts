@@ -1,6 +1,12 @@
+import React from 'react';
+import { renderToBuffer, renderToFile } from "@react-pdf/renderer";
 import { WEBSITE_ENDPOINTS } from "../constants";
-import type { UserModel } from "../models/user";
+import { generatePdfFilename } from "./tender";
+import type { Tender } from "../models/interfaces/tender";
 import type { Context } from "../types";
+import type { UserModel } from "../models/user";
+import TenderPDF from '../react/tender-pdf-template';
+import { User } from '../models/interfaces/user';
 
 export const sendForgottenPasswordEmail = async (context: Context, user: UserModel): Promise<void> => {
   const { hostname }: { hostname: string } = context.config.get("website");
@@ -11,7 +17,7 @@ export const sendForgottenPasswordEmail = async (context: Context, user: UserMod
   const forgottenPasswordToken = await user.getForgottenPasswordToken();
   const actionUrl = `${hostname}/${WEBSITE_ENDPOINTS.SET_PASSWORD}?token=${forgottenPasswordToken.token}`;
 
-  const message = JSON.stringify({
+  const emailBody = JSON.stringify({
     to: email,
     variables: {
       name,
@@ -24,7 +30,7 @@ export const sendForgottenPasswordEmail = async (context: Context, user: UserMod
     template: "password-reset"
   });
 
-  await context.helpers.serviceBus.send("email-queue", { body: message });
+  await context.helpers.serviceBus.send("email-queue", { body: emailBody });
 };
 
 export const sendRegistrationEmail = async (context: Context, user: UserModel): Promise<void> => {
@@ -38,7 +44,7 @@ export const sendRegistrationEmail = async (context: Context, user: UserModel): 
   const actionUrl = `${hostname}/${WEBSITE_ENDPOINTS.ACCOUNT_VERIFY}?token=${accountToken.token}`;
   const loginUrl = `${hostname}/${WEBSITE_ENDPOINTS.LOGIN}`;
 
-  const message = JSON.stringify({
+  const emailBody = JSON.stringify({
     to: email,
     variables: {
       name,
@@ -53,5 +59,29 @@ export const sendRegistrationEmail = async (context: Context, user: UserModel): 
     template: "welcome"
   });
 
-  await context.helpers.serviceBus.send("email-queue", { body: message });
+  await context.helpers.serviceBus.send("email-queue", { body: emailBody });
 };
+
+export const sendTenderPdfEmail = async (context: Context, tender: Tender, message: string): Promise<void> => {
+  const fileName = generatePdfFilename(tender);
+  const element = React.createElement(TenderPDF, { tender });
+  const buffer = await renderToBuffer(element);
+
+  const emailBody = JSON.stringify({
+    to: tender.contact!.email,
+    subject: "Your new proposal has arrived",
+    htmlBody: message,
+    attachments: [{
+      "Name": fileName,
+      "Content": buffer.toString("base64"),
+      "ContentType": "pdf/application"
+    },]
+  });
+
+  await context.helpers.serviceBus.send("email-queue", { body: emailBody });
+}
+
+export const sendTemplatedEmail = async (context: Context, to: string, subject: string, htmlBody: string): Promise<void> => {
+  const emailBody = JSON.stringify({ to, subject, htmlBody });
+  await context.helpers.serviceBus.send("email-queue", { body: emailBody });
+}

@@ -16,6 +16,7 @@ import { type TenderService } from "./services/tender";
 import { type StatisticsService } from "./services/statistics";
 import { type SearchService } from "./services/search";
 import { type JourneyService } from "./services/journey";
+import { type NotificationService } from "./services/notification";
 import { type Models } from "./models";
 
 export interface Services {
@@ -32,6 +33,7 @@ export interface Services {
   statistics: StatisticsService
   search: SearchService
   journey: JourneyService
+  notification: NotificationService
 }
 
 export interface Helpers {

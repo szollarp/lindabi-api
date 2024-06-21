@@ -51,6 +51,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public address!: string | null;
 
+  public notifications?: Record<string, boolean> | undefined;
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
@@ -135,6 +137,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare documentIds?: ForeignKey<Document["id"][]>;
 
+
+
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
@@ -210,6 +214,10 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       tenantId: {
         type: DataTypes.INTEGER,
         allowNull: false
+      },
+      notifications: {
+        type: DataTypes.JSONB,
+        allowNull: true
       },
       createdBy: {
         type: DataTypes.INTEGER

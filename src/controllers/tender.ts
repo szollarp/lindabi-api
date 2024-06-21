@@ -8,6 +8,46 @@ import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/ten
 @Route("tenders")
 export class TenderController extends Controller {
   /**
+   * Creates a new tender with the provided properties. This operation is secured and
+   * requires a JWT token with "Tender:Create" permission.
+   *
+   * @param body The properties required to create a new tender.
+   * @returns The newly created tender object with partial details, or null if creation fails.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Post("/")
+  @Security("jwtToken", ["Tender:Create"])
+  public async createTender(@Request() request: ContextualRequest, @Body() body: CreateTenderProperties): Promise<Partial<Tender> | null> {
+    const { context, user } = request;
+    const tender = await context.services.tender.createTender(context, user.tenant, user, body);
+    if (tender) {
+      context.services.notification.sendTenderCreatedNotification(context, tender);
+    }
+
+    return tender;
+  }
+
+
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Post("/{id}/copy")
+  @Security("jwtToken", ["Tender:Create"])
+  public async copyTender(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Tender> | null> {
+    const { context, user } = request;
+    return await context.services.tender.copyTender(context, user, id);
+  }
+
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Post("/{id}/send")
+  @Security("jwtToken", ["Tender:Create"])
+  public async sendEmail(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { message: string }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.tender.sendTenderViaEmail(context, user, id, body.message);
+  }
+
+  /**
    * Retrieves a list of all tenders within the system. This endpoint requires
    * authentication and is protected by JWT tokens with the "Tender:List" permission.
    *
@@ -85,11 +125,11 @@ export class TenderController extends Controller {
 
   @Tags("Tender")
   @SuccessResponse("200", "OK")
-  @Put("/{id}/items-copy/{sourceTenderId}")
+  @Put("/{id}/items-copy/{targetTenderId}")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async copyTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() sourceTenderId: number): Promise<{ success: boolean }> {
+  public async copyTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() targetTenderId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.tender.copyTenderItem(context, id, sourceTenderId, user);
+    return await context.services.tender.copyTenderItem(context, id, targetTenderId, user);
   }
 
   /**
@@ -196,21 +236,7 @@ export class TenderController extends Controller {
     return await context.services.tender.removeAllTenderDocuments(context, id, user, type);
   }
 
-  /**
-   * Creates a new tender with the provided properties. This operation is secured and
-   * requires a JWT token with "Tender:Create" permission.
-   *
-   * @param body The properties required to create a new tender.
-   * @returns The newly created tender object with partial details, or null if creation fails.
-   */
-  @Tags("Tender")
-  @SuccessResponse("200", "OK")
-  @Post("/")
-  @Security("jwtToken", ["Tender:Create"])
-  public async createTender(@Request() request: ContextualRequest, @Body() body: CreateTenderProperties): Promise<Partial<Tender> | null> {
-    const { context, user } = request;
-    return await context.services.tender.createTender(context, user.tenant, user, body);
-  }
+
 
   /**
    * Updates the information of an existing tender, identified by their ID. Access to this
@@ -226,7 +252,12 @@ export class TenderController extends Controller {
   @Security("jwtToken", ["Tenant:Update"])
   public async updateTender(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Tender>): Promise<Partial<Tender> | null> {
     const { context, user } = request;
-    return await context.services.tender.updateTender(context, id, user, body);
+    const data = await context.services.tender.updateTender(context, id, user, body);
+    if (data.statusChanged && data.tender?.id && data.status) {
+      context.services.notification.sendTenderStatusChangedNotification(context, data.tender.id!, data.status);
+    }
+
+    return data.tender;
   }
 
   /**

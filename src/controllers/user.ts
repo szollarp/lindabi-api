@@ -183,6 +183,15 @@ export class UserController extends Controller {
     return await context.services.user.disableTwoFactorAuthentication(context, tenant, id);
   }
 
+  @Tags("User")
+  @SuccessResponse("200", "OK")
+  @Put("{id}/notifications")
+  @Security("jwtToken", ["Me:*"])
+  public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Record<string, boolean>): Promise<{ success: boolean }> {
+    const { context } = request;
+    return await context.services.user.updateNotifications(context, id, body);
+  }
+
   /**
    * Deletes a user by ID.
    * Secured with JWT token and requires "User:Delete" permission.
