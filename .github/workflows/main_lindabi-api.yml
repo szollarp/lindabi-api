@@ -26,12 +26,6 @@ jobs:
           npm install
           npm run build --if-present
       
-      - name: db migrate
-        env:
-          NODE_ENV: 'production'
-        run: |
-          npm run db:migrate --if-present
-
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
