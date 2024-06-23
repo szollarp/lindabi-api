@@ -4,7 +4,7 @@
     "token": "POSTMARK_TOKEN"
   },
   "website": {
-    "hostname": "WEBSITE_HOSTNAME"
+    "hostname": "APP_HOSTNAME"
   },
   "database": {
     "password": "DATABASE_PASSWORD"

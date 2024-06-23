@@ -25,11 +25,10 @@
     }
   },
   "postmark": {
-    "from": "no-reply@lindabi.com",
-    "token": "9a269851-0a37-41e8-8184-535b9177426f"
+    "from": "no-reply@lindabi.com"
   },
   "website": {
-    "hostname": "http://app.lindabi.com"
+    "hostname": "http://lindabi.com"
   },
   "auth": {
     "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
