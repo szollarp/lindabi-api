@@ -1,0 +1,49 @@
+{
+  "server": {
+    "port": 8080
+  },
+  "log": {
+    "level": "info"
+  },
+  "serviceBus": {
+    "namespace": "lindabi.servicebus.windows.net"
+  },
+  "env": "production",
+  "database": {
+    "host": "development-pq.postgres.database.azure.com",
+    "port": 5432,
+    "username": "admin",
+    "database": "lindabi",
+    "ssl": true,
+    "dialect": "postgres",
+    "dialectOptions": {
+      "encrypt": true,
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "postmark": {
+    "from": "no-reply@lindabi.com",
+    "token": "9a269851-0a37-41e8-8184-535b9177426f"
+  },
+  "website": {
+    "hostname": "http://app.lindabi.com"
+  },
+  "auth": {
+    "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
+    "authToken": {
+      "key": "U5=aFfuchkT[:ekzi:=5U&DP?]!A+R8Qi4cz",
+      "expiresIn": "15m"
+    },
+    "refreshToken": {
+      "key": "Ei]rpV=n]u7fq+$PSZ7BjqGNpt9N]#+g4tn(",
+      "expiresIn": "30d"
+    },
+    "verifyToken": {
+      "key": "UFTGP]rpV=n])T&OGYLUHD%(FTGOYUHI+$PSZ7BjqGNpt9N(^FOGYUPHIJ^(%*E$DR$IDR&OTFIYGOUL)g4tn(",
+      "expiresIn": "1h"
+    }
+  },
+}
