@@ -12,13 +12,6 @@ export interface TenantService {
   deleteTenants: (context: Context, body: { ids: number[] }) => Promise<{ success: boolean }>
 }
 
-try {
-
-} catch (error) {
-  context.logger.error(error);
-  throw error;
-}
-
 export const tenantService = (): TenantService => {
   const getTenants = async (context: Context): Promise<Array<Partial<Tenant>>> => {
     try {
