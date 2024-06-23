@@ -10,7 +10,7 @@
   },
   "env": "production",
   "database": {
-    "host": "development-pq.postgres.database.azure.com",
+    "host": "lindabi-production-db.postgres.database.azure.com",
     "port": 5432,
     "username": "admin",
     "database": "lindabi",
