@@ -6,7 +6,6 @@ import type {
   UpdateUserProperties, User
 } from "../models/interfaces/user";
 import type { Context } from "../types";
-import { sendRegistrationEmail } from "../helpers/email";
 import { createAccountVerifyToken } from "../helpers/jwt";
 import { hashPassword } from "../helpers/password";
 import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-factor";
@@ -77,7 +76,8 @@ export const userService = (): UserService => {
       await context.models.AccountVerifyToken.create({ token, userId: user.id }, { transaction: t });
       await t.commit();
 
-      await sendRegistrationEmail(context, user);
+      context.services.email.sendWelcomeNewUserEmail(context, user);
+
       return user;
     } catch (error: any) {
       await t.rollback();
@@ -236,7 +236,8 @@ export const userService = (): UserService => {
       await context.models.AccountVerifyToken.create({ token, userId: user.id }, { transaction: t });
       await t.commit();
 
-      await sendRegistrationEmail(context, user);
+      context.services.email.sendWelcomeNewUserEmail(context, user);
+
       return { success: true };
     } catch (error) {
       await t.rollback();

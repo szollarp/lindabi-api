@@ -5,7 +5,6 @@ import { CreateDocumentProperties, Document } from "../models/interfaces/documen
 import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 import { TENDER_STATUS } from "../constants";
-import { sendTenderPdfEmail } from "../helpers/email";
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
@@ -194,7 +193,7 @@ export const tenderService = (): TenderService => {
         return { success: false };
       }
 
-      await sendTenderPdfEmail(context, tender, message);
+      context.services.email.sendTenderPdfEmail(context, tender, message);
       return { success: true };
     }
     catch (error: any) {
@@ -399,15 +398,16 @@ export const tenderService = (): TenderService => {
         throw new Error("Tender update failed.");
       }
 
-      const tenderNumber = await generateTenderNumber(context, tender);
+      const updatedTender = updated[0];
+      const tenderNumber = await generateTenderNumber(context, updatedTender);
       if (tenderNumber) {
-        await tender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
+        await updatedTender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
       }
 
       await context.services.journey.addDiffLogs(context, user, {
         activity: "The tender has been successfully updated.",
         existed: tender.toJSON(),
-        updated: updated[0].toJSON()
+        updated: updatedTender.toJSON()
       }, tender.id, "tender", t);
 
       await t.commit();
@@ -415,7 +415,7 @@ export const tenderService = (): TenderService => {
       return {
         statusChanged,
         status: tender.status,
-        tender: updated[0].toJSON() as Partial<Tender>
+        tender: updatedTender.toJSON() as Partial<Tender>
       }
     } catch (error) {
       await t.rollback();

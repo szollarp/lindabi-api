@@ -10,10 +10,12 @@ import type { Context } from "./types";
 
 export const create = async (): Promise<Context> => {
   const env: string = config.get("env") ?? "development";
-  const databaseConfig: Options = getDatabaseConfig();
+  const isProduction: boolean = env === "production";
 
+  const databaseConfig: Options = getDatabaseConfig();
   const services = createServices();
-  const models = await createModels(databaseConfig, true, true);
+
+  const models = await createModels(databaseConfig, !isProduction, !isProduction);
   await models.sequelize.authenticate();
 
   const serviceBus = new AzureServiceBus(config.get("serviceBus.namespace"));

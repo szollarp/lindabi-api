@@ -4,7 +4,6 @@ import { verifyOtpToken } from "../helpers/two-factor";
 import { hashPassword } from "../helpers/password";
 import * as jwt from "../helpers/jwt";
 import { USER_STATUS } from "../constants";
-import { sendForgottenPasswordEmail } from "../helpers/email";
 import { nextDay } from "../helpers/date";
 import type {
   ForgottenPasswordRequest,
@@ -285,7 +284,8 @@ export const authenticationService = (): AuthenticationService => {
         }
 
         await t.commit();
-        await sendForgottenPasswordEmail(context, user);
+
+        context.services.email.sendForgottenPasswordEmail(context, user);
       }
 
       return { success: true };

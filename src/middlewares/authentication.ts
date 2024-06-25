@@ -60,6 +60,7 @@ export const expressAuthentication = async (request: Request, securityName: stri
 
   const { authToken } = getHeaderTokens(request);
   const decodedToken = await validateHeaderToken(context, authToken);
+
   if (!decodedToken?.user) {
     throw new Unauthorized();
   }

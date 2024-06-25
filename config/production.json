@@ -21,12 +21,6 @@
       }
     }
   },
-  "postmark": {
-    "from": "no-reply@lindabi.com"
-  },
-  "website": {
-    "hostname": "http://lindabi.com"
-  },
   "auth": {
     "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
     "authToken": {

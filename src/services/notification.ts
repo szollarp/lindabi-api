@@ -2,7 +2,6 @@ import { Op } from "sequelize";
 import type { Context } from "../types";
 import { TENDER_STATUS, USER_STATUS } from "../constants";
 import { Tender } from "../models/interfaces/tender";
-import { sendTemplatedEmail } from "../helpers/email";
 import { User } from "../models/interfaces/user";
 import { getTenderCreateTemplate } from "../helpers/notification-template/create-tender";
 import { getUpdateTenderStatusTemplate } from "../helpers/notification-template/update-tender-status";
@@ -22,7 +21,7 @@ export const notificationService = (): NotificationService => {
 
   const sendEmailToUsers = async (context: Context, users: User[], subject: string, message: string): Promise<void> => {
     for (const user of users) {
-      await sendTemplatedEmail(context, user.email, subject, message);
+      await context.services.email.sendTemplatedEmail(context, user.email, subject, message);
     }
   };
 
@@ -63,7 +62,7 @@ export const notificationService = (): NotificationService => {
     const hostname = fetchConfigHostname(context);
     const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor"], "tenderNew");
     const createUser = await findUserById(context, tender.createdBy!);
-    const href = `http://${hostname}/dashboard/tender/${tender.id}/edit/`;
+    const href = `${hostname}/dashboard/tender/${tender.id}/edit/`;
 
     return sendNotification(context, users, "Új ajánlat rögzítésre került", () =>
       getTenderCreateTemplate(tender!, createUser!, href));
@@ -80,7 +79,7 @@ export const notificationService = (): NotificationService => {
     });
 
     const updateUser = await findUserById(context, tender!.updatedBy!);
-    const href = `http://${hostname}/dashboard/tender/${tenderId}/edit/`;
+    const href = `${hostname}/dashboard/tender/${tenderId}/edit/`;
 
     if (tender!.status === TENDER_STATUS.AWAITING_APPROVAL) {
       const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin"], "tenderAwaitingApproval");

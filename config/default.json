@@ -40,14 +40,14 @@
     "namespace": "api-test-peti.servicebus.windows.net"
   },
   "postmark": {
-    "from": "no-reply@vilkrig.com",
-    "token": ""
+    "from": "noreply@lindabi.com",
+    "token": "9a269851-0a37-41e8-8184-535b9177426f"
   },
   "auth": {
     "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
     "authToken": {
       "key": "U5=aFfuchkT[:ekzi:=5U&DP?]!A+R8Qi4cz",
-      "expiresIn": "1m"
+      "expiresIn": "15m"
     },
     "refreshToken": {
       "key": "Ei]rpV=n]u7fq+$PSZ7BjqGNpt9N]#+g4tn(",
