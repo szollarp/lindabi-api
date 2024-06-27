@@ -53,6 +53,8 @@ export class RoleController extends Controller {
   @Security("jwtToken", ["Tenant", "Permission:Update"])
   public async updatePermissions(@Request() request: ContextualRequest, @Body() body: SetRolePermissionsProperties[]): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
-    return await context.services.role.updatePermissions(context, user.tenant, body);
+    const update = await context.services.role.updatePermissions(context, user.tenant, body);
+    await context.services.notification.sendPermissionMatrixUpdateNotification(context);
+    return update;
   }
 }

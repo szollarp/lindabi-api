@@ -2,7 +2,7 @@ import { fDate } from "../../format";
 import type { Tender } from "../../models/interfaces/tender";
 import type { User } from "../../models/interfaces/user";
 
-export const getWaitingApprovalTenderStatusTemplate = (tender: Tender, updatedBy: User, href: string, previousStatus: string) => `
+export default (tender: Tender, updatedBy: User, href: string, previousStatus: string) => `
   <div class="container">
     <div class="content">
       <h2>Ajánlat jóváhagyásra vár</h2>

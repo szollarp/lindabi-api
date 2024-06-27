@@ -2,7 +2,7 @@ import { NotAcceptable, Unauthorized } from "http-errors";
 import { createRandomToken } from "../helpers/token";
 import { USER_STATUS } from "../constants";
 import type {
-  CreateUserProperties, UpdatePasswordProperties,
+  CreateUserProperties, Notifications, UpdatePasswordProperties,
   UpdateUserProperties, User
 } from "../models/interfaces/user";
 import type { Context } from "../types";
@@ -17,7 +17,7 @@ export interface UserService {
   create: (context: Context, tenantId: number, body: CreateUserProperties) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
-  updateNotifications: (context: Context, id: number, body: Record<string, boolean>) => Promise<{ success: boolean }>
+  updateNotifications: (context: Context, id: number, body: Notifications) => Promise<Notifications | null>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean, qrCode: string }>
   enableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number, body: { code: string }) => Promise<{ success: boolean }>
@@ -196,14 +196,14 @@ export const userService = (): UserService => {
     }
   };
 
-  const updateNotifications = async (context: Context, id: number, body: Record<string, boolean>): Promise<{ success: boolean }> => {
+  const updateNotifications = async (context: Context, id: number, body: Notifications): Promise<Notifications | null> => {
     try {
       const user = await context.models.User.findOne({
         where: { id }
       });
 
       await user?.update({ notifications: body });
-      return { success: true };
+      return user?.notifications || null;
     } catch (error) {
       context.logger.error(error);
       throw error;

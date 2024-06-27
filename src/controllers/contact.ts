@@ -55,7 +55,12 @@ export class ContactController extends Controller {
   @Security("jwtToken", ["Tenant", "Contact:Create"])
   public async createContact(@Request() request: ContextualRequest, @Body() body: CreateContactProperties): Promise<Partial<Contact> | null> {
     const { context, user } = request;
-    return await context.services.contact.createContact(context, user.tenant, user.id, body);
+    const contact = await context.services.contact.createContact(context, user.tenant, user.id, body);
+    if (contact) {
+      await context.services.notification.sendContactCreatedNotification(context, contact);
+    }
+
+    return contact;
   }
 
   /**
@@ -72,7 +77,12 @@ export class ContactController extends Controller {
   @Security("jwtToken", ["Tenant", "Contact:Update"])
   public async updateContact(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Contact>): Promise<Partial<Contact> | null> {
     const { context, user } = request;
-    return await context.services.contact.updateContact(context, user.tenant, id, user.id, body);
+    const contact = await context.services.contact.updateContact(context, user.tenant, id, user.id, body);
+    if (contact) {
+      await context.services.notification.sendContactUpdateNotification(context, contact);
+    }
+
+    return contact;
   }
 
   /**

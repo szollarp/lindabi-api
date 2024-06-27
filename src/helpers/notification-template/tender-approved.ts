@@ -2,11 +2,11 @@ import { fDate } from "../../format";
 import type { Tender } from "../../models/interfaces/tender";
 import type { User } from "../../models/interfaces/user";
 
-export const getApprovedTenderStatusTemplate = (tender: Tender, updatedBy: User, href: string, previousStatus: string) => `
+export default (tender: Tender, updatedBy: User, href: string, previousStatus: string) => `
   <div class="container">
     <div class="content">
       <h2>Ajánlat kiküldésre vár</h2>
-        <p>Az alábbi ajánlat kiküldésre vár:</p>
+      <p>Az alábbi ajánlat kiküldésre vár:</p>
       <ul>
         <li>Megrendelő: ${tender.customer?.name || '-'}</li>
         <li>Helyszín: ${tender.location?.zipCode || ''} ${tender.location?.city || ''}, ${tender.location?.address || '-'}</li>

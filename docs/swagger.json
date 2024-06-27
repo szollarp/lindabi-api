@@ -478,13 +478,73 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Record_string.boolean_": {
-				"properties": {},
-				"additionalProperties": {
-					"type": "boolean"
+			"Notifications": {
+				"properties": {
+					"userNew": {
+						"type": "boolean"
+					},
+					"tenderNew": {
+						"type": "boolean"
+					},
+					"contactNew": {
+						"type": "boolean"
+					},
+					"userDelete": {
+						"type": "boolean"
+					},
+					"userUpdate": {
+						"type": "boolean"
+					},
+					"customerNew": {
+						"type": "boolean"
+					},
+					"contactUpdate": {
+						"type": "boolean"
+					},
+					"contractorNew": {
+						"type": "boolean"
+					},
+					"customerUpdate": {
+						"type": "boolean"
+					},
+					"tenderApproved": {
+						"type": "boolean"
+					},
+					"userUpdateRole": {
+						"type": "boolean"
+					},
+					"contractorUpdate": {
+						"type": "boolean"
+					},
+					"tenderStatusChange": {
+						"type": "boolean"
+					},
+					"permissionMatrixUpdate": {
+						"type": "boolean"
+					},
+					"tenderAwaitingApproval": {
+						"type": "boolean"
+					}
 				},
+				"required": [
+					"userNew",
+					"tenderNew",
+					"contactNew",
+					"userDelete",
+					"userUpdate",
+					"customerNew",
+					"contactUpdate",
+					"contractorNew",
+					"customerUpdate",
+					"tenderApproved",
+					"userUpdateRole",
+					"contractorUpdate",
+					"tenderStatusChange",
+					"permissionMatrixUpdate",
+					"tenderAwaitingApproval"
+				],
 				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
+				"additionalProperties": false
 			},
 			"Partial_User_": {
 				"properties": {
@@ -605,7 +665,7 @@
 						"type": "array"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Record_string.boolean_"
+						"$ref": "#/components/schemas/Notifications"
 					}
 				},
 				"type": "object",
@@ -696,7 +756,7 @@
 						"type": "array"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Record_string.boolean_"
+						"$ref": "#/components/schemas/Notifications"
 					}
 				},
 				"required": [
@@ -789,7 +849,7 @@
 						"type": "array"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Record_string.boolean_"
+						"$ref": "#/components/schemas/Notifications"
 					}
 				},
 				"required": [
@@ -3177,6 +3237,7 @@
 						}
 					}
 				},
+				"description": "Enables two-factor authentication for a user by ID.\nThis endpoint is secured with JWT authentication and requires \"User:Update\" or \"Me:*\" permissions,\nindicating that the user can set up two-factor authentication for themselves or it can be set by an administrator.",
 				"tags": [
 					"User"
 				],
@@ -3190,6 +3251,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the user to enable two-factor authentication for.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3200,6 +3262,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "An object containing the verification code necessary to enable two-factor authentication.",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -3212,7 +3275,8 @@
 								"required": [
 									"code"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "An object containing the verification code necessary to enable two-factor authentication."
 							}
 						}
 					}
@@ -3240,6 +3304,7 @@
 						}
 					}
 				},
+				"description": "Disables two-factor authentication for a user by ID.\nSecured with JWT authentication and requires \"User:Update\" or \"Me:*\" permission,\nallowing users to disable two-factor authentication for themselves or an administrator to do so.",
 				"tags": [
 					"User"
 				],
@@ -3253,6 +3318,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the user for whom to disable two-factor authentication.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3273,20 +3339,18 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Notifications"
 										}
-									},
-									"required": [
-										"success"
 									],
-									"type": "object"
+									"nullable": true
 								}
 							}
 						}
 					}
 				},
+				"description": "Updates notification settings for a user by ID.\nSecured with JWT token and requires \"Me:*\" permission, indicating that users can update their own notification settings.",
 				"tags": [
 					"User"
 				],
@@ -3299,6 +3363,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the user whose notification settings are to be updated.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3309,11 +3374,13 @@
 					}
 				],
 				"requestBody": {
+					"description": "A record of settings indicating the types of notifications and whether they should be enabled or disabled.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Record_string.boolean_"
+								"$ref": "#/components/schemas/Notifications",
+								"description": "A record of settings indicating the types of notifications and whether they should be enabled or disabled."
 							}
 						}
 					}
@@ -3476,6 +3543,7 @@
 						}
 					}
 				},
+				"description": "Copies an existing tender based on its ID. This operation is secured and\nrequires a JWT token with \"Tender:Create\" permission.",
 				"tags": [
 					"Tender"
 				],
@@ -3488,6 +3556,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the tender to be copied.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3522,6 +3591,7 @@
 						}
 					}
 				},
+				"description": "Sends an email with details about a specific tender. Secured with a JWT token and requires \"Tender:Create\" permission.\nThis method is typically used for notifying stakeholders about tender updates or invitations to tender.",
 				"tags": [
 					"Tender"
 				],
@@ -3534,6 +3604,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the tender to send.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3544,6 +3615,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "Contains the message to be included in the email.",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -3556,7 +3628,8 @@
 								"required": [
 									"message"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "Contains the message to be included in the email."
 							}
 						}
 					}
@@ -3768,6 +3841,7 @@
 						}
 					}
 				},
+				"description": "Adds a new item to an existing tender identified by its ID. This operation is secured with JWT and requires \"Tender:Get\" permission.\nUseful for modifying tender details dynamically during the tender process.",
 				"tags": [
 					"Tender"
 				],
@@ -3781,6 +3855,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the tender to which the item will be added.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3791,15 +3866,76 @@
 					}
 				],
 				"requestBody": {
+					"description": "The properties required to create the new tender item.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateTenderItemProperties"
+								"$ref": "#/components/schemas/CreateTenderItemProperties",
+								"description": "The properties required to create the new tender item."
 							}
 						}
 					}
 				}
+			}
+		},
+		"/tenders/{id}/items-copy/{targetTenderId}": {
+			"put": {
+				"operationId": "CopyTenderItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Copies an existing tender item to another tender. This endpoint is protected by JWT authentication,\nrequiring \"Tender:Update\" permission. It allows users to duplicate tender items efficiently between tenders.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender containing the item to copy.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The ID of the target tender where the item will be copied.",
+						"in": "path",
+						"name": "targetTenderId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/tenders/{id}/items/{itemId}": {
@@ -3817,6 +3953,7 @@
 						}
 					}
 				},
+				"description": "Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication\nand is protected by \"Tender:Update\" permission, ensuring that only authorized modifications are allowed.",
 				"tags": [
 					"Tender"
 				],
@@ -3830,6 +3967,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the tender containing the item.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3839,6 +3977,7 @@
 						}
 					},
 					{
+						"description": "The unique identifier of the item to update.",
 						"in": "path",
 						"name": "itemId",
 						"required": true,
@@ -3849,11 +3988,13 @@
 					}
 				],
 				"requestBody": {
+					"description": "A partial tender item object containing the fields to update.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Partial_TenderItem_"
+								"$ref": "#/components/schemas/Partial_TenderItem_",
+								"description": "A partial tender item object containing the fields to update."
 							}
 						}
 					}
@@ -3881,6 +4022,7 @@
 						}
 					}
 				},
+				"description": "Removes a specific item from a tender by its item ID. This operation requires JWT authentication\nand is secured with \"Tender:Update\" permission, designed to allow modifications only by authorized personnel.",
 				"tags": [
 					"Tender"
 				],
@@ -3894,6 +4036,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the tender from which the item will be removed.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3903,64 +4046,9 @@
 						}
 					},
 					{
+						"description": "The unique identifier of the item to be removed.",
 						"in": "path",
 						"name": "itemId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/tenders/{id}/items-copy/{targetTenderId}": {
-			"put": {
-				"operationId": "CopyTenderItem",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Tender"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Tender:Update"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "path",
-						"name": "targetTenderId",
 						"required": true,
 						"schema": {
 							"format": "double",

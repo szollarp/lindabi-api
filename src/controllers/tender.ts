@@ -28,7 +28,13 @@ export class TenderController extends Controller {
     return tender;
   }
 
-
+  /**
+     * Copies an existing tender based on its ID. This operation is secured and
+     * requires a JWT token with "Tender:Create" permission.
+     *
+     * @param id The unique identifier of the tender to be copied.
+     * @returns The newly created copy of the tender with partial details, or null if the copy fails.
+     */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/copy")
@@ -38,6 +44,14 @@ export class TenderController extends Controller {
     return await context.services.tender.copyTender(context, user, id);
   }
 
+  /**
+   * Sends an email with details about a specific tender. Secured with a JWT token and requires "Tender:Create" permission.
+   * This method is typically used for notifying stakeholders about tender updates or invitations to tender.
+   *
+   * @param id The unique identifier of the tender to send.
+   * @param body Contains the message to be included in the email.
+   * @returns An object indicating whether the email was successfully sent.
+   */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/send")
@@ -96,6 +110,14 @@ export class TenderController extends Controller {
     return await context.services.tender.getTenderItems(context, user.tenant, id);
   }
 
+  /**
+    * Adds a new item to an existing tender identified by its ID. This operation is secured with JWT and requires "Tender:Get" permission.
+    * Useful for modifying tender details dynamically during the tender process.
+    *
+    * @param id The unique identifier of the tender to which the item will be added.
+    * @param body The properties required to create the new tender item.
+    * @returns The newly created tender item object with partial details, or null if the operation fails.
+    */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/items")
@@ -105,6 +127,32 @@ export class TenderController extends Controller {
     return await context.services.tender.createTenderItem(context, id, user, body);
   }
 
+  /**
+   * Copies an existing tender item to another tender. This endpoint is protected by JWT authentication,
+   * requiring "Tender:Update" permission. It allows users to duplicate tender items efficiently between tenders.
+   *
+   * @param id The unique identifier of the tender containing the item to copy.
+   * @param targetTenderId The ID of the target tender where the item will be copied.
+   * @returns An object indicating whether the item was successfully copied.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Put("/{id}/items-copy/{targetTenderId}")
+  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  public async copyTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() targetTenderId: number): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.tender.copyTenderItem(context, id, targetTenderId, user);
+  }
+
+  /**
+  * Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication
+  * and is protected by "Tender:Update" permission, ensuring that only authorized modifications are allowed.
+  *
+  * @param id The unique identifier of the tender containing the item.
+  * @param itemId The unique identifier of the item to update.
+  * @param body A partial tender item object containing the fields to update.
+  * @returns The updated tender item object with partial details, or null if the update fails.
+  */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}")
@@ -114,6 +162,14 @@ export class TenderController extends Controller {
     return await context.services.tender.updateTenderItem(context, id, itemId, user, body);
   }
 
+  /**
+   * Removes a specific item from a tender by its item ID. This operation requires JWT authentication
+   * and is secured with "Tender:Update" permission, designed to allow modifications only by authorized personnel.
+   *
+   * @param id The unique identifier of the tender from which the item will be removed.
+   * @param itemId The unique identifier of the item to be removed.
+   * @returns An object indicating whether the item removal was successful.
+   */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/items/{itemId}")
@@ -121,15 +177,6 @@ export class TenderController extends Controller {
   public async removeTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
     const { context } = request;
     return await context.services.tender.removeTenderItem(context, id, itemId);
-  }
-
-  @Tags("Tender")
-  @SuccessResponse("200", "OK")
-  @Put("/{id}/items-copy/{targetTenderId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async copyTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() targetTenderId: number): Promise<{ success: boolean }> {
-    const { context, user } = request;
-    return await context.services.tender.copyTenderItem(context, id, targetTenderId, user);
   }
 
   /**
@@ -235,8 +282,6 @@ export class TenderController extends Controller {
     const { context, user } = request;
     return await context.services.tender.removeAllTenderDocuments(context, id, user, type);
   }
-
-
 
   /**
    * Updates the information of an existing tender, identified by their ID. Access to this

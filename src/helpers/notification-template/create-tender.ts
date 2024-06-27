@@ -2,7 +2,7 @@ import { fDate } from "../../format";
 import type { Tender } from "../../models/interfaces/tender";
 import type { User } from "../../models/interfaces/user";
 
-export const getTenderCreateTemplate = (tender: Partial<Tender>, createdBy: User, href: string) => `
+export default (tender: Partial<Tender>, createdBy: User, href: string) => `
   <div class="container">
     <div class="content">
       <h2>Új ajánlat rögzítés</h2>

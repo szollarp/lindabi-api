@@ -9,7 +9,7 @@ import { USER_STATUS } from "../constants";
 import type { AccountVerifyTokenModel } from "./account-verify-token";
 import type { RefreshTokenModel } from "./refresh-token";
 import type { ForgottenPasswordTokenModel } from "./forgotten-password-token";
-import type { CreateUserProperties, User } from "./interfaces/user";
+import type { CreateUserProperties, Notifications, User } from "./interfaces/user";
 import type { Role } from "./interfaces/role";
 import type { AccountVerifyToken } from "./interfaces/account-verify-token";
 import type { ForgottenPasswordToken } from "./interfaces/forgotten-password-token";
@@ -22,7 +22,6 @@ import type { Tenant } from "./interfaces/tenant";
 import type { Document } from "./interfaces/document";
 import type { DocumentModel } from "./document";
 import type { Models } from ".";
-
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -51,7 +50,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public address!: string | null;
 
-  public notifications?: Record<string, boolean> | undefined;
+  public notifications?: Notifications | undefined;
 
   public readonly createdOn!: Date;
 

@@ -1,5 +1,5 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete } from "tsoa";
-import type { CreateUserProperties, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
+import type { CreateUserProperties, Notifications, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties } from "../models/interfaces/document";
 
@@ -34,7 +34,12 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Create", "Tenant"])
   public async createUser(@Request() request: ContextualRequest, @Body() body: CreateUserProperties): Promise<Partial<User>> {
     const { context, user } = request;
-    return await context.services.user.create(context, user.tenant, body);
+    const newUser = await context.services.user.create(context, user.tenant, body);
+    if (newUser) {
+      await context.services.notification.sendUserCreatedNotification(context, newUser);
+    }
+
+    return newUser;
   }
 
   /**
@@ -70,7 +75,12 @@ export class UserController extends Controller {
   public async updateUser(@Request() request: ContextualRequest, @Body() body: UpdateUserProperties, @Path() id: number): Promise<Partial<User>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
-    return await context.services.user.update(context, tenant, id, body);
+    const updatedUser = await context.services.user.update(context, tenant, id, body);
+    if (updatedUser) {
+      await context.services.notification.sendUserUpdateNotification(context, updatedUser);
+    }
+
+    return updatedUser;
   }
 
   /**
@@ -163,6 +173,15 @@ export class UserController extends Controller {
     return await context.services.user.generateTwoFactorAuthenticationConfig(context, tenant, id);
   }
 
+  /**
+   * Enables two-factor authentication for a user by ID.
+   * This endpoint is secured with JWT authentication and requires "User:Update" or "Me:*" permissions,
+   * indicating that the user can set up two-factor authentication for themselves or it can be set by an administrator.
+   *
+   * @param id The ID of the user to enable two-factor authentication for.
+   * @param body An object containing the verification code necessary to enable two-factor authentication.
+   * @returns A response indicating whether two-factor authentication was successfully enabled.
+   */
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/two-factor-authentication")
@@ -173,6 +192,14 @@ export class UserController extends Controller {
     return await context.services.user.enableTwoFactorAuthentication(context, tenant, id, body);
   }
 
+  /**
+   * Disables two-factor authentication for a user by ID.
+   * Secured with JWT authentication and requires "User:Update" or "Me:*" permission,
+   * allowing users to disable two-factor authentication for themselves or an administrator to do so.
+   *
+   * @param id The ID of the user for whom to disable two-factor authentication.
+   * @returns A response indicating whether two-factor authentication was successfully disabled.
+   */
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("{id}/two-factor-authentication")
@@ -183,11 +210,19 @@ export class UserController extends Controller {
     return await context.services.user.disableTwoFactorAuthentication(context, tenant, id);
   }
 
+  /**
+   * Updates notification settings for a user by ID.
+   * Secured with JWT token and requires "Me:*" permission, indicating that users can update their own notification settings.
+   *
+   * @param id The ID of the user whose notification settings are to be updated.
+   * @param body A record of settings indicating the types of notifications and whether they should be enabled or disabled.
+   * @returns A response indicating whether the update was successful.
+   */
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/notifications")
   @Security("jwtToken", ["Me:*"])
-  public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Record<string, boolean>): Promise<{ success: boolean }> {
+  public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Notifications): Promise<Notifications | null> {
     const { context } = request;
     return await context.services.user.updateNotifications(context, id, body);
   }

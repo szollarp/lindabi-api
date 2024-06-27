@@ -7,6 +7,24 @@ import type { TwoFactorAuthentication } from "./two-factor-authentication";
 import type { Tenant } from "./tenant";
 import type { Document } from "./document";
 
+export interface Notifications {
+  userNew: boolean
+  tenderNew: boolean
+  contactNew: boolean
+  userDelete: boolean
+  userUpdate: boolean
+  customerNew: boolean
+  contactUpdate: boolean
+  contractorNew: boolean
+  customerUpdate: boolean
+  tenderApproved: boolean
+  userUpdateRole: boolean
+  contractorUpdate: boolean
+  tenderStatusChange: boolean
+  permissionMatrixUpdate: boolean
+  tenderAwaitingApproval: boolean
+}
+
 export interface User {
   id: number
   email: string
@@ -41,7 +59,7 @@ export interface User {
   tenantId?: number | null
   lastLoggedIn?: Date | null
   documents?: Document[]
-  notifications?: Record<string, boolean>
+  notifications?: Notifications
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;
