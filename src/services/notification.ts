@@ -59,7 +59,11 @@ export const notificationService = (): NotificationService => {
           model: context.models.Permission,
           as: "permissions",
           required: true,
-          where: { name: { [Op.in]: permissions } }
+          where: {
+            name: {
+              [Op.in]: permissions
+            }
+          }
         }]
       }]
     });
@@ -82,7 +86,7 @@ export const notificationService = (): NotificationService => {
 
   const sendTenderCreatedNotification = async (context: Context, tender: Partial<Tender>): Promise<{ success: boolean }> => {
     const hostname = fetchConfigHostname(context);
-    const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor"], "tenderNew");
+    const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor", "System:*"], "tenderNew");
     const createUser = await findUserById(context, tender.createdBy!);
     const href = `${hostname}/dashboard/tender/${tender.id}/edit/`;
 
@@ -104,18 +108,18 @@ export const notificationService = (): NotificationService => {
     const href = `${hostname}/dashboard/tender/${tenderId}/edit/`;
 
     if (tender!.status === TENDER_STATUS.AWAITING_APPROVAL) {
-      const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin"], "tenderAwaitingApproval");
+      const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "System:*"], "tenderAwaitingApproval");
       return sendNotification(context, users, "Ajánlat jóváhagyásra vár állapotba került", () =>
         getWaitingApprovalTenderStatusTemplate(tender!, updateUser!, href, status));
     }
 
     if (tender!.status === TENDER_STATUS.FINALIZED) {
-      const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor"], "tenderApproved");
+      const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor", "System:*"], "tenderApproved");
       return sendNotification(context, users, "Ajánlat végleges állapotba került", () =>
         getApprovedTenderStatusTemplate(tender!, updateUser!, href, status));
     }
 
-    const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor"], "tenderStatusChange");
+    const users = await fetchUsersWithPermissions(context, ["Tender:Approver", "Tender:Admin", "Tender:Editor", "System:*"], "tenderStatusChange");
     return sendNotification(context, users, "Ajánlaton állapotváltás történt", () =>
       getUpdateTenderStatusTemplate(tender!, updateUser!, href, status));
   };
@@ -129,7 +133,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendUserUpdateNotification = async (context: Context, user: Partial<User>): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "userUpdate");
     const updateBy = await findUserById(context, user.updatedBy!);
 
     return sendNotification(context, users, "A felhasználó módosításra került", () =>
@@ -137,7 +141,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendUserDeleteNotification = async (context: Context, user: Partial<User>): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "userDelete");
     const updateBy = await findUserById(context, user.updatedBy!);
 
     return sendNotification(context, users, "A felhasználó inaktiválásra került", () =>
@@ -145,14 +149,14 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendPermissionMatrixUpdateNotification = async (context: Context): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "permissionMatrixUpdate");
 
     return sendNotification(context, users, "A szerepkör-jogosultság mátrix módosításra került", () =>
       getUpdatePermissionMatrixTemplate());
   };
 
   const sendContactCreatedNotification = async (context: Context, contact: Partial<Contact>): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "contactNew");
     const createdBy = await findUserById(context, contact.createdBy!);
 
     return sendNotification(context, users, "Új kapcsolattartó rögzítésre került", () =>
@@ -160,7 +164,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendContactUpdateNotification = async (context: Context, contact: Partial<Contact>): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "contactUpdate");
     const updateBy = await findUserById(context, contact.updatedBy!);
 
     return sendNotification(context, users, "A kapcsolattartó módosításra került", () =>
@@ -168,7 +172,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendCustomerCreatedNotification = async (context: Context, company: Company): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "customerNew");
     const createdBy = await findUserById(context, company.createdBy!);
 
     return sendNotification(context, users, "Új megrendelő rögzítésre került", () =>
@@ -176,7 +180,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendCustomerUpdateNotification = async (context: Context, company: Company): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "customerUpdate");
     const updateBy = await findUserById(context, company.updatedBy!);
 
     return sendNotification(context, users, "A megrendelő módosításra került", () =>
@@ -184,7 +188,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendContractorCreatedNotification = async (context: Context, company: Company): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "contractorNew");
     const createdBy = await findUserById(context, company.createdBy!);
 
     return sendNotification(context, users, "Új kivitelező rögzítésre került", () =>
@@ -192,7 +196,7 @@ export const notificationService = (): NotificationService => {
   };
 
   const sendContractorUpdateNotification = async (context: Context, company: Company): Promise<{ success: boolean }> => {
-    const users = await fetchUsersWithPermissions(context, ["System:*"], "userNew");
+    const users = await fetchUsersWithPermissions(context, ["System:*"], "contractorUpdate");
     const updateBy = await findUserById(context, company.updatedBy!);
 
     return sendNotification(context, users, "A kivitelező módosításra került", () =>
