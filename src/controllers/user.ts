@@ -34,7 +34,7 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Create", "Tenant"])
   public async createUser(@Request() request: ContextualRequest, @Body() body: CreateUserProperties): Promise<Partial<User>> {
     const { context, user } = request;
-    const newUser = await context.services.user.create(context, user.tenant, body);
+    const newUser = await context.services.user.create(context, user.tenant, body, user.id);
     if (newUser) {
       await context.services.notification.sendUserCreatedNotification(context, newUser);
     }
@@ -75,7 +75,7 @@ export class UserController extends Controller {
   public async updateUser(@Request() request: ContextualRequest, @Body() body: UpdateUserProperties, @Path() id: number): Promise<Partial<User>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
-    const updatedUser = await context.services.user.update(context, tenant, id, body);
+    const updatedUser = await context.services.user.update(context, tenant, id, body, user.id);
     if (updatedUser) {
       await context.services.notification.sendUserUpdateNotification(context, updatedUser);
     }

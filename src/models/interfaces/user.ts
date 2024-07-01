@@ -62,7 +62,7 @@ export interface User {
   notifications?: Notifications
 };
 
-export type CreateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;
+export type CreateUserProperties = Omit<User, "id" | "createdOn" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;
 
 export type UpdateUserProperties = Omit<User, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "email" | "password" | "accountVerifyToken" | "forgottenPasswordToken" | "lastLoggedIn">;
 

@@ -14,8 +14,8 @@ import { Op } from "sequelize";
 export interface UserService {
   list: (context: Context, tenantId: number) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User>>
-  create: (context: Context, tenantId: number, body: CreateUserProperties) => Promise<Partial<User>>
-  update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties) => Promise<Partial<User>>
+  create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
+  update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties, updatedBy: number) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
   updateNotifications: (context: Context, id: number, body: Notifications) => Promise<Notifications | null>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
@@ -57,7 +57,7 @@ export const userService = (): UserService => {
     }
   };
 
-  const create = async (context: Context, tenantId: number, body: CreateUserProperties): Promise<Partial<User>> => {
+  const create = async (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number): Promise<Partial<User>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -69,7 +69,8 @@ export const userService = (): UserService => {
         status: USER_STATUS.PENDING,
         salt: createRandomToken(),
         password: "",
-        tenantId
+        tenantId,
+        createdBy
       }, { transaction: t });
 
       const token = createAccountVerifyToken(context, user);
@@ -133,12 +134,11 @@ export const userService = (): UserService => {
     }
   };
 
-  const update = async (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties): Promise<Partial<User>> => {
+  const update = async (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties, updatedBy: number): Promise<Partial<User>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
       const where = !tenantId ? { id } : { id, tenantId };
-      console.log({ where });
       const user = await context.models.User.findOne({
         attributes: USER_ATTRIBUTES,
         where,
@@ -155,7 +155,7 @@ export const userService = (): UserService => {
         throw Unauthorized("ERROR_AUTH_FAILED");
       }
 
-      await user.update(body, { transaction: t });
+      await user.update({ ...body, updatedBy }, { transaction: t });
       await t.commit();
 
       return user;
@@ -202,7 +202,7 @@ export const userService = (): UserService => {
         where: { id }
       });
 
-      await user?.update({ notifications: body });
+      await user?.update({ notifications: body, updatedBy: id });
       return user?.notifications || null;
     } catch (error) {
       context.logger.error(error);
