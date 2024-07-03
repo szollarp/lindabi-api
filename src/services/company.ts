@@ -16,7 +16,7 @@ export const companyService = (): CompanyService => {
   const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> => {
     try {
       return await context.models.Company.findAll({
-        attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode"],
+        attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default"],
         where: { tenantId, type },
         include: [{
           model: context.models.Document,
@@ -100,6 +100,10 @@ export const companyService = (): CompanyService => {
       }
 
       await company.update({ ...data, updatedBy });
+
+      if (data.default === true) {
+        await context.models.Company.update({ default: false }, { where: { tenantId, id: { [Op.ne]: id } } });
+      }
 
       if (company.type === COMPANY_TYPE.CONTRACTOR) {
         await context.services.notification.sendContractorUpdateNotification(context, company);

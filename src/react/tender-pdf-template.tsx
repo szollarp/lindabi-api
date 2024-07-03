@@ -10,6 +10,7 @@ import {
   getTotalAmount, getTotalNetAmount, getTotalVatAmount
 } from '../helpers/tender';
 import { fDate, fPercent, fCurrency } from "../format";
+import { DocumentModel } from '../models/document';
 
 Font.register({
   family: 'Roboto',
@@ -159,12 +160,39 @@ type TenderPDFProps = {
 const TenderPDF = ({ tender }: TenderPDFProps) => {
   const styles = useStyles();
 
-  const getImage = (type: "logo" | "signature" | "stamp") => {
-    if (!tender?.contractor?.documents) return "";
-    const documents = tender.contractor.documents as DocumentType[];
+  const getImage = (type: "logo" | "signature" | "stamp"): string | null => {
+    if (!tender?.contractor?.documents) return null;
+    const documents = tender.contractor.documents as DocumentModel[];
     const image = documents.find((doc) => doc.type === type);
-    return image ? image.data : "";
+    return image ? image.data : null;
   };
+
+  const TenderCustomerLogo = () => {
+    const imageData = getImage("logo");
+    if (!imageData) {
+      return <View style={{ height: 85 }} />
+    }
+
+    return (<Image source={imageData} style={{ height: 85, width: "auto" }} />)
+  }
+
+  const TenderCustomerStamp = () => {
+    const imageData = getImage("stamp");
+    if (!imageData) {
+      return <View style={{ height: 25 }} />
+    }
+
+    return (<Image source={imageData} style={{ width: 175, height: "auto" }} />)
+  }
+
+  const TenderCustomerSignature = () => {
+    const imageData = getImage("signature");
+    if (!imageData) {
+      return <View style={{ height: 25 }} />
+    }
+
+    return (<Image source={imageData} style={{ width: 100, height: "auto" }} />)
+  }
 
   const TenderDiscount = () => {
     if (!tender?.discount) return null;
@@ -210,7 +238,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
         <Text style={styles.h6}>{tender?.contractor?.email}</Text>
       </View>
       <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
-        <Image source={getImage("logo")} style={{ height: 85, width: "auto" }} />
+        <TenderCustomerLogo />
       </View>
     </View>
   );
@@ -344,8 +372,8 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
       <View style={{ alignItems: "flex-end", justifyContent: "center" }}>
         <View style={[styles.col4, { width: 225, textAlign: "center" }]} />
         <View style={[styles.col4, { width: 225, textAlign: "center" }]}>
-          <Image source={getImage("stamp")} style={{ width: 175, height: "auto" }} />
-          <Image source={getImage("signature")} style={{ width: 100, height: "auto" }} />
+          <TenderCustomerStamp />
+          <TenderCustomerSignature />
         </View>
       </View>
       <View style={[styles.gridContainer]}>

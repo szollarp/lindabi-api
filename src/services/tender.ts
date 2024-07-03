@@ -193,7 +193,8 @@ export const tenderService = (): TenderService => {
         return { success: false };
       }
 
-      context.services.email.sendTenderPdfEmail(context, tender, message);
+      await context.services.email.sendTenderPdfEmail(context, tender, message);
+      await tender.update({ status: TENDER_STATUS.SENT, updatedBy: user.id });
       return { success: true };
     }
     catch (error: any) {
