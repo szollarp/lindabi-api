@@ -71,21 +71,29 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   public addLocation!: HasManyAddAssociationMixin<LocationModel, number>;
 
-  public getLocations!: HasManyGetAssociationsMixin<LocationModel[]>;
+  public getLocations!: HasManyGetAssociationsMixin<LocationModel>;
 
-  public removeLocation!: HasManyRemoveAssociationMixin<LocationModel, number>;
+  public removeLocation!: HasManyRemoveAssociationMixin<LocationModel, Location["id"]>;
+
+  public removeLocations!: HasManyRemoveAssociationMixin<LocationModel, Location["id"]>;
 
   declare locations?: NonAttribute<Location[]>;
+
+  declare locationIds?: ForeignKey<Location["id"]>[];
 
   public createContact!: HasManyCreateAssociationMixin<ContactModel>;
 
   public addContact!: HasManyAddAssociationMixin<ContactModel, number>;
 
-  public getContacts!: HasManyGetAssociationsMixin<ContactModel[]>;
+  public getContacts!: HasManyGetAssociationsMixin<ContactModel>;
 
-  public removeContact!: HasManyRemoveAssociationMixin<ContactModel, number>;
+  public removeContact!: HasManyRemoveAssociationMixin<ContactModel, Contact["id"]>;
+
+  public removeContacts!: HasManyRemoveAssociationMixin<ContactModel, Contact["id"]>;
 
   declare contacts?: NonAttribute<Contact[]>;
+
+  declare contactIds?: ForeignKey<Contact["id"]>[];
 
   public static associate: (models: Models) => void;
 

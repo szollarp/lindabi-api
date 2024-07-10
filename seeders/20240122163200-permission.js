@@ -170,6 +170,50 @@ module.exports = {
       name: 'Tender:Delete',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'Tender:ShowAmounts',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Approver',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:DocumentViewer',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Admin',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Viewer',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Tender:Editor',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Supplier:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Supplier:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Supplier:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Supplier:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Supplier:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

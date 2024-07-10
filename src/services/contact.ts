@@ -35,7 +35,7 @@ export const contactService = (): ContactService => {
           {
             model: context.models.Company,
             as: "companies",
-            attributes: ["id", "name", "country", "city", "address", "zipCode"],
+            attributes: ["id", "name", "country", "city", "address", "zipCode", "type"],
             through: { attributes: [] }
           }
         ]

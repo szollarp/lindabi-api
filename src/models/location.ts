@@ -10,6 +10,8 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
 
   public name!: string;
 
+  public taxNumber!: string | null;
+
   public status!: LOCATION_STATUS.ACTIVE | LOCATION_STATUS.INACTIVE;
 
   public country!: string;
@@ -22,7 +24,7 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
 
   public address!: string;
 
-  public notes?: string | null;
+  public notes!: string | null;
 
   declare tenant: NonAttribute<Tenant>;
 
@@ -51,6 +53,11 @@ export const LocationFactory = (sequelize: Sequelize): typeof LocationModel => {
       name: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      taxNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
       },
       city: {
         type: DataTypes.STRING,

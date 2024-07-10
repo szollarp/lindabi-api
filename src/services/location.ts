@@ -17,7 +17,7 @@ export const locationService = (): LocationService => {
   const getLocations = async (context: Context, tenantId: number): Promise<Array<Partial<Location>>> => {
     try {
       return await context.models.Location.findAll({
-        attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes"],
+        attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes", "taxNumber"],
         where: { tenantId }
       });
     } catch (error) {
@@ -29,7 +29,7 @@ export const locationService = (): LocationService => {
   const getLocation = async (context: Context, tenantId: number, id: number): Promise<Partial<Location> | null> => {
     try {
       return await context.models.Location.findOne({
-        attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes"],
+        attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes", "taxNumber"],
         where: { tenantId, id }
       });
     } catch (error) {

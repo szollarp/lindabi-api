@@ -976,6 +976,12 @@
 				],
 				"type": "string"
 			},
+			"COMPANY_TYPE.SUPPLIER": {
+				"enum": [
+					"supplier"
+				],
+				"type": "string"
+			},
 			"Company": {
 				"properties": {
 					"id": {
@@ -1022,6 +1028,9 @@
 							},
 							{
 								"$ref": "#/components/schemas/COMPANY_TYPE.CUSTOMER"
+							},
+							{
+								"$ref": "#/components/schemas/COMPANY_TYPE.SUPPLIER"
 							}
 						]
 					},
@@ -1113,6 +1122,10 @@
 					"id": {
 						"type": "number",
 						"format": "double"
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
 					},
 					"name": {
 						"type": "string"
@@ -2152,6 +2165,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"taxNumber": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -2232,6 +2248,9 @@
 						"format": "double"
 					},
 					"notes": {
+						"type": "string"
+					},
+					"taxNumber": {
 						"type": "string"
 					}
 				},
@@ -2355,7 +2374,8 @@
 			"COMPANY_TYPE": {
 				"enum": [
 					"customer",
-					"contractor"
+					"contractor",
+					"supplier"
 				],
 				"type": "string"
 			},
@@ -6150,6 +6170,134 @@
 							"schema": {
 								"$ref": "#/components/schemas/CreateDocumentProperties",
 								"description": "Contains the image data and metadata for the logo."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/companies/{id}/contacts": {
+			"post": {
+				"operationId": "AddContacts",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds multiple contacts to a company specified by the company ID. This operation is secured with JWT and requires\n\"Company:Update\" permission, ensuring that only authorized users can add contacts to the company.",
+				"tags": [
+					"Company"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Company:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the company to which contacts will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "An array of contacts, represented as partial objects, to be added to the company.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/Partial_Contact_"
+								},
+								"type": "array",
+								"description": "An array of contacts, represented as partial objects, to be added to the company."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/companies/{id}/locations": {
+			"post": {
+				"operationId": "AddLocations",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds multiple locations to a company specified by the company ID. This method is secured with JWT and requires\n\"Company:Update\" permission, allowing only authorized users to add locations to the company.",
+				"tags": [
+					"Company"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Company:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the company to which locations will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "An array of location objects, represented as partial objects, to be added to the company.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/Partial_Location_"
+								},
+								"type": "array",
+								"description": "An array of location objects, represented as partial objects, to be added to the company."
 							}
 						}
 					}

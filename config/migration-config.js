@@ -1,10 +1,18 @@
 module.exports = {
   local: {
-    username: 'root',
-    password: null,
-    database: 'database_dev',
-    host: '127.0.0.1',
-    dialect: 'postgres'
+    username: 'peterszollar',
+    password: 'Ns3enmSPsP',
+    database: 'api',
+    port: 5432,
+    host: 'development-pq.postgres.database.azure.com',
+    dialect: 'postgres',
+    dialectOptions: {
+      encrypt: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
   },
   development: {
     username: 'root',

@@ -1,7 +1,9 @@
 import { Op } from "sequelize";
 import type { Context } from "../types";
 import type { Company, CreateCompanyProperties } from "../models/interfaces/company";
+import type { Contact } from "../models/interfaces/contact";
 import { COMPANY_TYPE } from "../constants";
+import { Location } from "../models/interfaces/location";
 
 export interface CompanyService {
   getCompanies: (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER) => Promise<Array<Partial<Company>>>
@@ -10,6 +12,8 @@ export interface CompanyService {
   updateCompany: (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Company>) => Promise<Partial<Company> | null>
   deleteCompany: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteCompanies: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
+  addContacts: (context: Context, tenantId: number, id: number, contacts: Partial<Contact>[]) => Promise<{ success: boolean }>
+  addLocations: (context: Context, tenantId: number, id: number, locations: Partial<Location>[]) => Promise<{ success: boolean }>
 }
 
 export const companyService = (): CompanyService => {
@@ -140,6 +144,94 @@ export const companyService = (): CompanyService => {
     }
   };
 
+  const addContacts = async (context: Context, tenantId: number, id: number, contacts: Partial<Contact>[]): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      const companyContacts = await company.getContacts();
+      for (const contact of companyContacts) {
+        await company.removeContact(contact, { transaction: t });
+      }
+
+      if (contacts.length > 0) {
+        const notExistedContacts = contacts.filter((contact) => !contact.id);
+        for (const contact of notExistedContacts) {
+          const newContact = await context.models.Contact.create({
+            ...contact,
+            tenantId
+          });
+
+          await company.addContact(newContact, { transaction: t });
+        }
+
+        const existedContacts = contacts.filter((contact) => contact.id);
+        for (const contact of existedContacts) {
+          await company.addContact(contact.id, { transaction: t });
+        }
+      }
+
+      await t.commit();
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const addLocations = async (context: Context, tenantId: number, id: number, locations: Partial<Location>[]): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const company = await context.models.Company.findOne({
+        where: { tenantId, id }
+      });
+
+      if (!company) {
+        return { success: false };
+      }
+
+      const companyLocations = await company.getLocations();
+      for (const location of companyLocations) {
+        await company.removeLocation(location, { transaction: t });
+      }
+
+      if (locations.length > 0) {
+        const notExistedLocations = locations.filter((location) => !location.id);
+        for (const location of notExistedLocations) {
+          const newLocation = await context.models.Location.create({
+            ...location,
+            tenantId
+          });
+
+          await company.addLocation(newLocation, { transaction: t });
+        }
+
+        const existedLocations = locations.filter((location) => location.id);
+        for (const location of existedLocations) {
+          await company.addLocation(location.id, { transaction: t });
+        }
+      }
+
+      await t.commit();
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     getCompanies,
     getCompany,
@@ -147,5 +239,7 @@ export const companyService = (): CompanyService => {
     updateCompany,
     deleteCompany,
     deleteCompanies,
+    addContacts,
+    addLocations
   };
 };

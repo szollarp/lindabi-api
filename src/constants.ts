@@ -23,6 +23,7 @@ export enum COMPANY_STATUS {
 export enum COMPANY_TYPE {
   CUSTOMER = "customer",
   CONTRACTOR = "contractor",
+  SUPPLIER = "supplier",
 };
 
 export enum CONTACT_STATUS {

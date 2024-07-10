@@ -5,7 +5,9 @@ import {
 import type { CreateCompanyProperties, Company } from "../models/interfaces/company";
 import type { ContextualRequest } from "../types";
 import type { COMPANY_TYPE } from "../constants";
-import { CreateDocumentProperties } from "../models/interfaces/document";
+import type { CreateDocumentProperties } from "../models/interfaces/document";
+import type { Contact } from "../models/interfaces/contact";
+import { Location } from "../models/interfaces/location";
 
 @Route("companies")
 export class CompanyController extends Controller {
@@ -23,7 +25,7 @@ export class CompanyController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("/")
   @Security("jwtToken", ["Tenant", "Company:List"])
-  public async getCompanies(@Request() request: ContextualRequest, @Query() type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> {
+  public async getCompanies(@Request() request: ContextualRequest, @Query() type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER): Promise<Array<Partial<Company>>> {
     const { context, user } = request;
     return await context.services.company.getCompanies(context, user.tenant, type);
   }
@@ -125,5 +127,39 @@ export class CompanyController extends Controller {
   public async deleteCompany(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.company.deleteCompany(context, user.tenant, id);
+  }
+
+  /**
+   * Adds multiple contacts to a company specified by the company ID. This operation is secured with JWT and requires
+   * "Company:Update" permission, ensuring that only authorized users can add contacts to the company.
+   *
+   * @param id The unique identifier of the company to which contacts will be added.
+   * @param body An array of contacts, represented as partial objects, to be added to the company.
+   * @returns An object indicating whether the addition of contacts was successful.
+   */
+  @Tags("Company")
+  @SuccessResponse("200", "OK")
+  @Post("{id}/contacts")
+  @Security("jwtToken", ["Tenant", "Company:Update"])
+  public async addContacts(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Contact>[]): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.company.addContacts(context, user.tenant, id, body);
+  }
+
+  /**
+   * Adds multiple locations to a company specified by the company ID. This method is secured with JWT and requires
+   * "Company:Update" permission, allowing only authorized users to add locations to the company.
+   *
+   * @param id The unique identifier of the company to which locations will be added.
+   * @param body An array of location objects, represented as partial objects, to be added to the company.
+   * @returns An object indicating whether the addition of locations was successful.
+   */
+  @Tags("Company")
+  @SuccessResponse("200", "OK")
+  @Post("{id}/locations")
+  @Security("jwtToken", ["Tenant", "Company:Update"])
+  public async addLocations(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Location>[]): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.company.addLocations(context, user.tenant, id, body);
   }
 };

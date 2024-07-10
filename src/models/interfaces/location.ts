@@ -2,6 +2,7 @@ import type { LOCATION_STATUS } from "../../constants";
 
 export interface Location {
   id: number
+  taxNumber?: string | null
   name: string
   country: string
   region?: string | null

@@ -15,3 +15,5 @@ export interface Contact {
 };
 
 export type CreateContactProperties = Omit<Contact, "id" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;
+
+export type CreateCompanyContactProperties = Omit<Contact, "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;

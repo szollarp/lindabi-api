@@ -11,7 +11,7 @@ export interface Company {
   address: string
   zipCode: string
   status: COMPANY_STATUS.ACTIVE | COMPANY_STATUS.INACTIVE
-  type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER
+  type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER
   default?: boolean | null
   taxNumber?: string | null
   registrationNumber?: string | null
