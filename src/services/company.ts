@@ -6,7 +6,7 @@ import { COMPANY_TYPE } from "../constants";
 import { Location } from "../models/interfaces/location";
 
 export interface CompanyService {
-  getCompanies: (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER) => Promise<Array<Partial<Company>>>
+  getCompanies: (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER) => Promise<Array<Partial<Company>>>
   getCompany: (context: Context, tenantId: number, id: number) => Promise<Partial<Company> | null>
   createCompany: (context: Context, tenantId: number, createdBy: number, body: CreateCompanyProperties) => Promise<Partial<Company> | null>
   updateCompany: (context: Context, tenantId: number, id: number, updatedBy: number, data: Partial<Company>) => Promise<Partial<Company> | null>
@@ -17,7 +17,7 @@ export interface CompanyService {
 }
 
 export const companyService = (): CompanyService => {
-  const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER): Promise<Array<Partial<Company>>> => {
+  const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER): Promise<Array<Partial<Company>>> => {
     try {
       return await context.models.Company.findAll({
         attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default"],
@@ -167,7 +167,7 @@ export const companyService = (): CompanyService => {
           const newContact = await context.models.Contact.create({
             ...contact,
             tenantId
-          });
+          } as Contact);
 
           await company.addContact(newContact, { transaction: t });
         }
@@ -211,7 +211,7 @@ export const companyService = (): CompanyService => {
           const newLocation = await context.models.Location.create({
             ...location,
             tenantId
-          });
+          } as Location);
 
           await company.addLocation(newLocation, { transaction: t });
         }
