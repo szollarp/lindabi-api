@@ -9,7 +9,7 @@ const getHeaderTokens = (request: Request): { authToken: string, refreshToken: s
     throw new Unauthorized("Request is not authenticated.");
   }
 
-  const refreshToken = request.cookies["X-Refresh-Token"] as string ?? null;
+  const refreshToken = request.cookies["X-Refresh-Token"] || request.headers["x-refresh-token"] || null;
   return { authToken: authToken.replace("Bearer ", ""), refreshToken };
 };
 
@@ -17,10 +17,18 @@ const getTenant = (request: Request): number => {
   return Number(request.headers["x-tenant"]);
 };
 
-const validateHeaderToken = async (context: Context, authToken: string): Promise<{ user: DecodedUser }> => {
+const validateHeaderToken = async (context: Context, authToken: string, refreshToken: string): Promise<{ user: DecodedUser }> => {
   const authConfig: { refreshToken: { key: string }, authToken: { key: string } } = context.config.get("auth");
   const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
   if (decodedToken == null) {
+    throw new Unauthorized();
+  }
+
+  const token = await context.models.RefreshToken.findOne({
+    where: { token: refreshToken, userId: decodedToken.user.id }
+  });
+
+  if (!token) {
     throw new Unauthorized();
   }
 
@@ -58,8 +66,8 @@ export const expressAuthentication = async (request: Request, securityName: stri
     throw new Forbidden("Your login credentials have either expired or are no longer valid, please enter your credentials again.");
   }
 
-  const { authToken } = getHeaderTokens(request);
-  const decodedToken = await validateHeaderToken(context, authToken);
+  const { authToken, refreshToken } = getHeaderTokens(request);
+  const decodedToken = await validateHeaderToken(context, authToken, refreshToken);
 
   if (!decodedToken?.user) {
     throw new Unauthorized();
