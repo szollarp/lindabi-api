@@ -48,7 +48,7 @@ const useStyles = () =>
         subtitle2: { fontSize: 9, fontWeight: 700 },
         alignRight: { textAlign: 'right' },
         page: {
-          fontSize: 10,
+          fontSize: 9,
           lineHeight: 1.5,
           fontFamily: 'Roboto',
           backgroundColor: '#FFFFFF',
@@ -70,17 +70,17 @@ const useStyles = () =>
           backgroundColor: '#5889ad',
           color: 'white',
           paddingLeft: 8,
-          paddingTop: 6,
-          height: 25
+          paddingTop: 4,
+          height: 20
         },
         boxContent: {
           paddingLeft: 8,
-          paddingTop: 3,
+          paddingTop: 4,
           minHeight: 20,
         },
         summaryContent: {
           paddingLeft: 8,
-          paddingTop: 3,
+          paddingTop: 4,
           minHeight: 15,
         },
         boxShadow: {
@@ -110,11 +110,12 @@ const useStyles = () =>
         tableHeader: {
           backgroundColor: '#5889ad',
           color: 'white',
-          height: 35,
+          height: 25,
           fontSize: 8,
           flexDirection: 'row',
           paddingLeft: 8,
-          paddingTop: 5,
+          paddingTop: 4,
+          lineHeight: 1
         },
         tableRow: {
           height: 25,
@@ -170,10 +171,10 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   const TenderCustomerLogo = () => {
     const imageData = getImage("logo");
     if (!imageData) {
-      return <View style={{ height: 85 }} />
+      return <View style={{ height: 65 }} />
     }
 
-    return (<Image source={imageData} style={{ height: 85, width: "auto" }} />)
+    return (<Image source={imageData} style={{ height: 65, width: "auto" }} />)
   }
 
   const TenderCustomerStamp = () => {
@@ -182,7 +183,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
       return <View style={{ height: 25 }} />
     }
 
-    return (<Image source={imageData} style={{ width: 175, height: "auto" }} />)
+    return (<Image source={imageData} style={{ width: 115, height: "auto" }} />)
   }
 
   const TenderCustomerSignature = () => {
@@ -232,10 +233,9 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   };
 
   const TenderHeader = () => (
-    <View style={[styles.gridContainer, styles.mb8]}>
+    <View style={[styles.gridContainer, styles.mb4]}>
       <View style={{ flexDirection: 'column' }}>
         <Text style={[styles.h2, styles.title]}>AJÁNLAT</Text>
-        <Text style={styles.h6}>{tender?.contractor?.email}</Text>
       </View>
       <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
         <TenderCustomerLogo />
@@ -244,7 +244,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   );
 
   const TenderInfo = () => (
-    <View style={[styles.gridContainer, styles.mb8]}>
+    <View style={[styles.gridContainer, styles.mb4]}>
       <View style={[styles.box, styles.col6]}>
         <View style={[styles.boxHeader]}><Text>Kivitelező</Text></View>
         <View style={[styles.boxContent]}>
@@ -252,6 +252,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
           <Text>{tender?.contractor?.zipCode} {tender?.contractor?.city}, {tender?.contractor?.address}</Text>
           <Text>Adószám: {tender?.contractor?.taxNumber || "-"}</Text>
           <Text>Bankszámla: {tender?.contractor?.bankAccount || "-"}</Text>
+          <Text>E-mail: {tender?.contractor?.email || "-"}</Text> 
         </View>
       </View>
       <View style={[styles.box, styles.col6]}>
@@ -266,7 +267,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   );
 
   const TenderDetails = () => (
-    <View style={[styles.gridContainer, styles.mb8]}>
+    <View style={[styles.gridContainer, styles.mb4]}>
       <View style={[styles.box, styles.col3]}>
         <View style={[styles.boxHeader]}><Text>Kiállítás</Text></View>
         <View style={[styles.boxContent, styles.boxShadow]}><Text>{fDate(tender?.openDate)}</Text></View>
@@ -283,7 +284,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   );
 
   const TenderNotes = () => (
-    <View style={[styles.mb8, styles.box]}>
+    <View style={[styles.mb4, styles.box]}>
       <View style={[styles.boxHeader]}><Text>Leírás</Text></View>
       <View style={[styles.boxContent]}><Text>{tender?.notes}</Text></View>
     </View>
@@ -297,7 +298,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
   );
 
   const TenderSummary = () => (
-    <View style={[styles.gridContainer, styles.mb8]}>
+    <View style={[styles.gridContainer, styles.mb4]}>
       <View style={[styles.col6]} />
       <View style={[styles.col6]}>
         <SummaryRow
@@ -371,7 +372,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
     <View>
       <View style={{ alignItems: "flex-end", justifyContent: "center" }}>
         <View style={[styles.col4, { width: 225, textAlign: "center" }]} />
-        <View style={[styles.col4, { width: 225, textAlign: "center" }]}>
+         <View style={[styles.col4, { width: 225, textAlign: "center", alignContent: "center", alignItems: "center" }]}>
           <TenderCustomerStamp />
           <TenderCustomerSignature />
         </View>
