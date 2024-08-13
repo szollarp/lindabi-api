@@ -448,7 +448,15 @@ export const tenderService = (): TenderService => {
 
   const createTenderItem = async (context: Context, tenderId: number, user: DecodedUser, data: CreateTenderItemProperties): Promise<TenderItem> => {
     try {
-      return await context.models.TenderItem.create({ ...data, tenderId, createdBy: user.id });
+      const numMax: number | null = await context.models.TenderItem.max("num", { where: { tenderId } });
+      const max = numMax ? Number(numMax) + 1 : 1;
+
+      return await context.models.TenderItem.create({
+        ...data,
+        tenderId,
+        createdBy: user.id,
+        num: max
+      } as TenderItem);
     } catch (error) {
       context.logger.error(error);
       throw error;
