@@ -14,10 +14,11 @@ export interface TenderItem {
   feeActualNetAmount: number
   totalFeeAmount: number
   tenderId: number
+  num: number
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
 };
 
-export type CreateTenderItemProperties = Omit<TenderItem, "id" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateTenderItemProperties = Omit<TenderItem, "id" | "num" | "createdOn" | "updatedBy" | "updatedOn">;

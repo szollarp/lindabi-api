@@ -33,6 +33,8 @@ export class TenderItemModel extends Model<TenderItem, CreateTenderItemPropertie
 
   public totalFeeAmount!: number;
 
+  public num!: number;
+
   public tenderId!: ForeignKey<Tender["id"]>;
 
   public tender?: NonAttribute<Tender>;
@@ -102,6 +104,10 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
     },
     totalFeeAmount: {
       type: DataTypes.DECIMAL,
+      allowNull: false
+    },
+    num: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     tenderId: {
