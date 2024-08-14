@@ -162,6 +162,15 @@ export class TenderController extends Controller {
     return await context.services.tender.updateTenderItem(context, id, itemId, user, body);
   }
 
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Put("/{id}/items/{itemId}/order")
+  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  public async updateTenderItemOrder(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: { side: "up" | "down" }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.tender.updateTenderItemOrder(context, id, itemId, user, body);
+  }
+
   /**
    * Removes a specific item from a tender by its item ID. This operation requires JWT authentication
    * and is secured with "Tender:Update" permission, designed to allow modifications only by authorized personnel.
