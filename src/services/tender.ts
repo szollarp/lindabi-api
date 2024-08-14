@@ -24,6 +24,7 @@ export interface TenderService {
   createTenderItem: (context: Context, tenderId: number, user: DecodedUser, data: CreateTenderItemProperties) => Promise<TenderItem>
   updateTenderItem: (context: Context, tenderId: number, id: number, user: DecodedUser, data: Partial<TenderItem>) => Promise<Partial<TenderItem> | null>
   removeTenderItem: (context: Context, tenderId: number, id: number) => Promise<{ success: boolean }>
+  updateTenderItemOrder: (context: Context, tenderId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
   copyTender: (context: Context, user: DecodedUser, id: number) => Promise<Partial<Tender> | null>
   copyTenderItem: (context: Context, tenderId: number, sourceTenderId: number, user: DecodedUser) => Promise<{ success: boolean }>
 };
@@ -94,7 +95,8 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.TenderItem,
             as: "items",
-            required: false
+            required: false,
+            order: [["num", "ASC"]]
           }
         ],
         where: { tenantId },
@@ -140,7 +142,8 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.TenderItem,
             as: "items",
-            required: false
+            required: false,
+            order: [["num", "ASC"]]
           }
         ],
       });
@@ -184,7 +187,8 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.TenderItem,
             as: "items",
-            required: false
+            required: false,
+            order: [["num", "ASC"]]
           }
         ],
       });
@@ -207,13 +211,14 @@ export const tenderService = (): TenderService => {
     try {
       return await context.models.TenderItem.findAll({
         where: { tenderId: id },
+        order: [["num", "ASC"]],
         include: [
           {
             model: context.models.Tender,
             as: "tender",
             attributes: ["id"],
             where: { tenantId },
-            required: true
+            required: true,
           }
         ]
       });
@@ -481,6 +486,45 @@ export const tenderService = (): TenderService => {
     }
   }
 
+  const updateTenderItemOrder = async (context: Context, tenderId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const tenderItem = await context.models.TenderItem.findOne({
+        where: { id, tenderId }
+      });
+
+      if (!tenderItem) {
+        return { success: false };
+      }
+
+      const num = data.side === "up" ? tenderItem.num - 1 : tenderItem.num + 1;
+      const tenderNumed = await context.models.TenderItem.findOne({
+        where: { tenderId, num }
+      });
+
+      await tenderItem.update({
+        ...data, updatedBy: user.id, num: data.side === "up" ? tenderItem.num - 1 : tenderItem.num + 1
+      }, { transaction: t });
+
+      await tenderNumed?.update(
+        {
+          num: data.side === "up" ? tenderNumed.num + 1 : tenderNumed.num - 1,
+          updatedBy: user.id
+        }
+      ), { transaction: t };
+
+      await t.commit();
+
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   const removeTenderItem = async (context: Context, tenderId: number, id: number): Promise<{ success: boolean }> => {
     try {
       await context.models.TenderItem.destroy({ where: { id, tenderId } })
@@ -536,6 +580,7 @@ export const tenderService = (): TenderService => {
     deleteTenders,
     getTenderJourneys,
     getTenderItems,
+    updateTenderItemOrder,
     createTenderItem,
     updateTenderItem,
     removeTenderItem,
