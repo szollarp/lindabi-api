@@ -70,7 +70,6 @@ export const tenderService = (): TenderService => {
   const getTenders = async (context: Context, tenantId: number): Promise<Array<Partial<Tender>>> => {
     try {
       return await context.models.Tender.findAll({
-        attributes: ["id", "type", "status", "dueDate", "createdOn", "number", "fee", "returned", "currency", "discount", "surcharge", "vatKey"],
         include: [
           {
             model: context.models.Contact,
@@ -80,17 +79,17 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.Location,
             as: "location",
-            attributes: ["id", "name", "city", "country", "zipCode", "address"]
+            attributes: ["id", "city", "country", "zipCode", "address"]
           },
           {
             model: context.models.Company,
             as: "customer",
-            attributes: ["id", "name"]
+            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
           },
           {
             model: context.models.Company,
             as: "contractor",
-            attributes: ["id", "name", "prefix"]
+            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"]
           },
           {
             model: context.models.TenderItem,
