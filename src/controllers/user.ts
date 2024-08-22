@@ -17,7 +17,7 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:List", "Tenant"])
   public async getUsers(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
-    return await context.services.user.list(context, user.tenant);
+    return await context.services.user.list(context, user.tenant, "user");
   }
 
   /**
@@ -116,7 +116,7 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
   public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "user");
+    return await context.services.document.upload(context, id, body, "user", false);
   }
 
   /**

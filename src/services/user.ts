@@ -1,6 +1,6 @@
 import { NotAcceptable, Unauthorized } from "http-errors";
 import { createRandomToken } from "../helpers/token";
-import { USER_STATUS } from "../constants";
+import { USER_STATUS, USER_TYPE } from "../constants";
 import type {
   CreateUserProperties, Notifications, UpdatePasswordProperties,
   UpdateUserProperties, User
@@ -12,10 +12,10 @@ import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-facto
 import { Op } from "sequelize";
 
 export interface UserService {
-  list: (context: Context, tenantId: number) => Promise<Array<Partial<User>>>
+  list: (context: Context, tenantId: number, entity: string) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User>>
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
-  update: (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties, updatedBy: number) => Promise<Partial<User>>
+  update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
   updateNotifications: (context: Context, id: number, body: Notifications) => Promise<Notifications | null>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
@@ -27,27 +27,34 @@ export interface UserService {
 }
 
 const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "country", "region", "city", "address",
-  "zipCode", "createdOn", "updatedOn", "lastLoggedIn", "enableTwoFactor", "roleId", "tenantId", "notifications"];
+  "zipCode", "createdOn", "updatedOn", "lastLoggedIn", "enableTwoFactor", "roleId", "tenantId",
+  "notifications", "entity", "employeeType", "notes", "identifier", "birthName", "motherName", "placeOfBirth", "dateOfBirth",
+  "socialSecurityNumber", "taxIdentificationNumber", "personalIdentificationNumber", "licensePlateNumber", "enableLogin", "properties", "billing"];
 
 export const userService = (): UserService => {
-  const list = async (context: Context, tenantId: number): Promise<Array<Partial<User>>> => {
+  const list = async (context: Context, tenantId: number, entity: string = "user"): Promise<Array<Partial<User>>> => {
     try {
       const users = await context.models.User.findAll({
-        where: { tenantId },
+        where: { tenantId, entity },
         attributes: USER_ATTRIBUTES,
         order: [["id", "ASC"]],
         include: [{
           model: context.models.Document,
-          attributes: ["data", "mimeType"],
+          attributes: ["data", "mimeType", "name", "properties", "type", "companyId", "approved"],
           as: "documents",
           foreignKey: "ownerId",
-          where: { type: "avatar" },
           required: false
         }, {
           model: context.models.Role,
           attributes: ["id", "name"],
           as: "role"
-        }]
+        }, {
+          model: context.models.Contact,
+          attributes: ["id", "phoneNumber", "email"],
+          as: "contact",
+          required: false
+        },
+        ]
       });
 
       return users;
@@ -61,10 +68,9 @@ export const userService = (): UserService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      const { email } = body;
-
+      const { email, contactId, salaries, ...data } = body;
       const user = await context.models.User.create({
-        ...body,
+        ...data,
         email: email.toLowerCase(),
         status: USER_STATUS.PENDING,
         salt: createRandomToken(),
@@ -72,6 +78,22 @@ export const userService = (): UserService => {
         tenantId,
         createdBy
       }, { transaction: t });
+
+      if (contactId) {
+        const contact = await context.models.Contact.findByPk(contactId, { transaction: t });
+        if (contact) {
+          await contact.update({ userId: user.id }, { transaction: t });
+        }
+      }
+
+      if (salaries) {
+        await context.models.Salary.destroy({ where: { userId: user.id }, transaction: t });
+        await context.models.Salary.bulkCreate(salaries.map((salary) => ({
+          ...salary,
+          userId: user.id,
+          createdBy
+        })), { transaction: t });
+      }
 
       const token = createAccountVerifyToken(context, user);
       await context.models.AccountVerifyToken.create({ token, userId: user.id }, { transaction: t });
@@ -105,7 +127,8 @@ export const userService = (): UserService => {
           }]
         }, {
           model: context.models.Document,
-          attributes: ["data", "mimeType"],
+          order: [["id", "ASC"]],
+          attributes: ["data", "mimeType", "name", "properties", "type", "id", "companyId", "approved"],
           as: "documents",
           foreignKey: "ownerId"
         }, {
@@ -120,6 +143,16 @@ export const userService = (): UserService => {
             as: "permissions",
             through: { attributes: [] }
           }]
+        }, {
+          model: context.models.Contact,
+          attributes: ["id", "phoneNumber", "email"],
+          as: "contact",
+          required: false
+        }, {
+          model: context.models.Salary,
+          as: "salaries",
+          attributes: ["id", "startDate", "endDate", "hourlyRate", "dailyRate"],
+          required: false
         }]
       });
 
@@ -134,7 +167,7 @@ export const userService = (): UserService => {
     }
   };
 
-  const update = async (context: Context, tenantId: number | null, id: number, body: UpdateUserProperties, updatedBy: number): Promise<Partial<User>> => {
+  const update = async (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number): Promise<Partial<User>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -156,6 +189,16 @@ export const userService = (): UserService => {
       }
 
       await user.update({ ...body, updatedBy }, { transaction: t });
+
+      if (body.salaries) {
+        await context.models.Salary.destroy({ where: { userId: user.id }, transaction: t });
+        await context.models.Salary.bulkCreate(body.salaries.map((salary) => ({
+          ...salary,
+          userId: user.id,
+          updatedBy
+        })), { transaction: t });
+      }
+
       await t.commit();
 
       return user;
@@ -355,7 +398,7 @@ export const userService = (): UserService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      await context.models.User.destroy({ where: { id, tenantId }, transaction: t, cascade: true, force: true });
+      await context.models.User.destroy({ where: { id, tenantId, entity: USER_TYPE.USER, }, transaction: t, cascade: true, force: true });
       await t.commit();
 
       return { success: true };
@@ -370,7 +413,13 @@ export const userService = (): UserService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      await context.models.User.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, transaction: t, cascade: true, force: true });
+      await context.models.User.destroy({
+        where: {
+          id: { [Op.in]: body.ids },
+          tenantId,
+          entity: USER_TYPE.USER
+        }, transaction: t, cascade: true, force: true
+      });
       await t.commit();
 
       return { success: true };

@@ -272,7 +272,14 @@
 					"survey",
 					"other",
 					"plan",
-					"pdf"
+					"pdf",
+					"employee",
+					"medical-fitness-certificate",
+					"work-authorization-document",
+					"personal-protective-equipment-inspection-report",
+					"annual-subcontractor-framework-agreement",
+					"annual-general-occupational-safety-training",
+					"data-processing-declaration"
 				]
 			},
 			"DocumentOwnerType": {
@@ -286,6 +293,18 @@
 					null
 				],
 				"nullable": true
+			},
+			"DocumentProperties": {
+				"properties": {
+					"startOfValidity": {
+						"type": "string"
+					},
+					"endOfValidity": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
 			},
 			"Document": {
 				"properties": {
@@ -331,6 +350,24 @@
 						"type": "string",
 						"format": "date-time",
 						"nullable": true
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "number",
+								"format": "double"
+							},
+							{
+								"type": "string"
+							}
+						],
+						"nullable": true
+					},
+					"approved": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -546,6 +583,462 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"USER_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.DISABLED": {
+				"enum": [
+					"disabled"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.PENDING": {
+				"enum": [
+					"pending"
+				],
+				"type": "string"
+			},
+			"Salary": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"hourlyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"dailyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"startDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CONTACT_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"CONTACT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"Contact": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string",
+						"nullable": true
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
+							}
+						]
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.unknown_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"UserBilling": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"registrationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/USER_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.INACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.DISABLED"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.PENDING"
+							}
+						]
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string",
+						"nullable": true
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string",
+						"nullable": true
+					},
+					"address": {
+						"type": "string",
+						"nullable": true
+					},
+					"zipCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"accountVerifyToken": {
+						"$ref": "#/components/schemas/AccountVerifyToken"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"forgottenPasswordToken": {
+						"$ref": "#/components/schemas/ForgottenPasswordToken"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string",
+						"nullable": true
+					},
+					"employeeType": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"birthName": {
+						"type": "string",
+						"nullable": true
+					},
+					"motherName": {
+						"type": "string",
+						"nullable": true
+					},
+					"placeOfBirth": {
+						"type": "string",
+						"nullable": true
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"socialSecurityNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"taxIdentificationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"personalIdentificationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"licensePlateNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							},
+							{
+								"properties": {},
+								"type": "object"
+							}
+						]
+					}
+				},
+				"required": [
+					"id",
+					"email",
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Partial_User_": {
 				"properties": {
 					"id": {
@@ -666,6 +1159,73 @@
 					},
 					"notifications": {
 						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
 					}
 				},
 				"type": "object",
@@ -761,6 +1321,73 @@
 					},
 					"notifications": {
 						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
 					}
 				},
 				"required": [
@@ -854,6 +1481,73 @@
 					},
 					"notifications": {
 						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
 					}
 				},
 				"required": [
@@ -874,6 +1568,9 @@
 				"properties": {
 					"name": {
 						"type": "string"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
 					},
 					"preview": {
 						"type": "string"
@@ -897,6 +1594,20 @@
 					"size": {
 						"type": "number",
 						"format": "double"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
+					},
+					"approved": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -1196,81 +1907,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CONTACT_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"CONTACT_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"Contact": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string",
-						"nullable": true
-					},
-					"phoneNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"status": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
-							}
-						]
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"status"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"TenderItem": {
 				"properties": {
 					"id": {
@@ -1323,6 +1959,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -1355,7 +1995,8 @@
 					"feeNetAmount",
 					"feeActualNetAmount",
 					"totalFeeAmount",
-					"tenderId"
+					"tenderId",
+					"num"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1522,11 +2163,18 @@
 						},
 						"type": "array"
 					},
-					"survey": {
+					"notes": {
 						"type": "string"
 					},
 					"contact": {
 						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"survey": {
+						"type": "string"
 					},
 					"type": {
 						"type": "string"
@@ -1568,9 +2216,6 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"notes": {
-						"type": "string"
-					},
 					"inquiry": {
 						"type": "string"
 					},
@@ -1603,10 +2248,6 @@
 					},
 					"location": {
 						"$ref": "#/components/schemas/Location"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
 					},
 					"items": {
 						"items": {
@@ -1684,6 +2325,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -1704,7 +2349,7 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
-			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-createdOn-or-updatedBy-or-updatedOn__": {
+			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -1774,12 +2419,12 @@
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_TenderItem.id-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_TenderItem.Exclude_keyofTenderItem.id-or-createdOn-or-updatedBy-or-updatedOn__",
+			"Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"CreateTenderItemProperties": {
-				"$ref": "#/components/schemas/Omit_TenderItem.id-or-createdOn-or-updatedBy-or-updatedOn_"
+				"$ref": "#/components/schemas/Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
 			"Partial_TenderItem-or-null_": {
 				"properties": {
@@ -1830,6 +2475,10 @@
 						"format": "double"
 					},
 					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"num": {
 						"type": "number",
 						"format": "double"
 					},
@@ -1892,16 +2541,27 @@
 					"updatedOn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
+					},
+					"approved": {
+						"type": "boolean"
 					}
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
-			},
-			"Record_string.unknown_": {
-				"properties": {},
-				"additionalProperties": {},
-				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
 			},
 			"Partial_Journey_": {
 				"properties": {
@@ -2285,6 +2945,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"userId": {
+						"type": "number",
+						"format": "double"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -2348,6 +3012,10 @@
 					},
 					"notes": {
 						"type": "string"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -2503,11 +3171,11 @@
 						},
 						"type": "array"
 					},
-					"type": {
-						"$ref": "#/components/schemas/COMPANY_TYPE"
-					},
 					"notes": {
 						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/COMPANY_TYPE"
 					},
 					"taxNumber": {
 						"type": "string"
@@ -4082,6 +4750,84 @@
 				]
 			}
 		},
+		"/tenders/{id}/items/{itemId}/order": {
+			"put": {
+				"operationId": "UpdateTenderItemOrder",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"side": {
+										"type": "string",
+										"enum": [
+											"up",
+											"down"
+										]
+									}
+								},
+								"required": [
+									"side"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/tenders/{id}/documents": {
 			"get": {
 				"operationId": "GetTenderDocuments",
@@ -5393,6 +6139,551 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/employees": {
+			"get": {
+				"operationId": "GetEmployees",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_User_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of employees.\nSecured with JWT token and requires \"Employee:List\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:List",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new employee.\nSecured with JWT token and requires \"Employee:Create\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Create",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "Properties required to create an employee.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserProperties",
+								"description": "Properties required to create an employee."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteEmployees",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple employees by their IDs.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Delete",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of employee IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of employee IDs to delete."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{id}": {
+			"put": {
+				"operationId": "UpdateEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates an existing employee.\nSecured with JWT token and requires \"Employee:Update\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Properties to update in the employee.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_User_",
+								"description": "Properties to update in the employee."
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a single employee by ID.\nSecured with JWT token and requires \"Employee:Get\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a employee by ID.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Delete",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to delete.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/employees/{id}/documents": {
+			"post": {
+				"operationId": "AddDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds a document to an employee's record specified by the employee ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can add documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the employee to whom the document will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The properties of the document to be created.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateDocumentProperties",
+								"description": "The properties of the document to be created."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{ownerId}/document/{id}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a document from an employee's record. This method requires \"Employee:Update\" permission and is secured with JWT,\nallowing only authorized users to delete documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee from whom the document will be removed.",
+						"in": "path",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Document"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates a specific document for an employee identified by the document ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized personnel can make changes to documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose document is being updated.",
+						"in": "path",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The partial updates to be applied to the document.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Document_",
+								"description": "The partial updates to be applied to the document."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{id}/check-documents": {
+			"get": {
+				"operationId": "CheckDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Checks the status of documents associated with a specific employee. This method is secured with JWT and requires\n\"Employee:Get\" permission, allowing for verification of document status by authorized users.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose documents are being checked.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/employees/{id}/billing": {
+			"put": {
+				"operationId": "UpdateBilling",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the billing information for an employee by ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can update billing details.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose billing information is being updated.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The billing information to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserBilling",
+								"description": "The billing information to update."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/contacts": {

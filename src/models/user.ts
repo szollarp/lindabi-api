@@ -1,15 +1,16 @@
 import { Model, DataTypes } from "sequelize";
 import type {
-  Sequelize, Association, HasOneGetAssociationMixin, HasOneCreateAssociationMixin, NonAttribute,
-  ForeignKey, HasManyAddAssociationMixin, HasOneSetAssociationMixin,
+  Sequelize, Association, HasOneGetAssociationMixin,
+  HasOneCreateAssociationMixin, NonAttribute,
+  ForeignKey, HasOneSetAssociationMixin,
   HasManyGetAssociationsMixin,
   HasManyCreateAssociationMixin
 } from "sequelize";
-import { USER_STATUS } from "../constants";
+import { USER_STATUS, USER_TYPE } from "../constants";
 import type { AccountVerifyTokenModel } from "./account-verify-token";
 import type { RefreshTokenModel } from "./refresh-token";
 import type { ForgottenPasswordTokenModel } from "./forgotten-password-token";
-import type { CreateUserProperties, Notifications, User } from "./interfaces/user";
+import type { CreateUserProperties, Notifications, User, UserBilling } from "./interfaces/user";
 import type { Role } from "./interfaces/role";
 import type { AccountVerifyToken } from "./interfaces/account-verify-token";
 import type { ForgottenPasswordToken } from "./interfaces/forgotten-password-token";
@@ -22,6 +23,10 @@ import type { Tenant } from "./interfaces/tenant";
 import type { Document } from "./interfaces/document";
 import type { DocumentModel } from "./document";
 import type { Models } from ".";
+import { Contact } from "./interfaces/contact";
+import { ContactModel } from "./contact";
+import { SalaryModel } from "./salary";
+import { Salary } from "./interfaces/salary";
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -52,6 +57,36 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public notifications?: Notifications | undefined;
 
+  public entity!: USER_TYPE.USER | USER_TYPE.EMPLOYEE;
+
+  public enableLogin!: boolean;
+
+  public identifier!: string | null;
+
+  public employeeType!: string | null;
+
+  public notes!: string | null;
+
+  public birthName!: string | null;
+
+  public motherName!: string | null;
+
+  public placeOfBirth!: string | null;
+
+  public dateOfBirth!: Date | null;
+
+  public socialSecurityNumber!: string | null;
+
+  public taxIdentificationNumber!: string | null;
+
+  public personalIdentificationNumber!: string | null;
+
+  public licensePlateNumber!: string | null;
+
+  public properties?: Record<string, unknown> | {};
+
+  public billing?: UserBilling | {};
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
@@ -68,7 +103,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public static associate: (models: Models) => void;
 
-  public addRole!: HasManyAddAssociationMixin<Role, number>;
+  public addRole!: HasOneSetAssociationMixin<Role, number>;
 
   public setRole!: HasOneSetAssociationMixin<Role, number>;
 
@@ -77,6 +112,14 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
   declare role?: NonAttribute<Role>;
 
   declare roleId?: ForeignKey<Role["id"]>;
+
+  public setContact!: HasOneSetAssociationMixin<Contact, number>;
+
+  public getContact!: HasOneGetAssociationMixin<Contact>;
+
+  declare contact?: NonAttribute<Contact>;
+
+  declare contactId?: ForeignKey<Contact["id"]>;
 
   declare tenant?: NonAttribute<Tenant>;
 
@@ -136,7 +179,13 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare documentIds?: ForeignKey<Document["id"][]>;
 
+  public createSalary!: HasManyCreateAssociationMixin<SalaryModel>;
 
+  public getSalaries!: HasManyGetAssociationsMixin<SalaryModel>;
+
+  declare salaries?: NonAttribute<Salary[]>;
+
+  declare salaryIds?: ForeignKey<Salary["id"][]>;
 
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
@@ -144,6 +193,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
     twoFactorSession: Association<UserModel, TwoFactorSessionModel>
     twoFactorAuthentication: Association<UserModel, TwoFactorAuthenticationModel>
     documents: Association<UserModel, DocumentModel>
+    contact: Association<UserModel, ContactModel>
+    salaries: Association<UserModel, SalaryModel>
   };
 }
 
@@ -217,6 +268,81 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       notifications: {
         type: DataTypes.JSONB,
         allowNull: true
+      },
+      entity: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: USER_TYPE.USER
+      },
+      enableLogin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
+      identifier: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      employeeType: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      notes: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: null
+      },
+      birthName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      motherName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      placeOfBirth: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      dateOfBirth: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null
+      },
+      socialSecurityNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      taxIdentificationNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      personalIdentificationNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      licensePlateNumber: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      properties: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
+      },
+      billing: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
       },
       createdBy: {
         type: DataTypes.INTEGER
@@ -296,12 +422,22 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       as: "twoFactorAuthentication"
     });
 
+    UserModel.hasOne(models.Contact, {
+      foreignKey: "user_id",
+      as: "contact"
+    });
+
     UserModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "user"
       },
       as: "documents"
+    });
+
+    UserModel.hasMany(models.Salary, {
+      foreignKey: "user_id",
+      as: "salaries"
     });
   };
 

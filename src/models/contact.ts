@@ -5,6 +5,7 @@ import type { Tenant } from "./interfaces/tenant";
 import { CONTACT_STATUS } from "../constants";
 import type { Models } from ".";
 import { CompanyModel } from "./company";
+import { User } from "./interfaces/user";
 
 export class ContactModel extends Model<Contact, CreateContactProperties> implements Contact {
   public id!: number;
@@ -22,6 +23,10 @@ export class ContactModel extends Model<Contact, CreateContactProperties> implem
   declare tenant: NonAttribute<Tenant>;
 
   declare tenantId: ForeignKey<Tenant["id"]>;
+
+  declare user: NonAttribute<User>;
+
+  declare userId: ForeignKey<User["id"]>;
 
   public readonly createdOn!: Date;
 
@@ -72,6 +77,10 @@ export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
       createdBy: {
         type: DataTypes.INTEGER
       },
@@ -103,6 +112,10 @@ export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
       foreignKey: "contact_id",
       through: "company_contacts",
       as: "companies"
+    });
+
+    ContactModel.belongsTo(models.User, {
+      foreignKey: "user_id", as: "user"
     });
   };
 

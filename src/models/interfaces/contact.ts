@@ -2,6 +2,7 @@ import type { CONTACT_STATUS } from "../../constants"
 
 export interface Contact {
   id: number
+  userId?: number | null
   name: string
   email?: string | null
   phoneNumber?: string | null

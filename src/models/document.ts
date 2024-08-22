@@ -25,6 +25,12 @@ export class DocumentModel extends Model<Document, CreateDocumentProperties> imp
 
   public ownerType?: DocumentOwnerType;
 
+  public properties?: Record<string, unknown> | {};
+
+  public companyId?: number | string | null;
+
+  public approved?: boolean;
+
   public static associate: (models: Models) => void;
 }
 
@@ -81,6 +87,21 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
         type: DataTypes.DATE,
         defaultValue: null,
         allowNull: true
+      },
+      properties: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
+      },
+      companyId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
+      },
+      approved: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
       }
     },
     {

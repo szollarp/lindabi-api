@@ -16,6 +16,7 @@ import { DocumentFactory, type DocumentModel } from "./document";
 import { TenderFactory, type TenderModel } from "./tender";
 import { TenderItemFactory, type TenderItemModel } from "./tender-item";
 import { JourneyFactory, type JourneyModel } from "./journey";
+import { SalaryFactory, type SalaryModel } from "./salary";
 
 export interface Models {
   sequelize: Sequelize
@@ -36,6 +37,7 @@ export interface Models {
   Tender: typeof TenderModel
   TenderItem: typeof TenderItemModel
   Journey: typeof JourneyModel
+  Salary: typeof SalaryModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
@@ -59,6 +61,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Tender: TenderFactory(sequelize),
     TenderItem: TenderItemFactory(sequelize),
     Journey: JourneyFactory(sequelize),
+    Salary: SalaryFactory(sequelize),
     sequelize
   };
 

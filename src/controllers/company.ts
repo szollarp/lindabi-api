@@ -94,7 +94,7 @@ export class CompanyController extends Controller {
   @Security("jwtToken", ["Tenant", "Company:Update"])
   public async updateDocument(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "company");
+    return await context.services.document.upload(context, id, body, "company", false);
   }
 
   /**

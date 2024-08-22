@@ -6,6 +6,8 @@ import type { TwoFactorSession } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./two-factor-authentication";
 import type { Tenant } from "./tenant";
 import type { Document } from "./document";
+import { Salary } from "./salary";
+import { Contact } from "./contact";
 
 export interface Notifications {
   userNew: boolean
@@ -24,6 +26,19 @@ export interface Notifications {
   permissionMatrixUpdate: boolean
   tenderAwaitingApproval: boolean
 }
+
+export interface UserBilling {
+  name: string
+  country: string
+  region?: string | null
+  city: string
+  address: string
+  zipCode: string
+  taxNumber?: string | null
+  registrationNumber?: string | null
+  bankAccount?: string | null
+  notes?: string | null
+};
 
 export interface User {
   id: number
@@ -60,6 +75,24 @@ export interface User {
   lastLoggedIn?: Date | null
   documents?: Document[]
   notifications?: Notifications
+  entity?: string;
+  enableLogin?: boolean;
+  identifier?: string | null;
+  employeeType?: string | null;
+  notes?: string | null;
+  birthName?: string | null;
+  motherName?: string | null;
+  placeOfBirth?: string | null;
+  dateOfBirth?: Date | null;
+  socialSecurityNumber?: string | null;
+  taxIdentificationNumber?: string | null;
+  personalIdentificationNumber?: string | null;
+  licensePlateNumber?: string | null;
+  salaries?: Salary[];
+  contact?: Contact;
+  contactId?: number | null;
+  properties?: Record<string, unknown>;
+  billing?: UserBilling | {};
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;

@@ -83,7 +83,7 @@ export class TenantController extends Controller {
   @Security("jwtToken", ["Tenant:Update"])
   public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "tenant");
+    return await context.services.document.upload(context, id, body, "tenant", false);
   }
 
   /**

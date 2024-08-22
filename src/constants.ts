@@ -5,6 +5,11 @@ export enum USER_STATUS {
   PENDING = "pending",
 };
 
+export enum USER_TYPE {
+  USER = "user",
+  EMPLOYEE = "employee"
+};
+
 export enum TENANT_STATUS {
   ACTIVE = "active",
   INACTIVE = "inactive",

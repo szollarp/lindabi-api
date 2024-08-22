@@ -1,6 +1,14 @@
 export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | null;
 
-export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" | "plan" | "pdf";
+export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" |
+  "plan" | "pdf" | "employee" | "medical-fitness-certificate" | "work-authorization-document" |
+  "personal-protective-equipment-inspection-report" | "annual-subcontractor-framework-agreement" |
+  "annual-general-occupational-safety-training" | "data-processing-declaration";
+
+export interface DocumentProperties {
+  startOfValidity?: string;
+  endOfValidity?: string;
+}
 
 export interface Document {
   id?: number
@@ -14,6 +22,9 @@ export interface Document {
   size?: number | null
   createdOn?: Date
   updatedOn?: Date | null
+  properties?: DocumentProperties;
+  companyId?: number | string | null
+  approved?: boolean
 }
 
 export type CreateDocumentProperties = Omit<Document, "id" | "createdOn" | "updatedOn">;
