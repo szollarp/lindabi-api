@@ -75,7 +75,7 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.Contact,
             as: "contact",
-            attributes: ["name"]
+            attributes: ["name", "email"]
           },
           {
             model: context.models.Location,
@@ -116,7 +116,7 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.Contact,
             as: "contact",
-            attributes: ["name"]
+            attributes: ["name", "email"]
           },
           {
             model: context.models.Location,

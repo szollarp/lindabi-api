@@ -12,7 +12,7 @@ createContext()
   .catch((error) => {
     logger.error(error.stack);
     logger.info("------------ EXIT ------------");
-    process.exit();
+    process.exit(1);
   });
 
 process.on("unhandledRejection", (reason: { stack?: string } | null | undefined, promise: Promise<any>) => {
@@ -24,5 +24,5 @@ process.on("uncaughtException", (error: Error) => {
   logger.error(error);
   logger.error("Uncaught exception: ", error);
   logger.error("Uncaught exception stack: ", error.stack);
-  process.exit();
+  process.exit(1);
 });
