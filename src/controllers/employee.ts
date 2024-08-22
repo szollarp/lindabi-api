@@ -2,6 +2,7 @@ import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post,
 import type { CreateUserProperties, User, UserBilling } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties, Document } from "../models/interfaces/document";
+import { USER_TYPE } from "../constants";
 
 @Route("employees")
 export class EmployeeController extends Controller {
@@ -17,7 +18,7 @@ export class EmployeeController extends Controller {
   @Security("jwtToken", ["Employee:List", "Tenant"])
   public async getEmployees(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
-    return await context.services.user.list(context, user.tenant, "employee");
+    return await context.services.user.list(context, user.tenant, USER_TYPE.EMPLOYEE);
   }
 
   /**
@@ -56,7 +57,7 @@ export class EmployeeController extends Controller {
   @Security("jwtToken", ["Employee:Delete", "Tenant"])
   public async deleteEmployees(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.deleteUsers(context, user.tenant, body);
+    return await context.services.user.deleteUsers(context, user.tenant, body, USER_TYPE.EMPLOYEE);
   }
 
   /**
@@ -116,7 +117,7 @@ export class EmployeeController extends Controller {
   @Security("jwtToken", ["Employee:Delete", "Tenant"])
   public async deleteEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.deleteUser(context, user.tenant, id);
+    return await context.services.user.deleteUser(context, user.tenant, id, USER_TYPE.EMPLOYEE);
   }
 
   /**

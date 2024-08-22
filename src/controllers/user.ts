@@ -2,6 +2,7 @@ import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post,
 import type { CreateUserProperties, Notifications, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties } from "../models/interfaces/document";
+import { USER_TYPE } from "../constants";
 
 @Route("users")
 export class UserController extends Controller {
@@ -17,7 +18,7 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:List", "Tenant"])
   public async getUsers(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
-    return await context.services.user.list(context, user.tenant, "user");
+    return await context.services.user.list(context, user.tenant, USER_TYPE.USER);
   }
 
   /**
@@ -56,7 +57,7 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Delete", "Tenant"])
   public async deleteUsers(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.deleteUsers(context, user.tenant, body);
+    return await context.services.user.deleteUsers(context, user.tenant, body, USER_TYPE.USER);
   }
 
   /**
@@ -241,6 +242,6 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Delete", "Me:*", "Tenant"])
   public async delete(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.user.deleteUser(context, user.tenant, id);
+    return await context.services.user.deleteUser(context, user.tenant, id, USER_TYPE.USER);
   }
 };

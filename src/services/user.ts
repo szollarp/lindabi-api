@@ -12,7 +12,7 @@ import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-facto
 import { Op } from "sequelize";
 
 export interface UserService {
-  list: (context: Context, tenantId: number, entity: string) => Promise<Array<Partial<User>>>
+  list: (context: Context, tenantId: number, entity: USER_TYPE) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User>>
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
@@ -22,8 +22,8 @@ export interface UserService {
   generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean, qrCode: string }>
   enableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number, body: { code: string }) => Promise<{ success: boolean }>
   disableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean }>
-  deleteUser: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
-  deleteUsers: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
+  deleteUser: (context: Context, tenantId: number, id: number, type: USER_TYPE) => Promise<{ success: boolean }>
+  deleteUsers: (context: Context, tenantId: number, body: { ids: number[] }, type: USER_TYPE) => Promise<{ success: boolean }>
 }
 
 const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "country", "region", "city", "address",
@@ -32,10 +32,11 @@ const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "countr
   "socialSecurityNumber", "taxIdentificationNumber", "personalIdentificationNumber", "licensePlateNumber", "enableLogin", "properties", "billing"];
 
 export const userService = (): UserService => {
-  const list = async (context: Context, tenantId: number, entity: string = "user"): Promise<Array<Partial<User>>> => {
+  const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER): Promise<Array<Partial<User>>> => {
     try {
+      const where = entity === USER_TYPE.USER ? { tenantId } : { tenantId, entity };
       const users = await context.models.User.findAll({
-        where: { tenantId, entity },
+        where,
         attributes: USER_ATTRIBUTES,
         order: [["id", "ASC"]],
         include: [{
@@ -394,11 +395,11 @@ export const userService = (): UserService => {
     }
   };
 
-  const deleteUser = async (context: Context, tenantId: number, id: number): Promise<{ success: boolean }> => {
+  const deleteUser = async (context: Context, tenantId: number, id: number, entity: USER_TYPE = USER_TYPE.USER): Promise<{ success: boolean }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      await context.models.User.destroy({ where: { id, tenantId, entity: USER_TYPE.USER, }, transaction: t, cascade: true, force: true });
+      await context.models.User.destroy({ where: { id, tenantId, entity, }, transaction: t, cascade: true, force: true });
       await t.commit();
 
       return { success: true };
@@ -409,7 +410,7 @@ export const userService = (): UserService => {
     }
   };
 
-  const deleteUsers = async (context: Context, tenantId: number, body: { ids: number[] }): Promise<{ success: boolean }> => {
+  const deleteUsers = async (context: Context, tenantId: number, body: { ids: number[] }, entity: USER_TYPE = USER_TYPE.USER): Promise<{ success: boolean }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -417,7 +418,7 @@ export const userService = (): UserService => {
         where: {
           id: { [Op.in]: body.ids },
           tenantId,
-          entity: USER_TYPE.USER
+          entity
         }, transaction: t, cascade: true, force: true
       });
       await t.commit();
