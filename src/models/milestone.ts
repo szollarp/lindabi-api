@@ -50,7 +50,7 @@ export class MilestoneModel extends Model<Milestone, CreateMilestoneProperties> 
 
   public static associations: {
     project: Association<MilestoneModel, ProjectModel>,
-    documents: Association<TenderModel, DocumentModel>
+    documents: Association<MilestoneModel, DocumentModel>
   };
 }
 

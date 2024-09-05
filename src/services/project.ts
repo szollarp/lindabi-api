@@ -397,7 +397,7 @@ export const projectService = (): ProjectService => {
         ...data,
         projectId,
         createdBy: user.id
-      }, { transaction: t });
+      } as any, { transaction: t });
 
       if (documents && documents.length) {
         const remainingDocuments = documents.filter(document => !document.id);
