@@ -48,11 +48,57 @@ export enum TENDER_STATUS {
   UNDER_SURVEY = "under survey"
 };
 
+export enum PROJECT_STATUS {
+  ORDERED = "ordered",
+  READY = "ready to start",
+  IN_PROGRESS = "in progress",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+  PAID = "paid",
+  CLOSED = "closed"
+};
+
+export enum PROJECT_ITEM_STATUS {
+  OPEN = "open",
+  CLOSED = "closed"
+};
+
+export enum PROJECT_ITEM_TYPE {
+  HOURLY = "hourly",
+  DAILY = "daily",
+  ITEMIZED = "itemized",
+  DISTANCE = "distance",
+};
+
 export enum TENDER_CURRENCY {
   HUF = "huf",
   EUR = "eur",
   USD = "usd"
 };
+
+export enum PROJECT_CURRENCY {
+  HUF = "huf",
+  EUR = "eur",
+  USD = "usd"
+};
+
+export enum MILESTONE_STATUS {
+  IN_PROGRESS = "in progress",
+  COMPLETE = "complete",
+  TIG_ISSUED = "tig issued",
+  BILLABLE = "billable",
+  INVOICED = "invoiced",
+  PAID = "paid",
+};
+
+export const PROJECT_COLORS = [
+  "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080",
+  "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#FFFFFF", "#000000",
+  "#FFD700", "#8B0000", "#008000", "#00008B", "#FF6347", "#4682B4",
+  "#D2691E", "#ADFF2F", "#E6E6FA", "#FF4500", "#2E8B57", "#DAA520",
+  "#D3D3D3", "#40E0D0", "#F08080", "#F5DEB3", "#7FFF00", "#DC143C",
+  "#FF1493", "#696969", "#1E90FF", "#B22222", "#228B22", "#FF69B4"
+];
 
 export const ERROR_MESSAGES = {
   USER_REGISTRATION: "Couldn't sign up a new user. Please check your information and try again.",

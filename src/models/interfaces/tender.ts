@@ -9,6 +9,7 @@ import type { Document } from "./document";
 export interface Tender {
   id: number
   type: string
+  shortName?: string | null
   number?: string | null
   status: TENDER_STATUS
   fee?: number | null

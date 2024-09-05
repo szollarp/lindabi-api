@@ -1,10 +1,10 @@
 import { Model, DataTypes } from "sequelize";
 import type {
-  Association, ForeignKey, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin, NonAttribute, Sequelize
+  Association, ForeignKey, HasManyAddAssociationMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin,
+  HasManySetAssociationsMixin, HasOneGetAssociationMixin, HasOneSetAssociationMixin, NonAttribute, Sequelize
 } from "sequelize";
-import { TENDER_STATUS, TENDER_CURRENCY } from "../constants";
-import { CreateTenderProperties, Tender } from "./interfaces/tender";
+import { PROJECT_STATUS } from "../constants";
+import { Tender } from "./interfaces/tender";
 import { Document } from "./interfaces/document";
 import { Location } from "./interfaces/location";
 import { Contact } from "./interfaces/contact";
@@ -17,40 +17,45 @@ import { TenantModel } from "./tenant";
 import { DocumentModel } from "./document";
 import { Journey } from "./interfaces/journey";
 import { JourneyModel } from "./journey";
-import type { Models } from ".";
 import { TenderItemModel } from "./tender-item";
-import { TenderItem } from "./interfaces/tender-item";
+import { CreateProjectProperties, Project } from "./interfaces/project";
+import { TenderModel } from "./tender";
+import { Milestone } from "./interfaces/milestone";
+import { MilestoneModel } from "./milestone";
+import { ProjectItem } from "./interfaces/project-item";
+import { ProjectItemModel } from "./project-item";
+import type { Models } from ".";
 
-export class TenderModel extends Model<Tender, CreateTenderProperties> implements Tender {
+export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
+
+  public number!: string;
+
+  public name?: string | null;
 
   public type!: string;
 
-  public shortName!: string | null;
+  public shortName?: string | null;
 
-  public number!: string | null;
+  public inSchedule!: boolean;
 
-  public status!: TENDER_STATUS;
+  public reports!: boolean;
 
-  public fee!: number | null;
+  public scheduleColor?: string | null;
 
-  public returned!: boolean;
+  public supervisorBonus!: boolean;
 
-  public vatKey!: string;
-
-  public currency!: TENDER_CURRENCY;
-
-  public surcharge!: number | null;
-
-  public discount!: number | null;
-
-  public validTo!: Date | null;
+  public status!: PROJECT_STATUS;
 
   public dueDate?: Date | null;
 
-  public openDate!: Date | null;
-
   public startDate?: Date | null;
+
+  public netAmount!: number;
+
+  public vatAmount!: number;
+
+  public vatKey!: string;
 
   public notes!: string | null;
 
@@ -88,13 +93,15 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public getLocation!: HasOneGetAssociationMixin<LocationModel>;
 
-  public contactId!: ForeignKey<Contact["id"]>;
+  public contactIds!: ForeignKey<Contact["id"][]>;
 
-  public contact?: NonAttribute<Contact>;
+  public contacts?: NonAttribute<Contact[]>;
 
-  public setContact!: HasOneSetAssociationMixin<ContactModel, number>;
+  public addContact!: HasManyAddAssociationMixin<ContactModel, number>;
 
-  public getContact!: HasOneGetAssociationMixin<ContactModel>;
+  public setContact!: HasManySetAssociationsMixin<ContactModel, number>;
+
+  public getContacts!: HasManyGetAssociationsMixin<ContactModel>;
 
   public getDocuments!: HasManyGetAssociationsMixin<DocumentModel[]>;
 
@@ -110,17 +117,29 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public createJourney!: HasManyCreateAssociationMixin<JourneyModel>;
 
-  public getItems!: HasManyGetAssociationsMixin<TenderItemModel[]>;
+  public getItems!: HasManyGetAssociationsMixin<ProjectItemModel[]>;
 
-  public createItem!: HasManyCreateAssociationMixin<TenderItemModel>;
+  public createItem!: HasManyCreateAssociationMixin<ProjectItemModel>;
 
-  declare items?: NonAttribute<TenderItem[]>;
+  declare items?: NonAttribute<ProjectItem[]>;
 
-  declare itemsIds?: ForeignKey<TenderItem["id"][]>;
+  declare itemsIds?: ForeignKey<ProjectItem["id"][]>;
+
+  public getMilestones!: HasManyGetAssociationsMixin<ProjectItemModel[]>;
+
+  public createMilestone!: HasManyCreateAssociationMixin<ProjectItemModel>;
+
+  declare milestones?: NonAttribute<Milestone[]>;
+
+  declare milestoneIds?: ForeignKey<Milestone["id"][]>;
 
   public tenantId!: ForeignKey<Tenant["id"]>;
 
   public tenant?: NonAttribute<Tenant>;
+
+  public tenderId!: ForeignKey<Tender["id"]>;
+
+  public tender?: NonAttribute<Tender>;
 
   public readonly createdOn!: Date;
 
@@ -133,18 +152,20 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
   public static associate: (models: Models) => void;
 
   public static associations: {
-    documents: Association<TenderModel, DocumentModel>,
-    tenant: Association<TenderModel, TenantModel>,
-    customer: Association<TenderModel, CompanyModel>,
-    contractor: Association<TenderModel, CompanyModel>,
-    location: Association<TenderModel, LocationModel>,
-    contact: Association<TenderModel, ContactModel>
-    items: Association<TenderModel, TenderItemModel>,
+    documents: Association<ProjectModel, DocumentModel>,
+    tenant: Association<ProjectModel, TenantModel>,
+    tender: Association<ProjectModel, TenderModel>,
+    customer: Association<ProjectModel, CompanyModel>,
+    contractor: Association<ProjectModel, CompanyModel>,
+    location: Association<ProjectModel, LocationModel>,
+    contacts: Association<ProjectModel, ContactModel>
+    items: Association<ProjectModel, TenderItemModel>,
+    milestones: Association<ProjectModel, MilestoneModel>
   };
 };
 
-export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
-  TenderModel.init({
+export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
+  ProjectModel.init({
     id: {
       unique: true,
       primaryKey: true,
@@ -153,12 +174,7 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: TENDER_STATUS.INQUIRY
-    },
-    shortName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null
+      defaultValue: PROJECT_STATUS.IN_PROGRESS
     },
     type: {
       type: DataTypes.STRING,
@@ -169,44 +185,11 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       allowNull: true,
       defaultValue: null
     },
-    fee: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: null
-    },
-    returned: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
     vatKey: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    currency: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    surcharge: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: null
-    },
-    discount: {
-      type: DataTypes.DECIMAL,
-      allowNull: true,
-      defaultValue: null
-    },
-    validTo: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null
-    },
     dueDate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null
-    },
-    openDate: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null
@@ -215,6 +198,11 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null
+    },
+    reports: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     notes: {
       type: DataTypes.TEXT,
@@ -258,13 +246,46 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    contactId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     tenantId: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    tenderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    netAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    vatAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    supervisorBonus: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    inSchedule: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    scheduleColor: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
+    },
+    shortName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
     },
     createdBy: {
       type: DataTypes.INTEGER
@@ -284,7 +305,7 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     }
   }, {
     sequelize,
-    tableName: "tenders",
+    tableName: "projects",
     timestamps: true,
     createdAt: "createdOn",
     updatedAt: "updatedOn",
@@ -292,46 +313,63 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     underscored: true
   });
 
-  TenderModel.associate = (models) => {
-    TenderModel.hasMany(models.Document, {
+  ProjectModel.associate = (models) => {
+    ProjectModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
-        ownerType: "tender"
+        ownerType: "project"
       },
       as: "documents"
     });
 
-    TenderModel.hasMany(models.TenderItem, {
-      foreignKey: "tenderId",
+    ProjectModel.hasMany(models.ProjectItem, {
+      foreignKey: "projectId",
       as: "items"
     });
 
-    TenderModel.belongsTo(models.Tenant, {
+    ProjectModel.hasMany(models.Milestone, {
+      foreignKey: "projectId",
+      as: "milestones"
+    });
+
+    ProjectModel.belongsTo(models.Tenant, {
       foreignKey: "tenantId",
       as: "tenant"
     });
 
-    TenderModel.belongsTo(models.Company, {
+    ProjectModel.belongsTo(models.Tender, {
+      foreignKey: "tenderId",
+      as: "tender"
+    });
+
+    ProjectModel.belongsTo(models.Company, {
       foreignKey: "customerId",
       as: "customer"
     });
 
-    TenderModel.belongsTo(models.Company, {
+    ProjectModel.belongsTo(models.Company, {
       foreignKey: "contractorId",
       as: "contractor"
     });
 
-    TenderModel.belongsTo(models.Location, {
+    ProjectModel.belongsTo(models.Location, {
       foreignKey: "locationId",
       as: "location"
     });
 
-    TenderModel.belongsTo(models.Contact, {
-      foreignKey: "contactId",
-      as: "contact"
+    ProjectModel.belongsToMany(models.Contact, {
+      foreignKey: "projectId",
+      through: models.ProjectContact,
+      as: "contacts"
     });
 
-    TenderModel.hasMany(models.Journey, {
+    ProjectModel.belongsToMany(models.Contact, {
+      foreignKey: "projectId",
+      through: models.ProjectSupervisor,
+      as: "supervisors"
+    });
+
+    ProjectModel.hasMany(models.Journey, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "tender"
@@ -340,5 +378,5 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     });
   };
 
-  return TenderModel;
+  return ProjectModel;
 };

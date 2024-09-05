@@ -18,7 +18,9 @@ import { type SearchService } from "./services/search";
 import { type JourneyService } from "./services/journey";
 import { type NotificationService } from "./services/notification";
 import { type EmailService } from "./services/email";
+import { type ProjectService } from "./services/project";
 import { type Models } from "./models";
+import { USER_TYPE } from "./constants";
 
 export interface Services {
   version: VersionService
@@ -36,6 +38,7 @@ export interface Services {
   journey: JourneyService
   notification: NotificationService
   email: EmailService
+  project: ProjectService
 }
 
 export interface Helpers {
@@ -63,6 +66,8 @@ export interface DecodedUser {
   name: string
   tenant: number
   isSystemAdmin: boolean
+  userType: USER_TYPE.EMPLOYEE | USER_TYPE.USER
+  permissions: string[]
 };
 
 export interface AuthConfig {

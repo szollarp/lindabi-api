@@ -1,4 +1,5 @@
 import type { COMPANY_STATUS, COMPANY_TYPE } from "../../constants";
+import { Contact } from "./contact";
 import { type Document } from "./document";
 
 export interface Company {
@@ -25,6 +26,7 @@ export interface Company {
   createdBy?: number
   updatedBy?: number | null
   documents?: Document[]
+  contacts?: Contact[]
 };
 
 export type CreateCompanyProperties = Omit<Company, "id" | "createdOn" | "updatedBy" | "updatedOn">;

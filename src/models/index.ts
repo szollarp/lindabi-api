@@ -17,6 +17,11 @@ import { TenderFactory, type TenderModel } from "./tender";
 import { TenderItemFactory, type TenderItemModel } from "./tender-item";
 import { JourneyFactory, type JourneyModel } from "./journey";
 import { SalaryFactory, type SalaryModel } from "./salary";
+import { ProjectFactory, type ProjectModel } from "./project";
+import { ProjectItemFactory, type ProjectItemModel } from "./project-item";
+import { MilestoneFactory, type MilestoneModel } from "./milestone";
+import { ProjectContactFactory, type ProjectContactModel } from "./project-contact";
+import { ProjectSupervisorFactory, ProjectSupervisorModel } from "./project-supervisor";
 
 export interface Models {
   sequelize: Sequelize
@@ -38,6 +43,11 @@ export interface Models {
   TenderItem: typeof TenderItemModel
   Journey: typeof JourneyModel
   Salary: typeof SalaryModel
+  Project: typeof ProjectModel
+  ProjectItem: typeof ProjectItemModel
+  ProjectContact: typeof ProjectContactModel
+  ProjectSupervisor: typeof ProjectSupervisorModel
+  Milestone: typeof MilestoneModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
@@ -62,6 +72,11 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     TenderItem: TenderItemFactory(sequelize),
     Journey: JourneyFactory(sequelize),
     Salary: SalaryFactory(sequelize),
+    Project: ProjectFactory(sequelize),
+    ProjectItem: ProjectItemFactory(sequelize),
+    ProjectContact: ProjectContactFactory(sequelize),
+    ProjectSupervisor: ProjectSupervisorFactory(sequelize),
+    Milestone: MilestoneFactory(sequelize),
     sequelize
   };
 

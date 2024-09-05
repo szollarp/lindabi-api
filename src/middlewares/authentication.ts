@@ -2,6 +2,7 @@ import { Forbidden, Unauthorized } from "http-errors";
 import * as jwt from "../helpers/jwt";
 import type { User } from "../models/interfaces/user";
 import type { Context, DecodedUser, ContextualRequest as Request } from "../types";
+import { USER_TYPE } from "../constants";
 
 const getHeaderTokens = (request: Request): { authToken: string, refreshToken: string } => {
   const authToken = request.headers.authorization ?? null;
@@ -60,6 +61,8 @@ const hasMePermission = (user: User, permissions: string[], requestPath: string)
 
 export const expressAuthentication = async (request: Request, securityName: string, inputPermissions?: string[]): Promise<DecodedUser> => {
   let isSystemAdmin = false;
+  let userType = USER_TYPE.USER;
+
   const { context, path } = request;
 
   if (securityName !== "jwtToken") {
@@ -81,7 +84,7 @@ export const expressAuthentication = async (request: Request, securityName: stri
   const permissions = inputPermissions?.filter((permission) => permission !== "Tenant");
   if (permissions !== null && permissions !== undefined && permissions.length > 0) {
     const user = await context.models.User.findOne({
-      attributes: ["id", "tenantId"],
+      attributes: ["id", "tenantId", "entity"],
       where: { id: decodedToken.user.id },
       include: [{
         attributes: ["id", "name"],
@@ -111,12 +114,16 @@ export const expressAuthentication = async (request: Request, securityName: stri
     if (!isSystemAdmin && !shouldUserRequiredPermission && !shouldUseMePermission && !shouldUserTenant) {
       throw new Forbidden("You do not have permission to access this resource.");
     }
+
+    userType = userJson.entity! as USER_TYPE;
   }
 
   return await Promise.resolve({
     id: decodedToken.user.id,
     name: decodedToken.user.name,
+    permissions: [],
     isSystemAdmin,
+    userType,
     tenant
   });
 };

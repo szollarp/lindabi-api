@@ -13,6 +13,8 @@ import { searchService } from "./search";
 import { journeyService } from "./journey";
 import { notificationService } from "./notification"
 import { emailService } from "./email"
+import { projectService } from "./project";
+
 import type { Services } from "../types";
 
 export default (): Services => ({
@@ -30,5 +32,6 @@ export default (): Services => ({
   search: searchService(),
   journey: journeyService(),
   notification: notificationService(),
-  email: emailService()
+  email: emailService(),
+  project: projectService()
 });

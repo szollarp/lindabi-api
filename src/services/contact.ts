@@ -17,7 +17,7 @@ export const contactService = (): ContactService => {
   const getContacts = async (context: Context, tenantId: number): Promise<Array<Partial<Contact>>> => {
     try {
       return await context.models.Contact.findAll({
-        attributes: ["id", "name", "email", "phoneNumber", "status", "notes"],
+        attributes: ["id", "name", "email", "phoneNumber", "status", "notes", "userId"],
         where: { tenantId }
       });
     } catch (error) {

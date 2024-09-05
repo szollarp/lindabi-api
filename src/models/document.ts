@@ -140,11 +140,27 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
       }
     });
 
-    DocumentModel.belongsTo(models.Company, {
+    DocumentModel.belongsTo(models.Tender, {
       foreignKey: "owner_id",
       as: "tender",
       scope: {
         ownerType: "tender"
+      }
+    });
+
+    DocumentModel.belongsTo(models.Project, {
+      foreignKey: "owner_id",
+      as: "project",
+      scope: {
+        ownerType: "project"
+      }
+    });
+
+    DocumentModel.belongsTo(models.Milestone, {
+      foreignKey: "owner_id",
+      as: "milestone",
+      scope: {
+        ownerType: "milestone"
       }
     });
   };
