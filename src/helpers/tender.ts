@@ -91,7 +91,7 @@ export const calculateTenderItemAmounts = (tenderItem: TenderItem, surcharge: nu
   const { feeNetUnitAmount, materialNetUnitAmount, quantity } = tenderItem;
 
   const materialActualNetAmount = materialNetUnitAmount * quantity * (1 + (Number(surcharge) / 100)) * (1 - (Number(discount) / 100));
-  const feeActualNetAmount = feeNetUnitAmount * quantity * (1 + (Number(surcharge) / 100)) * (1 - (Number(discount) / 100)),
+  const feeActualNetAmount = feeNetUnitAmount * quantity * (1 + (Number(surcharge) / 100)) * (1 - (Number(discount) / 100));
 
   return {
     materialActualNetAmount,
