@@ -5,6 +5,7 @@ import { CreateDocumentProperties, Document } from "../models/interfaces/documen
 import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 import { TENDER_STATUS } from "../constants";
+import { calculateTenderItemAmounts } from "../helpers/tender";
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
@@ -359,7 +360,7 @@ export const tenderService = (): TenderService => {
         return null;
       }
 
-      const { createdOn, updatedOn, createdBy, updatedBy, id, validTo, startDate, dueDate, openDate, ...data } = tender.toJSON();
+      const { createdOn, updatedOn, createdBy, updatedBy, id, validTo, startDate, dueDate, openDate, number, ...data } = tender.toJSON();
       const newTender = await context.models.Tender.create({
         ...data,
         createdBy: user.id,
@@ -407,6 +408,23 @@ export const tenderService = (): TenderService => {
       const tenderNumber = await generateTenderNumber(context, updatedTender);
       if (tenderNumber) {
         await updatedTender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
+      }
+
+      if (data.vatKey || data.surcharge || data.discount) {
+        const surcharge = data.surcharge || tender.surcharge;
+        const discount = data.discount || tender.discount;
+        const vatKey = data.vatKey || tender.vatKey;
+
+        const items = await context.models.TenderItem.findAll({
+          where: { tenderId: id }
+        });
+
+        for (const item of items) {
+          await item.update({
+            ...calculateTenderItemAmounts(item, surcharge!, discount!, vatKey),
+            updatedBy: user.id
+          }, { transaction: t });
+        }
       }
 
       await context.services.journey.addDiffLogs(context, user, {

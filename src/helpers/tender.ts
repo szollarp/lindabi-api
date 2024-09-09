@@ -86,3 +86,17 @@ export const generatePdfFilename = (tender: Tender) => {
 
   return `${created}-${contractorName}-${customerName}-${address}-${type}-${now}.pdf`
 };
+
+export const calculateTenderItemAmounts = (tenderItem: TenderItem, surcharge: number, discount: number, vatKey: string) => {
+  const { feeNetUnitAmount, materialNetUnitAmount, quantity } = tenderItem;
+
+  const materialActualNetAmount = materialNetUnitAmount * quantity * (1 + (Number(surcharge) / 100)) * (1 - (Number(discount) / 100));
+  const feeActualNetAmount = feeNetUnitAmount * quantity * (1 + (Number(surcharge) / 100)) * (1 - (Number(discount) / 100)),
+
+  return {
+    materialActualNetAmount,
+    feeActualNetAmount,
+    totalMaterialAmount: materialActualNetAmount * (Number(vatKey) / 100),
+    totalFeeAmount: feeActualNetAmount * (Number(vatKey) / 100)
+  }
+}
