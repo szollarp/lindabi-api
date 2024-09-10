@@ -107,6 +107,8 @@ export const userService = (): UserService => {
       await t.rollback();
 
       context.logger.error(error);
+      context.logger.error(error.stack);
+      context.logger.error(error.message);
       throw error;
     }
   };
