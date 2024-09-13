@@ -1,14 +1,17 @@
 import { NotAcceptable } from "http-errors";
 import type { Context, DecodedUser } from "../types";
-import type { CreateProjectBody, Project } from "../models/interfaces/project";
-import type { DocumentOwnerType } from "../models/interfaces/document";
+import type { CreateProjectBody, CreateProjectProperties, Project } from "../models/interfaces/project";
+import type { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "../models/interfaces/document";
 import { PROJECT_COLORS, PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE, PROJECT_STATUS, TENDER_STATUS } from "../constants";
 import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
 import { Op } from "sequelize";
 import { CreateMilestoneProperties, Milestone } from "../models/interfaces/milestone";
+import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
+import { Journey } from "../models/interfaces/journey";
 
 export interface ProjectService {
   copyFromTender: (context: Context, data: CreateProjectBody, user: DecodedUser) => Promise<{ id: number }>
+  updateProject: (context: Context, id: number, data: Partial<Project>, user: DecodedUser) => Promise<{ updated: boolean }>
   getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>
   getProject: (context: Context, tenantId: number, id: number) => Promise<Partial<Project> | null>
   updateProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number, body: { canShow: boolean, userContact: boolean }) => Promise<void>
@@ -20,6 +23,16 @@ export interface ProjectService {
   addMilestone: (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties) => Promise<{ updated: boolean }>
   updateMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>) => Promise<{ updated: boolean }>
   removeMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number) => Promise<{ updated: boolean }>
+  createProjectItem: (context: Context, projectId: number, user: DecodedUser, data: CreateProjectItemProperties) => Promise<ProjectItem>
+  updateProjectItem: (context: Context, projectId: number, id: number, user: DecodedUser, data: Partial<ProjectItem>) => Promise<Partial<ProjectItem> | null>
+  updateProjectItemOrder: (context: Context, projectId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
+  removeProjectItem: (context: Context, projectId: number, id: number) => Promise<{ success: boolean }>
+  getDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
+  getDocument: (context: Context, id: number, documentId: number) => Promise<Partial<Document> | null>
+  getJourneys: (context: Context, id: number) => Promise<Partial<Journey>[] | []>
+  uploadDocuments: (context: Context, id: number, user: DecodedUser, documents: CreateDocumentProperties[]) => Promise<{ uploaded: boolean }>
+  removeDocuments: (context: Context, id: number, user: DecodedUser, type: string) => Promise<{ success: boolean }>
+  removeDocument: (context: Context, id: number, user: DecodedUser, documentId: number) => Promise<{ success: boolean }>
 }
 
 export const projectService = (): ProjectService => {
@@ -56,6 +69,7 @@ export const projectService = (): ProjectService => {
       const vatAmount = getTotalVatAmount(tender);
       const { items, customer, ...attributes } = tender.toJSON();
 
+      //TODO: Add validation for the items
       const project = await context.models.Project.create({
         ...attributes,
         tenderId,
@@ -85,7 +99,8 @@ export const projectService = (): ProjectService => {
           ...document,
           ownerId: project.id,
           ownerType: "project" as DocumentOwnerType,
-          createdBy: user.id
+          createdBy: user.id,
+          type: "contract" as DocumentType
         }));
 
         await context.models.Document.bulkCreate(documents, {
@@ -111,11 +126,30 @@ export const projectService = (): ProjectService => {
       return { id: project.id };
     } catch (error) {
       context.logger.error(error);
+      context.logger.error(error.stack);
 
       await t.rollback();
       throw error;
     }
   };
+
+  const updateProject = async (context: Context, id: number, data: Partial<Project>, user: DecodedUser): Promise<{ updated: boolean }> => {
+    try {
+      const project = await context.models.Project.findOne({
+        where: { id }
+      });
+
+      if (!project) {
+        return { updated: false };
+      }
+
+      await project.update({ ...data, updatedBy: user.id });
+      return { updated: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
 
   const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
     try {
@@ -473,6 +507,196 @@ export const projectService = (): ProjectService => {
     }
   }
 
+  const createProjectItem = async (context: Context, projectId: number, user: DecodedUser, data: CreateProjectItemProperties): Promise<ProjectItem> => {
+    try {
+      const numMax: number | null = await context.models.ProjectItem.max("num", { where: { projectId } });
+      const max = numMax ? Number(numMax) + 1 : 1;
+
+      return await context.models.ProjectItem.create({
+        ...data,
+        projectId,
+        createdBy: user.id,
+        num: max
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const updateProjectItem = async (context: Context, projectId: number, id: number, user: DecodedUser, data: Partial<ProjectItem>): Promise<Partial<ProjectItem> | null> => {
+    try {
+      const projectItem = await context.models.ProjectItem.findOne({
+        where: { id, projectId }
+      });
+
+      if (!projectItem) {
+        return null;
+      }
+
+      await projectItem.update({ ...data, updatedBy: user.id });
+      return projectItem;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const updateProjectItemOrder = async (context: Context, projectId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const item = await context.models.ProjectItem.findOne({
+        where: { id, projectId }
+      });
+
+      if (!item) {
+        return { success: false };
+      }
+
+      const num = data.side === "up" ? item.num - 1 : item.num + 1;
+      const tenderNum = await context.models.ProjectItem.findOne({
+        where: { projectId, num }
+      });
+
+      await item.update({
+        ...data, updatedBy: user.id, num: data.side === "up" ? item.num - 1 : item.num + 1
+      }, { transaction: t });
+
+      await tenderNum?.update(
+        {
+          num: data.side === "up" ? tenderNum.num + 1 : tenderNum.num - 1,
+          updatedBy: user.id
+        }
+      ), { transaction: t };
+
+      await t.commit();
+
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const removeProjectItem = async (context: Context, projectId: number, id: number): Promise<{ success: boolean }> => {
+    try {
+      await context.models.ProjectItem.destroy({ where: { id, projectId } })
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const getDocuments = async (context: Context, id: number): Promise<Partial<Document>[] | []> => {
+    try {
+      return await context.models.Document.findAll({
+        where: { ownerId: id, ownerType: "project" },
+        attributes: ["id", "name", "type", "size", "preview", "mimeType"],
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const getDocument = async (context: Context, id: number, documentId: number): Promise<Partial<Document> | null> => {
+    try {
+      return await context.models.Document.findOne({
+        where: { ownerId: id, ownerType: "project", id: documentId },
+        attributes: ["id", "data", "mimeType", "name"],
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const getJourneys = async (context: Context, id: number): Promise<Partial<Journey>[] | []> => {
+    try {
+      return await context.services.journey.getLogs(context, id, "project");
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const uploadDocuments = async (context: Context, id: number, user: DecodedUser, documents: CreateDocumentProperties[]): Promise<{ uploaded: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      for (const document of documents) {
+        await context.models.Document.create({
+          ...document, ownerId: id, ownerType: "project"
+        }, { transaction: t });
+
+        await context.services.journey.addSimpleLog(context, user, {
+          activity: `The tender ${document.type} document have been successfully uploaded.`,
+          property: `${document.type} documents`,
+          updated: document.name
+        }, id, "tender");
+      };
+
+      await t.commit();
+      return { uploaded: true };
+    } catch (error) {
+      await t.rollback();
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const removeDocuments = async (context: Context, id: number, user: DecodedUser, type: string): Promise<{ success: boolean }> => {
+    try {
+      const documents = await context.models.Document.findAll({
+        attributes: ["name", "id", "type"],
+        where: { ownerId: id, ownerType: "project", type }
+      });
+
+      for (const document of documents) {
+        await context.services.journey.addSimpleLog(context, user, {
+          activity: `${type} document have been successfully removed.`,
+          property: `${type} documents`,
+          updated: document.name
+        }, id, "project");
+
+        await document.destroy();
+      }
+
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const removeDocument = async (context: Context, id: number, user: DecodedUser, documentId: number): Promise<{ success: boolean }> => {
+    try {
+      const document = await context.models.Document.findOne({
+        attributes: ["name", "id", "type"],
+        where: { id: documentId, ownerId: id, ownerType: "project" }
+      });
+
+      if (document) {
+        await context.services.journey.addSimpleLog(context, user, {
+          activity: `${document.type} document have been successfully removed.`,
+          property: `${document.type} documents`,
+          updated: document.name
+        }, id, "project");
+
+        await document.destroy();
+      }
+
+      return { success: true };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     copyFromTender,
     getProjects,
@@ -485,6 +709,17 @@ export const projectService = (): ProjectService => {
     getProjectColors,
     addMilestone,
     updateMilestone,
-    removeMilestone
+    removeMilestone,
+    createProjectItem,
+    updateProjectItem,
+    updateProjectItemOrder,
+    removeProjectItem,
+    getDocuments,
+    getDocument,
+    getJourneys,
+    uploadDocuments,
+    removeDocuments,
+    removeDocument,
+    updateProject
   };
 }

@@ -44,6 +44,7 @@ export interface Project {
   locationDescription?: string | null
   toolRequirements?: string | null
   otherComment?: string | null
+  contractOption?: string | null
   items?: ProjectItem[]
   documents?: Document[]
   milestones?: Milestone[]

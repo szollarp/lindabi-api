@@ -281,7 +281,12 @@
 					"annual-general-occupational-safety-training",
 					"data-processing-declaration",
 					"tig",
-					"invoice"
+					"invoice",
+					"before",
+					"during",
+					"completion",
+					"inspection",
+					"contract"
 				]
 			},
 			"DocumentOwnerType": {
@@ -3343,6 +3348,9 @@
 					"otherComment": {
 						"type": "string"
 					},
+					"contractOption": {
+						"type": "string"
+					},
 					"items": {
 						"items": {
 							"$ref": "#/components/schemas/ProjectItem"
@@ -3494,6 +3502,172 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Partial_ProjectItem_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
+					},
+					"type": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_ProjectItem.Exclude_keyofProjectItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"status",
+					"type",
+					"quantity",
+					"unit",
+					"projectId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_ProjectItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_ProjectItem.Exclude_keyofProjectItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateProjectItemProperties": {
+				"$ref": "#/components/schemas/Omit_ProjectItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_ProjectItem-or-null_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
+					},
+					"type": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"type": "object",
@@ -6440,39 +6614,62 @@
 				}
 			}
 		},
-		"/projects": {
-			"get": {
-				"operationId": "GetProjects",
+		"/projects/{id}": {
+			"put": {
+				"operationId": "UpdateProject",
 				"responses": {
 					"200": {
 						"description": "OK",
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_Project_"
+									"properties": {
+										"updated": {
+											"type": "boolean"
+										}
 									},
-									"type": "array"
+									"required": [
+										"updated"
+									],
+									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.",
 				"tags": [
 					"Project"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Project:List"
+							"Tenant",
+							"Project:Update"
 						]
 					}
 				],
-				"parameters": []
-			}
-		},
-		"/projects/{id}": {
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Project_"
+							}
+						}
+					}
+				}
+			},
 			"get": {
 				"operationId": "GetProject",
 				"responses": {
@@ -6516,6 +6713,38 @@
 						}
 					}
 				]
+			}
+		},
+		"/projects": {
+			"get": {
+				"operationId": "GetProjects",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Project_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Project:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/projects/{id}/contacts/{cid}": {
@@ -6966,6 +7195,578 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/items": {
+			"post": {
+				"operationId": "AddProjectItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_ProjectItem_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds a new item to an existing tender identified by its ID. This operation is secured with JWT and requires \"Tender:Get\" permission.\nUseful for modifying tender details dynamically during the tender process.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to which the item will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The properties required to create the new tender item.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProjectItemProperties",
+								"description": "The properties required to create the new tender item."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/projects/{id}/items/{itemId}": {
+			"put": {
+				"operationId": "UpdateProjectItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_ProjectItem-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication\nand is protected by \"Tender:Update\" permission, ensuring that only authorized modifications are allowed.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender containing the item.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the item to update.",
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial tender item object containing the fields to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ProjectItem_",
+								"description": "A partial tender item object containing the fields to update."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "RemoveProjectItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a specific item from a tender by its item ID. This operation requires JWT authentication\nand is secured with \"Tender:Update\" permission, designed to allow modifications only by authorized personnel.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender from which the item will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the item to be removed.",
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/items/{itemId}/order": {
+			"put": {
+				"operationId": "UpdateProjectItemOrder",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"side": {
+										"type": "string",
+										"enum": [
+											"up",
+											"down"
+										]
+									}
+								},
+								"required": [
+									"side"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/projects/{id}/documents": {
+			"get": {
+				"operationId": "GetDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Document_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial document objects containing the data to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/CreateDocumentProperties"
+								},
+								"type": "array",
+								"description": "A partial document objects containing the data to update."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/projects/{id}/documents/{documentId}": {
+			"get": {
+				"operationId": "GetDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Document_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender document by its document ID within a tender.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to retrieve.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a specific document from a tender by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"Tender:Update\" permission,\nensuring that only authorized users can delete documents.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender from which the document will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/journeys": {
+			"get": {
+				"operationId": "GetJourneys",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Journey_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves journey information associated with a specific tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/documents-by-type": {
+			"delete": {
+				"operationId": "RemoveProjectDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes all documents of a specific type associated with a tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The type of documents to remove.",
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]

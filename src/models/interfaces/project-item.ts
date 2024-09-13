@@ -17,4 +17,4 @@ export interface ProjectItem {
   updatedBy?: number | null
 };
 
-export type CreateProjectItemProperties = Omit<ProjectItem, "id" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateProjectItemProperties = Omit<ProjectItem, "id" | "num" | "createdOn" | "updatedBy" | "updatedOn">;

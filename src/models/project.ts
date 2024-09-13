@@ -41,6 +41,8 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public reports!: boolean;
 
+  public contractOption?: string | null;
+
   public scheduleColor?: string | null;
 
   public supervisorBonus!: boolean;
@@ -186,6 +188,10 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       defaultValue: null
     },
     vatKey: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    contractOption: {
       type: DataTypes.STRING,
       allowNull: false
     },

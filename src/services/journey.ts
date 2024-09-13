@@ -22,7 +22,7 @@ type DiffOpts<T> = {
 export interface JourneyService {
   addSimpleLog: (context: Context, user: DecodedUser, opts: JourneyOpts, ownerId: number, ownerType?: string, t?: Transaction) => Promise<void>
   addDiffLogs: <T>(context: Context, user: DecodedUser, opts: DiffOpts<T>, ownerId: number, ownerType?: string, t?: Transaction) => void
-  getLogs: (context: Context, tenderId: number) => Promise<Record<string, any>[]>
+  getLogs: (context: Context, tenderId: number, ownerType: string) => Promise<Record<string, any>[]>
 }
 
 export const journeyService = (): JourneyService => {
@@ -94,10 +94,10 @@ export const journeyService = (): JourneyService => {
     }
   }
 
-  const getLogs = async (context: Context, tenderId: number) => {
+  const getLogs = async (context: Context, tenderId: number, ownerType: string = "tender") => {
     try {
       const journeys = await context.models.Journey.findAll({
-        where: { ownerId: tenderId, ownerType: "tender" },
+        where: { ownerId: tenderId, ownerType },
         attributes: ["id", "activity", "notes", "createdOn", "username", "property", "existed", "updated"],
         order: [["createdOn", "DESC"]],
       });
