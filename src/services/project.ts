@@ -91,7 +91,7 @@ export const projectService = (): ProjectService => {
           createdBy: user.id,
           type: PROJECT_ITEM_TYPE.ITEMIZED,
           status: PROJECT_ITEM_STATUS.OPEN
-        }, { transaction: t });
+        } as any, { transaction: t });
       }
 
       if (data.documents && data.documents.length) {
@@ -126,7 +126,6 @@ export const projectService = (): ProjectService => {
       return { id: project.id };
     } catch (error) {
       context.logger.error(error);
-      context.logger.error(error.stack);
 
       await t.rollback();
       throw error;
@@ -517,7 +516,7 @@ export const projectService = (): ProjectService => {
         projectId,
         createdBy: user.id,
         num: max
-      });
+      } as any);
     } catch (error) {
       context.logger.error(error);
       throw error;

@@ -254,7 +254,7 @@ export const tenderService = (): TenderService => {
 
   const getTenderJourneys = async (context: Context, id: number): Promise<Partial<Journey>[] | []> => {
     try {
-      return await context.services.journey.getLogs(context, id);
+      return await context.services.journey.getLogs(context, id, "project");
     } catch (error) {
       context.logger.error(error);
       throw error;
