@@ -105,6 +105,16 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public getContacts!: HasManyGetAssociationsMixin<ContactModel>;
 
+  public supervisorIds!: ForeignKey<Contact["id"][]>;
+
+  public supervisors?: NonAttribute<Contact[]>;
+
+  public addSupervisor!: HasManyAddAssociationMixin<ContactModel, number>;
+
+  public setSupervisor!: HasManySetAssociationsMixin<ContactModel, number>;
+
+  public getSupervisors!: HasManyGetAssociationsMixin<ContactModel>;
+
   public getDocuments!: HasManyGetAssociationsMixin<DocumentModel[]>;
 
   public createDocument!: HasManyCreateAssociationMixin<DocumentModel>;
@@ -161,6 +171,7 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     contractor: Association<ProjectModel, CompanyModel>,
     location: Association<ProjectModel, LocationModel>,
     contacts: Association<ProjectModel, ContactModel>
+    supervisors: Association<ProjectModel, ContactModel>
     items: Association<ProjectModel, TenderItemModel>,
     milestones: Association<ProjectModel, MilestoneModel>
   };

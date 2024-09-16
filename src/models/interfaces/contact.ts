@@ -1,4 +1,5 @@
 import type { CONTACT_STATUS } from "../../constants"
+import type { User } from "./user"
 
 export interface Contact {
   id: number
@@ -8,6 +9,7 @@ export interface Contact {
   phoneNumber?: string | null
   status: CONTACT_STATUS.ACTIVE | CONTACT_STATUS.INACTIVE
   notes?: string | null
+  user?: User | null
   tenantId?: number | null
   createdOn?: Date
   updatedOn?: Date | null

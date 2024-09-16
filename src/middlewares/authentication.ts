@@ -121,7 +121,7 @@ export const expressAuthentication = async (request: Request, securityName: stri
   return await Promise.resolve({
     id: decodedToken.user.id,
     name: decodedToken.user.name,
-    permissions: [],
+    permissions,
     isSystemAdmin,
     userType,
     tenant

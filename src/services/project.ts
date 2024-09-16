@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import { CreateMilestoneProperties, Milestone } from "../models/interfaces/milestone";
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
 import { Journey } from "../models/interfaces/journey";
+import { getUserProjectIds } from "../helpers/project";
 
 export interface ProjectService {
   copyFromTender: (context: Context, data: CreateProjectBody, user: DecodedUser) => Promise<{ id: number }>
@@ -152,21 +153,7 @@ export const projectService = (): ProjectService => {
 
   const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
     try {
-      const projects = await context.models.Project.findAll({
-        attributes: ["id", "createdBy"],
-        include: [
-          {
-            model: context.models.Contact,
-            as: "contacts",
-            attributes: ["id"]
-          }
-        ],
-        where: { tenantId: user.tenant },
-      });
-
-      const projectIds = projects.filter(project =>
-        project.contacts?.some(contact => contact.id === user.id) || project.createdBy === user.id || user.isSystemAdmin
-      ).map(project => project.id);
+      const userProjectIds = await getUserProjectIds(context, user);
 
       return await context.models.Project.findAll({
         attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type"],
@@ -180,9 +167,14 @@ export const projectService = (): ProjectService => {
             model: context.models.Company,
             as: "customer",
             attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          },
+          {
+            model: context.models.Contact,
+            as: "supervisors",
+            attributes: ["id", "name"],
           }
         ],
-        where: { id: { [Op.in]: projectIds } },
+        where: { id: { [Op.in]: userProjectIds } },
         order: [["createdOn", "DESC"]]
       });
     } catch (error) {
@@ -249,7 +241,7 @@ export const projectService = (): ProjectService => {
               {
                 model: context.models.Document,
                 as: "documents",
-                attributes: ["id", "name", "type"]
+                attributes: ["id", "name", "type", "size", "mimeType"]
               }
             ]
           }
@@ -465,11 +457,27 @@ export const projectService = (): ProjectService => {
         transaction: t
       });
 
+      const { documents, ...data } = body;
+
       if (!milestone) {
         throw new NotAcceptable("Milestone not found");
       }
 
-      await milestone.update(body, { transaction: t });
+      await milestone.update(data, { transaction: t });
+
+      if (documents && documents.length) {
+        const remainingDocuments = documents.filter(document => !document.id);
+        const documentsData = remainingDocuments.map(document => ({
+          ...document,
+          ownerId: milestone.id,
+          ownerType: "milestone" as DocumentOwnerType,
+          createdBy: user.id
+        }));
+
+        await context.models.Document.bulkCreate(documentsData, {
+          transaction: t
+        });
+      }
 
       await t.commit();
       return { updated: true };

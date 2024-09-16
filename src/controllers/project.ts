@@ -145,6 +145,24 @@ export class ProjectController extends Controller {
     return await context.services.project.removeMilestone(context, user, id, mid);
   }
 
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Delete("/{id}/milestones/{mid}/documents/{did}")
+  @Security("jwtToken", ["Tenant", "Project:Update"])
+  public async removeMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<{ removed: boolean }> {
+    const { context, user } = request;
+    return await context.services.document.remove(context, mid, did, "milestone");
+  }
+
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Get("/{id}/milestones/{mid}/documents/{did}")
+  @Security("jwtToken", ["Tenant", "Project:Update"])
+  public async getMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<Partial<Document> | null> {
+    const { context, user } = request;
+    return await context.services.document.get(context, mid, did, "milestone");
+  }
+
   /**
     * Adds a new item to an existing tender identified by its ID. This operation is secured with JWT and requires "Tender:Get" permission.
     * Useful for modifying tender details dynamically during the tender process.

@@ -1,11 +1,12 @@
 import { Model, DataTypes } from "sequelize";
-import type { ForeignKey, HasManyGetAssociationsMixin, NonAttribute, Sequelize } from "sequelize";
+import type { Association, ForeignKey, HasManyGetAssociationsMixin, NonAttribute, Sequelize } from "sequelize";
 import type { CreateContactProperties, Contact } from "./interfaces/contact";
 import type { Tenant } from "./interfaces/tenant";
 import { CONTACT_STATUS } from "../constants";
 import type { Models } from ".";
 import { CompanyModel } from "./company";
 import { User } from "./interfaces/user";
+import { UserModel } from "./user";
 
 export class ContactModel extends Model<Contact, CreateContactProperties> implements Contact {
   public id!: number;
@@ -37,6 +38,10 @@ export class ContactModel extends Model<Contact, CreateContactProperties> implem
   public readonly updatedBy!: number | null;
 
   public static associate: (models: Models) => void;
+
+  public static associations: {
+    user: Association<ContactModel, UserModel>
+  };
 
   public getCompanies!: HasManyGetAssociationsMixin<CompanyModel[]>;
 };

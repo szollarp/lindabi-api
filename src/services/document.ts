@@ -17,6 +17,7 @@ export const COMPANY_DOCUMENTS = [
 
 export interface DocumentService {
   upload: (context: Context, id: number, body: CreateDocumentProperties, ownerType: DocumentOwnerType, unique: boolean) => Promise<{ uploaded: boolean }>
+  get: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType) => Promise<Partial<Document> | null>
   remove: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType) => Promise<{ removed: boolean }>
   update: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType, data: Partial<Document>) => Promise<Document>
   checkUserDocuments: (context: Context, tenantId: number, id: number) => void
@@ -57,18 +58,35 @@ export const documentService = (): DocumentService => {
     }
   };
 
+  const get = async (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType): Promise<Partial<Document> | null> => {
+    try {
+      return await context.models.Document.findOne({
+        where: { ownerId, ownerType, id },
+        attributes: ["id", "data", "mimeType", "name"],
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   const remove = async (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType): Promise<{ removed: boolean }> => {
     try {
-      const document = await context.models.Document.findOne({ where: { id, ownerType, ownerId } });
+      const document = await context.models.Document.findOne({
+        where: {
+          id, ownerType, ownerId
+        }
+      });
+
       if (document) {
         await document.destroy();
         return { removed: true };
       }
+
+      return { removed: false };
     } catch (error) {
       context.logger.error(error);
       throw error;
-    } finally {
-      return { removed: false };
     }
   };
 
@@ -115,5 +133,5 @@ export const documentService = (): DocumentService => {
     }
   }
 
-  return { upload, remove, update, checkUserDocuments };
+  return { upload, remove, update, checkUserDocuments, get };
 };

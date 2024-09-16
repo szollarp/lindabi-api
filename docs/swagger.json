@@ -686,128 +686,6 @@
 				],
 				"type": "string"
 			},
-			"Contact": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string",
-						"nullable": true
-					},
-					"phoneNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"status": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
-							}
-						]
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"status"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Record_string.unknown_": {
-				"properties": {},
-				"additionalProperties": {},
-				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
-			},
-			"UserBilling": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string",
-						"nullable": true
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"taxNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"registrationNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"bankAccount": {
-						"type": "string",
-						"nullable": true
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"name",
-					"country",
-					"city",
-					"address",
-					"zipCode"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"User": {
 				"properties": {
 					"id": {
@@ -1044,6 +922,136 @@
 					"email",
 					"name",
 					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Contact": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string",
+						"nullable": true
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
+							}
+						]
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"user": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/User"
+							}
+						],
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.unknown_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"UserBilling": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"registrationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3825,6 +3833,9 @@
 					"notes": {
 						"type": "string"
 					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
@@ -3873,6 +3884,9 @@
 					},
 					"notes": {
 						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					},
 					"userId": {
 						"type": "number",
@@ -7191,6 +7205,113 @@
 					{
 						"in": "path",
 						"name": "mid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/milestones/{mid}/documents/{did}": {
+			"delete": {
+				"operationId": "RemoveMilestoneDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "did",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"get": {
+				"operationId": "GetMilestoneDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Document_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "mid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "did",
 						"required": true,
 						"schema": {
 							"format": "double",
