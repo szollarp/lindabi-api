@@ -156,6 +156,11 @@ export const userService = (): UserService => {
           as: "salaries",
           attributes: ["id", "startDate", "endDate", "hourlyRate", "dailyRate"],
           required: false
+        }, {
+          model: context.models.Contact,
+          as: "contact",
+          attributes: ["id"],
+          required: false
         }]
       });
 

@@ -3681,6 +3681,46 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"Partial_ProjectComment_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"checked": {
+						"type": "boolean"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"LOCATION_STATUS": {
 				"enum": [
 					"active",
@@ -6604,6 +6644,7 @@
 						}
 					}
 				},
+				"description": "Creates a new project by copying details from an existing tender. This operation is secured with JWT and requires\n\"Project:Create\" permission. It is typically used to transition a tender into a project phase.",
 				"tags": [
 					"Project"
 				],
@@ -6617,11 +6658,13 @@
 				],
 				"parameters": [],
 				"requestBody": {
+					"description": "The project creation details including reference to the tender and additional parameters.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProjectBody"
+								"$ref": "#/components/schemas/CreateProjectBody",
+								"description": "The project creation details including reference to the tender and additional parameters."
 							}
 						}
 					}
@@ -6651,6 +6694,7 @@
 						}
 					}
 				},
+				"description": "Updates an existing project identified by its ID. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized users to make changes to project details.",
 				"tags": [
 					"Project"
 				],
@@ -6664,6 +6708,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the project to update.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6674,11 +6719,13 @@
 					}
 				],
 				"requestBody": {
+					"description": "The partial updates to be applied to the project.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Partial_Project_"
+								"$ref": "#/components/schemas/Partial_Project_",
+								"description": "The partial updates to be applied to the project."
 							}
 						}
 					}
@@ -6769,6 +6816,7 @@
 						"description": "OK"
 					}
 				},
+				"description": "Updates the contact information associated with a specific project. This method requires \"Project:Update\" permission\nand is secured with JWT to ensure that only authorized personnel can modify project contact details.",
 				"tags": [
 					"Project"
 				],
@@ -6782,6 +6830,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6791,6 +6840,7 @@
 						}
 					},
 					{
+						"description": "The ID of the contact to update within the project.",
 						"in": "path",
 						"name": "cid",
 						"required": true,
@@ -6801,6 +6851,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "The new values for the contact's visibility and association flags.",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -6817,7 +6868,8 @@
 									"userContact",
 									"canShow"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "The new values for the contact's visibility and association flags."
 							}
 						}
 					}
@@ -6830,6 +6882,7 @@
 						"description": "OK"
 					}
 				},
+				"description": "Removes a contact from a project by their contact ID. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized personnel can remove contacts from projects.",
 				"tags": [
 					"Project"
 				],
@@ -6843,6 +6896,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project from which the contact will be removed.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6852,6 +6906,7 @@
 						}
 					},
 					{
+						"description": "The ID of the contact to remove.",
 						"in": "path",
 						"name": "cid",
 						"required": true,
@@ -6871,6 +6926,7 @@
 						"description": "OK"
 					}
 				},
+				"description": "Adds a contact to a specific project identified by the project ID. This method is secured with JWT, requiring \"Project:Update\"\npermission under the \"Tenant\" scope. This ensures that only users with the appropriate permissions within the tenant can add contacts to the project.",
 				"tags": [
 					"Project"
 				],
@@ -6884,6 +6940,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The unique identifier of the project to which the contact will be added.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6894,6 +6951,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "Contains the contactId of the contact to be added to the project.",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -6907,7 +6965,8 @@
 								"required": [
 									"contactId"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "Contains the contactId of the contact to be added to the project."
 							}
 						}
 					}
@@ -6922,6 +6981,7 @@
 						"description": "OK"
 					}
 				},
+				"description": "Adds a supervisor to a project by their contact ID. This operation requires \"Project:Update\" permission\nand is secured with JWT, ensuring that only authorized users can add supervisors to the project.",
 				"tags": [
 					"Project"
 				],
@@ -6935,6 +6995,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project to which the supervisor will be added.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6945,6 +7006,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "Contains the ID of the contact to be added as a supervisor.",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -6958,7 +7020,8 @@
 								"required": [
 									"contactId"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "Contains the ID of the contact to be added as a supervisor."
 							}
 						}
 					}
@@ -6973,6 +7036,7 @@
 						"description": "OK"
 					}
 				},
+				"description": "Removes a supervisor from a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove supervisors.",
 				"tags": [
 					"Project"
 				],
@@ -6986,6 +7050,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project from which the supervisor will be removed.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6995,6 +7060,7 @@
 						}
 					},
 					{
+						"description": "The ID of the supervisor to remove.",
 						"in": "path",
 						"name": "cid",
 						"required": true,
@@ -7024,6 +7090,7 @@
 						}
 					}
 				},
+				"description": "Retrieves a list of color attributes associated with projects. This method is useful for client applications\nto fetch available colors for UI representations of project categories or statuses. It is secured with JWT,\nrequiring a general \"Tenant\" permission, which allows a broad range of users within the same tenant to access this information.",
 				"tags": [
 					"Project"
 				],
@@ -7060,6 +7127,7 @@
 						}
 					}
 				},
+				"description": "Adds a new milestone to a project identified by its ID. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized personnel to add milestones to the project.",
 				"tags": [
 					"Project"
 				],
@@ -7073,6 +7141,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project to which the milestone will be added.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -7083,11 +7152,13 @@
 					}
 				],
 				"requestBody": {
+					"description": "The properties required to create a new milestone.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateMilestoneProperties"
+								"$ref": "#/components/schemas/CreateMilestoneProperties",
+								"description": "The properties required to create a new milestone."
 							}
 						}
 					}
@@ -7117,6 +7188,7 @@
 						}
 					}
 				},
+				"description": "Updates a milestone within a project, specified by the milestone's ID. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized users to modify milestone details.",
 				"tags": [
 					"Project"
 				],
@@ -7130,6 +7202,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project containing the milestone.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -7139,6 +7212,7 @@
 						}
 					},
 					{
+						"description": "The ID of the milestone to update.",
 						"in": "path",
 						"name": "mid",
 						"required": true,
@@ -7149,11 +7223,13 @@
 					}
 				],
 				"requestBody": {
+					"description": "The partial details to update in the milestone.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Partial_Milestone_"
+								"$ref": "#/components/schemas/Partial_Milestone_",
+								"description": "The partial details to update in the milestone."
 							}
 						}
 					}
@@ -7181,6 +7257,7 @@
 						}
 					}
 				},
+				"description": "Removes a milestone from a project, identified by the milestone's ID. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove milestones.",
 				"tags": [
 					"Project"
 				],
@@ -7194,6 +7271,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The ID of the project from which the milestone will be removed.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -7203,6 +7281,7 @@
 						}
 					},
 					{
+						"description": "The ID of the milestone to remove.",
 						"in": "path",
 						"name": "mid",
 						"required": true,
@@ -7237,6 +7316,7 @@
 						}
 					}
 				},
+				"description": "Removes a document from a specific milestone within a project. This method is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can delete milestone documents.",
 				"tags": [
 					"Project"
 				],
@@ -7250,6 +7330,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The milestone ID from which the document will be removed.",
 						"in": "path",
 						"name": "mid",
 						"required": true,
@@ -7259,6 +7340,7 @@
 						}
 					},
 					{
+						"description": "The document ID to be removed.",
 						"in": "path",
 						"name": "did",
 						"required": true,
@@ -7288,6 +7370,7 @@
 						}
 					}
 				},
+				"description": "Retrieves a specific document from a milestone within a project. This method is secured with JWT and requires \"Project:Get\" permission,\nensuring that only authorized users can access milestone documents.",
 				"tags": [
 					"Project"
 				],
@@ -7295,12 +7378,13 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:Get"
 						]
 					}
 				],
 				"parameters": [
 					{
+						"description": "The milestone ID from which the document will be retrieved.",
 						"in": "path",
 						"name": "mid",
 						"required": true,
@@ -7310,6 +7394,7 @@
 						}
 					},
 					{
+						"description": "The document ID to retrieve.",
 						"in": "path",
 						"name": "did",
 						"required": true,
@@ -7458,7 +7543,7 @@
 						}
 					}
 				},
-				"description": "Removes a specific item from a tender by its item ID. This operation requires JWT authentication\nand is secured with \"Tender:Update\" permission, designed to allow modifications only by authorized personnel.",
+				"description": "Removes an item from a project. This operation requires JWT authentication and is secured with \"Project:Update\" permission,\nensuring that only authorized personnel can remove project items.",
 				"tags": [
 					"Project"
 				],
@@ -7472,7 +7557,7 @@
 				],
 				"parameters": [
 					{
-						"description": "The unique identifier of the tender from which the item will be removed.",
+						"description": "The unique identifier of the project from which the item will be removed.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -7517,6 +7602,7 @@
 						}
 					}
 				},
+				"description": "Updates the order of an item within a project. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing authorized users to adjust the order of project items.",
 				"tags": [
 					"Project"
 				],
@@ -7530,6 +7616,7 @@
 				],
 				"parameters": [
 					{
+						"description": "The project ID containing the item.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -7539,6 +7626,7 @@
 						}
 					},
 					{
+						"description": "The ID of the project item to reorder.",
 						"in": "path",
 						"name": "itemId",
 						"required": true,
@@ -7549,6 +7637,7 @@
 					}
 				],
 				"requestBody": {
+					"description": "Contains the direction to move the item (up or down).",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -7565,7 +7654,8 @@
 								"required": [
 									"side"
 								],
-								"type": "object"
+								"type": "object",
+								"description": "Contains the direction to move the item (up or down)."
 							}
 						}
 					}
@@ -7888,6 +7978,203 @@
 						"required": true,
 						"schema": {
 							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/projects/{id}/comments": {
+			"post": {
+				"operationId": "AddComment",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"updated": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"updated"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds a comment to a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can add comments to the project.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the project to which the comment will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Contains the comment text.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"notes": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"notes"
+								],
+								"type": "object",
+								"description": "Contains the comment text."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/projects/{id}/comments/{cid}": {
+			"put": {
+				"operationId": "UpdateComment",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"updated": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"updated"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates a comment in a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized users to modify project comments.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the project containing the comment.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The ID of the comment to update.",
+						"in": "path",
+						"name": "cid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Contains the partial update data for the comment.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ProjectComment_",
+								"description": "Contains the partial update data for the comment."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "RemoveComment",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"updated": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"updated"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a comment from a project. This method is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove comments.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the project from which the comment will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The ID of the comment to be removed.",
+						"in": "path",
+						"name": "cid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]

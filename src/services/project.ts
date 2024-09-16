@@ -9,6 +9,7 @@ import { CreateMilestoneProperties, Milestone } from "../models/interfaces/miles
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
 import { Journey } from "../models/interfaces/journey";
 import { getUserProjectIds } from "../helpers/project";
+import { CreateProjectCommentProperties, ProjectComment } from "../models/interfaces/project-comment";
 
 export interface ProjectService {
   copyFromTender: (context: Context, data: CreateProjectBody, user: DecodedUser) => Promise<{ id: number }>
@@ -34,6 +35,9 @@ export interface ProjectService {
   uploadDocuments: (context: Context, id: number, user: DecodedUser, documents: CreateDocumentProperties[]) => Promise<{ uploaded: boolean }>
   removeDocuments: (context: Context, id: number, user: DecodedUser, type: string) => Promise<{ success: boolean }>
   removeDocument: (context: Context, id: number, user: DecodedUser, documentId: number) => Promise<{ success: boolean }>
+  addComment: (context: Context, user: DecodedUser, projectId: number, body: { notes: string }) => Promise<{ updated: boolean }>
+  updateComment: (context: Context, user: DecodedUser, projectId: number, commentId: number, body: Partial<ProjectComment>) => Promise<{ updated: boolean }>
+  removeComment: (context: Context, user: DecodedUser, projectId: number, commentId: number) => Promise<{ updated: boolean }>
 }
 
 export const projectService = (): ProjectService => {
@@ -242,6 +246,19 @@ export const projectService = (): ProjectService => {
                 model: context.models.Document,
                 as: "documents",
                 attributes: ["id", "name", "type", "size", "mimeType"]
+              }
+            ]
+          },
+          {
+            model: context.models.ProjectComment,
+            as: "comments",
+            attributes: ["id", "notes", "createdOn", "updatedOn", "createdBy", "updatedBy", "checked"],
+            include: [
+              {
+                model: context.models.Contact,
+                as: "contact",
+                attributes: ["name"],
+                order: [["createdOn", "ASC"]]
               }
             ]
           }
@@ -704,6 +721,97 @@ export const projectService = (): ProjectService => {
     }
   }
 
+  const addComment = async (context: Context, user: DecodedUser, projectId: number, body: { notes: string }): Promise<{ updated: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const project = await context.models.Project.findOne({
+        where: { id: projectId },
+        transaction: t
+      });
+
+      if (!project) {
+        throw new NotAcceptable("Project not found");
+      }
+
+      const contact = await context.models.Contact.findOne({
+        where: { userId: user.id }
+      });
+
+      if (!contact) {
+        throw new NotAcceptable("Contact not found");
+      }
+
+      await context.models.ProjectComment.create({
+        ...body,
+        projectId,
+        contactId: contact.id,
+        createdBy: user.id
+      } as any, { transaction: t });
+
+      await t.commit();
+      return { updated: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const updateComment = async (context: Context, user: DecodedUser, projectId: number, commentId: number, body: Partial<ProjectComment>): Promise<{ updated: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const comment = await context.models.ProjectComment.findOne({
+        where: { id: commentId, projectId },
+        transaction: t
+      });
+
+      if (!comment) {
+        throw new NotAcceptable("Comment not found");
+      }
+
+      await comment.update({
+        ...body,
+        updatedBy: user.id
+      }, { transaction: t });
+
+      await t.commit();
+      return { updated: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const removeComment = async (context: Context, user: DecodedUser, projectId: number, commentId: number): Promise<{ updated: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const comment = await context.models.ProjectComment.findOne({
+        where: { id: commentId, projectId },
+        transaction: t
+      });
+
+      if (!comment) {
+        throw new NotAcceptable("Comment not found");
+      }
+
+      await comment.destroy({ transaction: t });
+
+      await t.commit();
+      return { updated: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     copyFromTender,
     getProjects,
@@ -727,6 +835,9 @@ export const projectService = (): ProjectService => {
     uploadDocuments,
     removeDocuments,
     removeDocument,
-    updateProject
+    updateProject,
+    addComment,
+    updateComment,
+    removeComment
   };
 }

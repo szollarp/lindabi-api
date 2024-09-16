@@ -22,6 +22,7 @@ import { ProjectItemFactory, type ProjectItemModel } from "./project-item";
 import { MilestoneFactory, type MilestoneModel } from "./milestone";
 import { ProjectContactFactory, type ProjectContactModel } from "./project-contact";
 import { ProjectSupervisorFactory, ProjectSupervisorModel } from "./project-supervisor";
+import { ProjectCommentFactory, ProjectCommentModel } from "./project-comment";
 
 export interface Models {
   sequelize: Sequelize
@@ -48,6 +49,7 @@ export interface Models {
   ProjectContact: typeof ProjectContactModel
   ProjectSupervisor: typeof ProjectSupervisorModel
   Milestone: typeof MilestoneModel
+  ProjectComment: typeof ProjectCommentModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
@@ -77,6 +79,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     ProjectContact: ProjectContactFactory(sequelize),
     ProjectSupervisor: ProjectSupervisorFactory(sequelize),
     Milestone: MilestoneFactory(sequelize),
+    ProjectComment: ProjectCommentFactory(sequelize),
     sequelize
   };
 

@@ -25,6 +25,8 @@ import { MilestoneModel } from "./milestone";
 import { ProjectItem } from "./interfaces/project-item";
 import { ProjectItemModel } from "./project-item";
 import type { Models } from ".";
+import { ProjectCommentModel } from "./project-comment";
+import { ProjectComment } from "./interfaces/project-comment";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -115,6 +117,14 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public getSupervisors!: HasManyGetAssociationsMixin<ContactModel>;
 
+  public commentIds!: ForeignKey<ProjectComment["id"][]>;
+
+  public comments?: NonAttribute<ProjectComment[]>;
+
+  public addComment!: HasManyAddAssociationMixin<ProjectCommentModel, number>;
+
+  public getComments!: HasManyGetAssociationsMixin<ProjectCommentModel>;
+
   public getDocuments!: HasManyGetAssociationsMixin<DocumentModel[]>;
 
   public createDocument!: HasManyCreateAssociationMixin<DocumentModel>;
@@ -174,6 +184,7 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     supervisors: Association<ProjectModel, ContactModel>
     items: Association<ProjectModel, TenderItemModel>,
     milestones: Association<ProjectModel, MilestoneModel>
+    comments: Association<ProjectModel, ProjectCommentModel>
   };
 };
 
@@ -392,6 +403,11 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
         ownerType: "tender"
       },
       as: "journeys",
+    });
+
+    ProjectModel.hasMany(models.ProjectComment, {
+      foreignKey: "projectId",
+      as: "comments"
     });
   };
 
