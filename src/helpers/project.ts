@@ -28,13 +28,32 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
           ],
           required: true,
         },
+        {
+          model: context.models.Contact,
+          as: "supervisors",
+          attributes: ["id"],
+          through: {
+            attributes: ["endDate"],
+            as: "attributes",
+            where: { endDate: null },
+          },
+          include: [
+            {
+              model: context.models.User,
+              as: "user",
+              attributes: ["id"],
+              required: true,
+            },
+          ],
+          required: true,
+        },
       ],
       where: { tenantId: user.tenant },
     });
 
     return projects
       .filter((project) => {
-        const { contacts, createdBy } = project.toJSON();
+        const { contacts, supervisors, createdBy } = project.toJSON();
 
         if (user.isSystemAdmin || createdBy === user.id) {
           return true
@@ -42,6 +61,10 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
 
         if (Array.isArray(contacts)) {
           return contacts.some(contact => hasPermission(user, "Project:List") && contact.user?.id === user.id);
+        }
+
+        if (Array.isArray(supervisors)) {
+          return supervisors.some(supervisor => hasPermission(user, "Project:List") && supervisor.user?.id === user.id);
         }
 
         return false;
