@@ -317,7 +317,7 @@ export const projectService = (): ProjectService => {
       }
 
       const contact = await context.models.Contact.findOne({
-        attributes: ["id", "userId"],
+        attributes: ["id", "userId", "name"],
         where: { id: contactId }
       });
 
@@ -348,13 +348,6 @@ export const projectService = (): ProjectService => {
   const removeProjectContact = async (context: Context, user: DecodedUser, projectId: number, contactId: number): Promise<void> => {
     try {
       const projectContact = await context.models.ProjectContact.findOne({
-        include: [
-          {
-            model: context.models.Contact,
-            as: "contact",
-            attributes: ["name"]
-          }
-        ],
         where: { projectId, contactId }
       });
 
@@ -364,11 +357,15 @@ export const projectService = (): ProjectService => {
 
       await projectContact.destroy();
 
-      const name = projectContact.contact?.name ?? "Unknown";
+      const contact = await context.models.Contact.findOne({
+        attributes: ["name"],
+        where: { id: contactId }
+      });
+
       await context.services.journey.addSimpleLog(context, user, {
         activity: `The project contact have been successfully removed.`,
         property: "Project Contact",
-        updated: name
+        updated: contact?.name,
       }, projectId, "project");
 
     } catch (error) {
@@ -390,7 +387,7 @@ export const projectService = (): ProjectService => {
       }
 
       const contact = await context.models.Contact.findOne({
-        attributes: ["id", "userId"],
+        attributes: ["id", "userId", "name"],
         where: { id: contactId },
         transaction: t
       });
@@ -443,11 +440,16 @@ export const projectService = (): ProjectService => {
         transaction: t
       });
 
-      const name = projectSupervisor.contact?.name ?? "Unknown";
+      const contact = await context.models.Contact.findOne({
+        attributes: ["name"],
+        where: { id: contactId },
+        transaction: t
+      });
+
       await context.services.journey.addSimpleLog(context, user, {
         activity: `The project supervisor have been successfully removed.`,
         property: "Project Supervisor",
-        updated: name
+        updated: contact?.name
       }, projectId, "project");
 
       await t.commit();
@@ -495,6 +497,12 @@ export const projectService = (): ProjectService => {
         createdBy: user.id
       } as any, { transaction: t });
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The milestone have been successfully added.`,
+        property: "Milestone",
+        updated: milestone.name
+      }, projectId, "project");
+
       if (documents && documents.length) {
         const remainingDocuments = documents.filter(document => !document.id);
         const documentsData = remainingDocuments.map(document => ({
@@ -507,13 +515,15 @@ export const projectService = (): ProjectService => {
         await context.models.Document.bulkCreate(documentsData, {
           transaction: t
         });
-      }
 
-      await context.services.journey.addSimpleLog(context, user, {
-        activity: `The milestone have been successfully added.`,
-        property: "Milestone",
-        updated: milestone.name
-      }, projectId, "project");
+        for (const document of documents) {
+          await context.services.journey.addSimpleLog(context, user, {
+            activity: `The milestone document have been successfully uploaded.`,
+            property: "Document",
+            updated: document.name
+          }, projectId, "project");
+        }
+      }
 
       await t.commit();
       return { updated: true };
@@ -543,7 +553,7 @@ export const projectService = (): ProjectService => {
       await context.services.journey.addDiffLogs(context, user, {
         activity: `The milestone have been successfully updated.`,
         existed: milestone,
-        updated: body
+        updated: data
       }, projectId, "project");
 
       await milestone.update(data, { transaction: t });
@@ -560,6 +570,14 @@ export const projectService = (): ProjectService => {
         await context.models.Document.bulkCreate(documentsData, {
           transaction: t
         });
+
+        for (const document of documents) {
+          await context.services.journey.addSimpleLog(context, user, {
+            activity: `The milestone document have been successfully uploaded.`,
+            property: "Document",
+            updated: document.name
+          }, projectId, "project");
+        }
       }
 
       await t.commit();
@@ -786,8 +804,8 @@ export const projectService = (): ProjectService => {
 
       for (const document of documents) {
         await context.services.journey.addSimpleLog(context, user, {
-          activity: `${type} document have been successfully removed.`,
-          property: `${type} documents`,
+          activity: `document have been successfully removed.`,
+          property: `Document`,
           updated: document.name
         }, id, "project");
 
