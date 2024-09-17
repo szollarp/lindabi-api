@@ -6750,7 +6750,7 @@
 						}
 					}
 				},
-				"description": "Retrieves detailed information about a specific project by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:Get\" permission.",
+				"description": "Retrieves detailed information about a specific project by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:GetMain\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -6758,13 +6758,60 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:GetMain"
 						]
 					}
 				],
 				"parameters": [
 					{
 						"description": "The unique identifier of the project to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteProjects",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a single project identified by their ID. This endpoint is secured with JWT authentication\nand requires \"Project:Delete\" permission. The operation is restricted to projects within the\nauthenticated user's tenant.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the project to delete.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -6806,6 +6853,66 @@
 					}
 				],
 				"parameters": []
+			},
+			"delete": {
+				"operationId": "DeleteProject",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple projects based on the provided array of IDs. This operation requires\nauthentication and \"Project:Delete\" permission. The deletion affects only the projects\nassociated with the authenticated user's tenant.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of project IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of project IDs to delete."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/projects/{id}/contacts/{cid}": {
@@ -6816,7 +6923,7 @@
 						"description": "OK"
 					}
 				},
-				"description": "Updates the contact information associated with a specific project. This method requires \"Project:Update\" permission\nand is secured with JWT to ensure that only authorized personnel can modify project contact details.",
+				"description": "Updates the contact information associated with a specific project. This method requires \"Project:UpdateMain\" permission\nand is secured with JWT to ensure that only authorized personnel can modify project contact details.",
 				"tags": [
 					"Project"
 				],
@@ -6824,7 +6931,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMaine"
 						]
 					}
 				],
@@ -6882,7 +6989,7 @@
 						"description": "OK"
 					}
 				},
-				"description": "Removes a contact from a project by their contact ID. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized personnel can remove contacts from projects.",
+				"description": "Removes a contact from a project by their contact ID. This operation is secured with JWT and requires \"Project:UpdateMain\" permission,\nensuring that only authorized personnel can remove contacts from projects.",
 				"tags": [
 					"Project"
 				],
@@ -6890,7 +6997,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMain"
 						]
 					}
 				],
@@ -6926,7 +7033,7 @@
 						"description": "OK"
 					}
 				},
-				"description": "Adds a contact to a specific project identified by the project ID. This method is secured with JWT, requiring \"Project:Update\"\npermission under the \"Tenant\" scope. This ensures that only users with the appropriate permissions within the tenant can add contacts to the project.",
+				"description": "Adds a contact to a specific project identified by the project ID. This method is secured with JWT, requiring \"Project:UpdateMain\"\npermission under the \"Tenant\" scope. This ensures that only users with the appropriate permissions within the tenant can add contacts to the project.",
 				"tags": [
 					"Project"
 				],
@@ -6934,7 +7041,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMain"
 						]
 					}
 				],
@@ -6981,7 +7088,7 @@
 						"description": "OK"
 					}
 				},
-				"description": "Adds a supervisor to a project by their contact ID. This operation requires \"Project:Update\" permission\nand is secured with JWT, ensuring that only authorized users can add supervisors to the project.",
+				"description": "Adds a supervisor to a project by their contact ID. This operation requires \"Project:UpdateMain\" permission\nand is secured with JWT, ensuring that only authorized users can add supervisors to the project.",
 				"tags": [
 					"Project"
 				],
@@ -6989,7 +7096,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMain"
 						]
 					}
 				],
@@ -7036,7 +7143,7 @@
 						"description": "OK"
 					}
 				},
-				"description": "Removes a supervisor from a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove supervisors.",
+				"description": "Removes a supervisor from a project. This operation is secured with JWT and requires \"Project:UpdateMain\" permission,\nensuring that only authorized users can remove supervisors.",
 				"tags": [
 					"Project"
 				],
@@ -7044,7 +7151,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMain"
 						]
 					}
 				],
@@ -7090,14 +7197,15 @@
 						}
 					}
 				},
-				"description": "Retrieves a list of color attributes associated with projects. This method is useful for client applications\nto fetch available colors for UI representations of project categories or statuses. It is secured with JWT,\nrequiring a general \"Tenant\" permission, which allows a broad range of users within the same tenant to access this information.",
+				"description": "Retrieves a list of color attributes associated with projects. This method is useful for client applications\nto fetch available colors for UI representations of project categories or statuses. It is secured with JWT,\nrequiring a general \"Project:UpdateMain\" permission, which allows a broad range of users within the same tenant to access this information.",
 				"tags": [
 					"Project"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant"
+							"Tenant",
+							"Project:GetMain"
 						]
 					}
 				],
@@ -7127,7 +7235,7 @@
 						}
 					}
 				},
-				"description": "Adds a new milestone to a project identified by its ID. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized personnel to add milestones to the project.",
+				"description": "Adds a new milestone to a project identified by its ID. This method is secured with JWT and requires \"Project:UpdateMilestones\" permission,\nallowing only authorized personnel to add milestones to the project.",
 				"tags": [
 					"Project"
 				],
@@ -7135,7 +7243,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMilestones"
 						]
 					}
 				],
@@ -7188,7 +7296,7 @@
 						}
 					}
 				},
-				"description": "Updates a milestone within a project, specified by the milestone's ID. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized users to modify milestone details.",
+				"description": "Updates a milestone within a project, specified by the milestone's ID. This method is secured with JWT and requires \"Project:UpdateMilestones\" permission,\nallowing only authorized users to modify milestone details.",
 				"tags": [
 					"Project"
 				],
@@ -7196,7 +7304,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMilestones"
 						]
 					}
 				],
@@ -7257,7 +7365,7 @@
 						}
 					}
 				},
-				"description": "Removes a milestone from a project, identified by the milestone's ID. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove milestones.",
+				"description": "Removes a milestone from a project, identified by the milestone's ID. This operation is secured with JWT and requires \"Project:UpdateMilestones\" permission,\nensuring that only authorized users can remove milestones.",
 				"tags": [
 					"Project"
 				],
@@ -7265,7 +7373,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMilestones"
 						]
 					}
 				],
@@ -7316,7 +7424,7 @@
 						}
 					}
 				},
-				"description": "Removes a document from a specific milestone within a project. This method is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can delete milestone documents.",
+				"description": "Removes a document from a specific milestone within a project. This method is secured with JWT and requires \"Project:UpdateMilestones\" permission,\nensuring that only authorized users can delete milestone documents.",
 				"tags": [
 					"Project"
 				],
@@ -7324,7 +7432,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateMilestones"
 						]
 					}
 				],
@@ -7370,7 +7478,7 @@
 						}
 					}
 				},
-				"description": "Retrieves a specific document from a milestone within a project. This method is secured with JWT and requires \"Project:Get\" permission,\nensuring that only authorized users can access milestone documents.",
+				"description": "Retrieves a specific document from a milestone within a project. This method is secured with JWT and requires \"Project:GetMilestones\" permission,\nensuring that only authorized users can access milestone documents.",
 				"tags": [
 					"Project"
 				],
@@ -7378,7 +7486,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Get"
+							"Project:GetMilestones"
 						]
 					}
 				],
@@ -7429,7 +7537,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateItems"
 						]
 					}
 				],
@@ -7474,7 +7582,7 @@
 						}
 					}
 				},
-				"description": "Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication\nand is protected by \"Tender:Update\" permission, ensuring that only authorized modifications are allowed.",
+				"description": "Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication\nand is protected by \"Project:UpdateItems\" permission, ensuring that only authorized modifications are allowed.",
 				"tags": [
 					"Project"
 				],
@@ -7482,7 +7590,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateItems"
 						]
 					}
 				],
@@ -7543,7 +7651,7 @@
 						}
 					}
 				},
-				"description": "Removes an item from a project. This operation requires JWT authentication and is secured with \"Project:Update\" permission,\nensuring that only authorized personnel can remove project items.",
+				"description": "Removes an item from a project. This operation requires JWT authentication and is secured with \"Project:UpdateItems\" permission,\nensuring that only authorized personnel can remove project items.",
 				"tags": [
 					"Project"
 				],
@@ -7551,7 +7659,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:DeleteItem"
 						]
 					}
 				],
@@ -7602,7 +7710,7 @@
 						}
 					}
 				},
-				"description": "Updates the order of an item within a project. This method is secured with JWT and requires \"Project:Update\" permission,\nallowing authorized users to adjust the order of project items.",
+				"description": "Updates the order of an item within a project. This method is secured with JWT and requires \"Project:UpdateItems\" permission,\nallowing authorized users to adjust the order of project items.",
 				"tags": [
 					"Project"
 				],
@@ -7610,7 +7718,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateItems"
 						]
 					}
 				],
@@ -7680,7 +7788,7 @@
 						}
 					}
 				},
-				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:GetDocuments\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -7688,7 +7796,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Get"
+							"Project:GetDocuments"
 						]
 					}
 				],
@@ -7727,7 +7835,7 @@
 						}
 					}
 				},
-				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:UpdateDocuments\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -7735,7 +7843,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateDocuments"
 						]
 					}
 				],
@@ -7788,7 +7896,7 @@
 						}
 					}
 				},
-				"description": "Retrieves detailed information about a specific tender document by its document ID within a tender.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"description": "Retrieves detailed information about a specific tender document by its document ID within a tender.\nThis endpoint is protected by JWT authentication, requiring \"Project:GetDocuments\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -7796,7 +7904,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Get"
+							"Project:GetDocuments"
 						]
 					}
 				],
@@ -7845,7 +7953,7 @@
 						}
 					}
 				},
-				"description": "Removes a specific document from a tender by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"Tender:Update\" permission,\nensuring that only authorized users can delete documents.",
+				"description": "Removes a specific document from a tender by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"Tender:DeleteDocument\" permission,\nensuring that only authorized users can delete documents.",
 				"tags": [
 					"Project"
 				],
@@ -7853,7 +7961,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Tender:Update"
+							"Tender:DeleteDocument"
 						]
 					}
 				],
@@ -7899,7 +8007,7 @@
 						}
 					}
 				},
-				"description": "Retrieves journey information associated with a specific tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"description": "Retrieves journey information associated with a specific tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:GetJournal\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -7907,7 +8015,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Get"
+							"Project:GetJournal"
 						]
 					}
 				],
@@ -7948,7 +8056,7 @@
 						}
 					}
 				},
-				"description": "Deletes all documents of a specific type associated with a tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"description": "Deletes all documents of a specific type associated with a tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:DeleteDocument\" permission.",
 				"tags": [
 					"Project"
 				],
@@ -7956,7 +8064,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:DeleteDocument"
 						]
 					}
 				],
@@ -8006,7 +8114,7 @@
 						}
 					}
 				},
-				"description": "Adds a comment to a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can add comments to the project.",
+				"description": "Adds a comment to a project. This operation is secured with JWT and requires \"Project:UpdateNotes\" permission,\nensuring that only authorized users can add comments to the project.",
 				"tags": [
 					"Project"
 				],
@@ -8014,7 +8122,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateNotes"
 						]
 					}
 				],
@@ -8075,7 +8183,7 @@
 						}
 					}
 				},
-				"description": "Updates a comment in a project. This operation is secured with JWT and requires \"Project:Update\" permission,\nallowing only authorized users to modify project comments.",
+				"description": "Updates a comment in a project. This operation is secured with JWT and requires \"Project:UpdateNotes\" permission,\nallowing only authorized users to modify project comments.",
 				"tags": [
 					"Project"
 				],
@@ -8083,7 +8191,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:UpdateNotes"
 						]
 					}
 				],
@@ -8144,7 +8252,7 @@
 						}
 					}
 				},
-				"description": "Removes a comment from a project. This method is secured with JWT and requires \"Project:Update\" permission,\nensuring that only authorized users can remove comments.",
+				"description": "Removes a comment from a project. This method is secured with JWT and requires \"Project:DeleteNote\" permission,\nensuring that only authorized users can remove comments.",
 				"tags": [
 					"Project"
 				],
@@ -8152,7 +8260,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Project:Update"
+							"Project:DeleteNote"
 						]
 					}
 				],

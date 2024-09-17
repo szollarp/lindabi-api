@@ -64,7 +64,7 @@ export class ProjectController extends Controller {
 
   /**
    * Retrieves detailed information about a specific project by their ID.
-   * This endpoint is protected by JWT authentication, requiring "Project:Get" permission.
+   * This endpoint is protected by JWT authentication, requiring "Project:GetMain" permission.
    *
    * @param id The unique identifier of the project to retrieve.
    * @returns A project object containing partial information, or null if no project is found. 
@@ -73,14 +73,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:GetMain"])
   public async getProject(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Project> | null> {
     const { context, user } = request;
     return await context.services.project.getProject(context, user.tenant, id);
   }
 
   /**
-   * Updates the contact information associated with a specific project. This method requires "Project:Update" permission
+   * Updates the contact information associated with a specific project. This method requires "Project:UpdateMain" permission
    * and is secured with JWT to ensure that only authorized personnel can modify project contact details.
    *
    * @param id The ID of the project.
@@ -91,14 +91,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/contacts/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMaine"])
   public async updateProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number, @Body() body: { canShow: boolean, userContact: boolean }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.updateProjectContact(context, user, id, cid, body);
   }
 
   /**
-   * Adds a contact to a specific project identified by the project ID. This method is secured with JWT, requiring "Project:Update"
+   * Adds a contact to a specific project identified by the project ID. This method is secured with JWT, requiring "Project:UpdateMain"
    * permission under the "Tenant" scope. This ensures that only users with the appropriate permissions within the tenant can add contacts to the project.
    *
    * @param id The unique identifier of the project to which the contact will be added.
@@ -108,14 +108,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/contacts")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
   public async addProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { contactId: number }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.addProjectContact(context, user, id, body.contactId);
   }
 
   /**
-   * Removes a contact from a project by their contact ID. This operation is secured with JWT and requires "Project:Update" permission,
+   * Removes a contact from a project by their contact ID. This operation is secured with JWT and requires "Project:UpdateMain" permission,
    * ensuring that only authorized personnel can remove contacts from projects.
    *
    * @param id The ID of the project from which the contact will be removed.
@@ -125,14 +125,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/contacts/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
   public async removeProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<void> {
     const { context, user } = request;
     return await context.services.project.removeProjectContact(context, user, id, cid);
   }
 
   /**
-   * Adds a supervisor to a project by their contact ID. This operation requires "Project:Update" permission
+   * Adds a supervisor to a project by their contact ID. This operation requires "Project:UpdateMain" permission
    * and is secured with JWT, ensuring that only authorized users can add supervisors to the project.
    *
    * @param id The ID of the project to which the supervisor will be added.
@@ -142,14 +142,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/supervisors")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
   public async addProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { contactId: number }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.addProjectSupervisor(context, user, id, body.contactId);
   }
 
   /**
-   * Removes a supervisor from a project. This operation is secured with JWT and requires "Project:Update" permission,
+   * Removes a supervisor from a project. This operation is secured with JWT and requires "Project:UpdateMain" permission,
    * ensuring that only authorized users can remove supervisors.
    *
    * @param id The ID of the project from which the supervisor will be removed.
@@ -159,7 +159,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/supervisors/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
   public async removeProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<void> {
     const { context, user } = request;
     return await context.services.project.removeProjectSupervisor(context, user, id, cid);
@@ -168,21 +168,21 @@ export class ProjectController extends Controller {
   /**
    * Retrieves a list of color attributes associated with projects. This method is useful for client applications
    * to fetch available colors for UI representations of project categories or statuses. It is secured with JWT,
-   * requiring a general "Tenant" permission, which allows a broad range of users within the same tenant to access this information.
+   * requiring a general "Project:UpdateMain" permission, which allows a broad range of users within the same tenant to access this information.
    *
    * @returns An array of strings, each representing a color code used in project attributes.
    */
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/attributes/get-colors")
-  @Security("jwtToken", ["Tenant"])
+  @Security("jwtToken", ["Tenant", "Project:GetMain"])
   public async getColors(@Request() request: ContextualRequest): Promise<string[]> {
     const { context, user } = request;
     return await context.services.project.getProjectColors(context, user.tenant);
   }
 
   /**
-   * Adds a new milestone to a project identified by its ID. This method is secured with JWT and requires "Project:Update" permission,
+   * Adds a new milestone to a project identified by its ID. This method is secured with JWT and requires "Project:UpdateMilestones" permission,
    * allowing only authorized personnel to add milestones to the project.
    *
    * @param id The ID of the project to which the milestone will be added.
@@ -192,14 +192,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/milestones")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async addMilestone(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateMilestoneProperties): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.addMilestone(context, user, id, body);
   }
 
   /**
-   * Updates a milestone within a project, specified by the milestone's ID. This method is secured with JWT and requires "Project:Update" permission,
+   * Updates a milestone within a project, specified by the milestone's ID. This method is secured with JWT and requires "Project:UpdateMilestones" permission,
    * allowing only authorized users to modify milestone details.
    *
    * @param id The ID of the project containing the milestone.
@@ -210,14 +210,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/milestones/{mid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async updateMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number, @Body() body: Partial<Milestone>): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateMilestone(context, user, id, mid, body);
   }
 
   /**
-   * Removes a milestone from a project, identified by the milestone's ID. This operation is secured with JWT and requires "Project:Update" permission,
+   * Removes a milestone from a project, identified by the milestone's ID. This operation is secured with JWT and requires "Project:UpdateMilestones" permission,
    * ensuring that only authorized users can remove milestones.
    *
    * @param id The ID of the project from which the milestone will be removed.
@@ -227,14 +227,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/milestones/{mid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeMilestone(context, user, id, mid);
   }
 
   /**
-   * Removes a document from a specific milestone within a project. This method is secured with JWT and requires "Project:Update" permission,
+   * Removes a document from a specific milestone within a project. This method is secured with JWT and requires "Project:UpdateMilestones" permission,
    * ensuring that only authorized users can delete milestone documents.
    *
    * @param mid The milestone ID from which the document will be removed.
@@ -244,14 +244,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/milestones/{mid}/documents/{did}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<{ removed: boolean }> {
     const { context, user } = request;
     return await context.services.document.remove(context, mid, did, "milestone");
   }
 
   /**
-   * Retrieves a specific document from a milestone within a project. This method is secured with JWT and requires "Project:Get" permission,
+   * Retrieves a specific document from a milestone within a project. This method is secured with JWT and requires "Project:GetMilestones" permission,
    * ensuring that only authorized users can access milestone documents.
    *
    * @param mid The milestone ID from which the document will be retrieved.
@@ -261,9 +261,9 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/{id}/milestones/{mid}/documents/{did}")
-  @Security("jwtToken", ["Tenant", "Project:Get"])
+  @Security("jwtToken", ["Tenant", "Project:GetMilestones"])
   public async getMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<Partial<Document> | null> {
-    const { context, user } = request;
+    const { context } = request;
     return await context.services.document.get(context, mid, did, "milestone");
   }
 
@@ -278,7 +278,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/items")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
   public async addProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateProjectItemProperties): Promise<Partial<ProjectItem>> {
     const { context, user } = request;
     return await context.services.project.createProjectItem(context, id, user, body);
@@ -286,7 +286,7 @@ export class ProjectController extends Controller {
 
   /**
   * Updates a specific item within a tender by its item ID. This endpoint requires JWT authentication
-  * and is protected by "Tender:Update" permission, ensuring that only authorized modifications are allowed.
+  * and is protected by "Project:UpdateItems" permission, ensuring that only authorized modifications are allowed.
   *
   * @param id The unique identifier of the tender containing the item.
   * @param itemId The unique identifier of the item to update.
@@ -296,14 +296,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
   public async updateProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: Partial<ProjectItem>): Promise<Partial<ProjectItem | null>> {
     const { context, user } = request;
     return await context.services.project.updateProjectItem(context, id, itemId, user, body);
   }
 
   /**
-   * Updates the order of an item within a project. This method is secured with JWT and requires "Project:Update" permission,
+   * Updates the order of an item within a project. This method is secured with JWT and requires "Project:UpdateItems" permission,
    * allowing authorized users to adjust the order of project items.
    *
    * @param id The project ID containing the item.
@@ -314,14 +314,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}/order")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
   public async updateProjectItemOrder(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: { side: "up" | "down" }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateProjectItemOrder(context, id, itemId, user, body);
   }
 
   /**
-   * Removes an item from a project. This operation requires JWT authentication and is secured with "Project:Update" permission,
+   * Removes an item from a project. This operation requires JWT authentication and is secured with "Project:UpdateItems" permission,
    * ensuring that only authorized personnel can remove project items.
    *
    * @param id The unique identifier of the project from which the item will be removed.
@@ -331,7 +331,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:DeleteItem"])
   public async removeProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeProjectItem(context, user, id, itemId);
@@ -339,7 +339,7 @@ export class ProjectController extends Controller {
 
   /**
    * Retrieves detailed information about a specific tender documents by their ID.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
+   * This endpoint is protected by JWT authentication, requiring "Project:GetDocuments" permission.
    *
    * @param id The unique identifier of the tender to retrieve.
    * @returns A tender documents objects containing partial information, or null if no documents is found. 
@@ -348,7 +348,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Project:Get"])
+  @Security("jwtToken", ["Tenant", "Project:GetDocuments"])
   public async getDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Document>[]> {
     const { context } = request;
     return await context.services.project.getDocuments(context, id);
@@ -356,7 +356,7 @@ export class ProjectController extends Controller {
 
   /**
    * Retrieves detailed information about a specific tender document by its document ID within a tender.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
+   * This endpoint is protected by JWT authentication, requiring "Project:GetDocuments" permission.
    *
    * @param id The unique identifier of the tender.
    * @param documentId The unique identifier of the document to retrieve.
@@ -366,7 +366,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Project:Get"])
+  @Security("jwtToken", ["Tenant", "Project:GetDocuments"])
   public async getDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<Partial<Document> | null> {
     const { context } = request;
     return await context.services.project.getDocument(context, id, documentId);
@@ -374,7 +374,7 @@ export class ProjectController extends Controller {
 
   /**
    * Retrieves journey information associated with a specific tender by its ID.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
+   * This endpoint is protected by JWT authentication, requiring "Project:GetJournal" permission.
    *
    * @param id The unique identifier of the tender.
    * @returns An array of journey objects containing partial information.
@@ -382,7 +382,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/journeys")
-  @Security("jwtToken", ["Tenant", "Project:Get"])
+  @Security("jwtToken", ["Tenant", "Project:GetJournal"])
   public async getJourneys(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Journey>[]> {
     const { context } = request;
     return await context.services.project.getJourneys(context, id);
@@ -390,7 +390,7 @@ export class ProjectController extends Controller {
 
   /**
    * Upload documents for the specified tender by their ID.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Update" permission.
+   * This endpoint is protected by JWT authentication, requiring "Project:UpdateDocuments" permission.
    *
    * @param id The unique identifier of the tender.
    * @param body A partial document objects containing the data to update.
@@ -400,7 +400,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateDocuments"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateDocumentProperties[]): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
     return await context.services.project.uploadDocuments(context, id, user, body);
@@ -408,7 +408,7 @@ export class ProjectController extends Controller {
 
   /**
    * Removes a specific document from a tender by its document ID.
-   * This endpoint requires JWT authentication and is protected with the "Tender:Update" permission,
+   * This endpoint requires JWT authentication and is protected with the "Tender:DeleteDocument" permission,
    * ensuring that only authorized users can delete documents.
    *
    * @param id The unique identifier of the tender from which the document will be removed.
@@ -418,7 +418,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("jwtToken", ["Tenant", "Tender:DeleteDocument"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeDocument(context, id, user, documentId);
@@ -426,7 +426,7 @@ export class ProjectController extends Controller {
 
   /**
    * Deletes all documents of a specific type associated with a tender by its ID.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Update" permission.
+   * This endpoint is protected by JWT authentication, requiring "Tender:DeleteDocument" permission.
    *
    * @param id The unique identifier of the tender.
    * @param type The type of documents to remove.
@@ -435,14 +435,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
   public async removeProjectDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: string,): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeDocuments(context, id, user, type);
   }
 
   /**
-   * Adds a comment to a project. This operation is secured with JWT and requires "Project:Update" permission,
+   * Adds a comment to a project. This operation is secured with JWT and requires "Project:UpdateNotes" permission,
    * ensuring that only authorized users can add comments to the project.
    *
    * @param id The ID of the project to which the comment will be added.
@@ -452,14 +452,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/comments")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateNotes"])
   public async addComment(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { notes: string }): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.addComment(context, user, id, body);
   }
 
   /**
-   * Updates a comment in a project. This operation is secured with JWT and requires "Project:Update" permission,
+   * Updates a comment in a project. This operation is secured with JWT and requires "Project:UpdateNotes" permission,
    * allowing only authorized users to modify project comments.
    *
    * @param id The ID of the project containing the comment.
@@ -470,14 +470,14 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/comments/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:UpdateNotes"])
   public async updateComment(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number, @Body() body: Partial<ProjectComment>): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateComment(context, user, id, cid, body);
   }
 
   /**
-   * Removes a comment from a project. This method is secured with JWT and requires "Project:Update" permission,
+   * Removes a comment from a project. This method is secured with JWT and requires "Project:DeleteNote" permission,
    * ensuring that only authorized users can remove comments.
    *
    * @param id The ID of the project from which the comment will be removed.
@@ -487,9 +487,43 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/comments/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("jwtToken", ["Tenant", "Project:DeleteNote"])
   public async removeComment(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeComment(context, user, id, cid);
+  }
+
+  /**
+   * Deletes multiple projects based on the provided array of IDs. This operation requires
+   * authentication and "Project:Delete" permission. The deletion affects only the projects
+   * associated with the authenticated user's tenant.
+   *
+   * @param body An object containing an array of project IDs to delete.
+   * @returns An object indicating the success of the deletion operation.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Delete("/")
+  @Security("jwtToken", ["Tenant", "Project:Delete"])
+  public async deleteProject(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.project.removeProjects(context, user, body.ids);
+  }
+
+  /**
+   * Deletes a single project identified by their ID. This endpoint is secured with JWT authentication
+   * and requires "Project:Delete" permission. The operation is restricted to projects within the
+   * authenticated user's tenant.
+   *
+   * @param id The ID of the project to delete.
+   * @returns An object indicating whether the deletion was successful.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Delete("{id}")
+  @Security("jwtToken", ["Tenant", "Project:Delete"])
+  public async deleteProjects(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    return await context.services.project.removeProject(context, user, id);
   }
 }

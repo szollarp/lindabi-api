@@ -38,6 +38,8 @@ export interface ProjectService {
   addComment: (context: Context, user: DecodedUser, projectId: number, body: { notes: string }) => Promise<{ updated: boolean }>
   updateComment: (context: Context, user: DecodedUser, projectId: number, commentId: number, body: Partial<ProjectComment>) => Promise<{ updated: boolean }>
   removeComment: (context: Context, user: DecodedUser, projectId: number, commentId: number) => Promise<{ updated: boolean }>
+  removeProject: (context: Context, user: DecodedUser, projectId: number) => Promise<{ success: boolean }>
+  removeProjects: (context: Context, user: DecodedUser, projectIds: number[]) => Promise<{ success: boolean }>
 }
 
 export const projectService = (): ProjectService => {
@@ -952,6 +954,66 @@ export const projectService = (): ProjectService => {
     }
   }
 
+  const removeProject = async (context: Context, user: DecodedUser, projectId: number): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const project = await context.models.Project.findOne({
+        where: { id: projectId },
+        transaction: t
+      });
+
+      if (!project) {
+        throw new NotAcceptable("Project not found");
+      }
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project have been successfully removed.`,
+        property: "Project",
+        updated: project.name
+      }, projectId, "project");
+
+      await project.destroy({ transaction: t });
+
+      await t.commit();
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const removeProjects = async (context: Context, user: DecodedUser, projectIds: number[]): Promise<{ success: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
+    try {
+      const projects = await context.models.Project.findAll({
+        where: { id: { [Op.in]: projectIds } },
+        transaction: t
+      });
+
+      for (const project of projects) {
+        await context.services.journey.addSimpleLog(context, user, {
+          activity: `The project have been successfully removed.`,
+          property: "Project",
+          updated: project.name
+        }, project.id, "project");
+
+        await project.destroy({ transaction: t });
+      }
+
+      await t.commit();
+      return { success: true };
+    } catch (error) {
+      await t.rollback();
+
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     copyFromTender,
     getProjects,
@@ -978,6 +1040,8 @@ export const projectService = (): ProjectService => {
     updateProject,
     addComment,
     updateComment,
-    removeComment
+    removeComment,
+    removeProject,
+    removeProjects
   };
 }
