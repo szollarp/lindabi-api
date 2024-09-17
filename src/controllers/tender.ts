@@ -184,8 +184,8 @@ export class TenderController extends Controller {
   @Delete("/{id}/items/{itemId}")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
   public async removeTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
-    const { context } = request;
-    return await context.services.tender.removeTenderItem(context, id, itemId);
+    const { context, user } = request;
+    return await context.services.tender.removeTenderItem(context, user, id, itemId);
   }
 
   /**

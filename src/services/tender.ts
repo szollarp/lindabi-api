@@ -24,14 +24,14 @@ export interface TenderService {
   getTenderItems: (context: Context, tenantId: number, id: number) => Promise<Partial<TenderItem>[]>
   createTenderItem: (context: Context, tenderId: number, user: DecodedUser, data: CreateTenderItemProperties) => Promise<TenderItem>
   updateTenderItem: (context: Context, tenderId: number, id: number, user: DecodedUser, data: Partial<TenderItem>) => Promise<Partial<TenderItem> | null>
-  removeTenderItem: (context: Context, tenderId: number, id: number) => Promise<{ success: boolean }>
+  removeTenderItem: (context: Context, user: DecodedUser, tenderId: number, id: number) => Promise<{ success: boolean }>
   updateTenderItemOrder: (context: Context, tenderId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
   copyTender: (context: Context, user: DecodedUser, id: number) => Promise<Partial<Tender> | null>
   copyTenderItem: (context: Context, tenderId: number, sourceTenderId: number, user: DecodedUser) => Promise<{ success: boolean }>
 };
 
 export const tenderService = (): TenderService => {
-  const generateTenderNumber = async (context: Context, tender: Tender): Promise<string | null> => {
+  const generateTenderNumber = async (context: Context, user: DecodedUser, tender: Tender): Promise<string | null> => {
     if (tender.number && tender.number.length > 0) {
       return tender.number;
     }
@@ -62,7 +62,15 @@ export const tenderService = (): TenderService => {
         }
       });
 
-      return `${constructor.offerNum}-${year}-${tenderNum + 1}`;
+      const number = `${constructor.offerNum}-${year}-${tenderNum + 1}`;
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The tender number have been successfully generated.`,
+        property: "number",
+        updated: number
+      }, tender.id, "tender");
+
+      return number;
     }
 
     return null;
@@ -199,6 +207,12 @@ export const tenderService = (): TenderService => {
 
       await context.services.email.sendTenderPdfEmail(context, tender, message);
       await tender.update({ status: TENDER_STATUS.SENT, updatedBy: user.id });
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender have been successfully sent via email.",
+        property: "status"
+      }, tender.id, "tender");
+
       return { success: true };
     }
     catch (error: any) {
@@ -254,7 +268,7 @@ export const tenderService = (): TenderService => {
 
   const getTenderJourneys = async (context: Context, id: number): Promise<Partial<Journey>[] | []> => {
     try {
-      return await context.services.journey.getLogs(context, id, "project");
+      return await context.services.journey.getLogs(context, id, "tender");
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -271,8 +285,8 @@ export const tenderService = (): TenderService => {
         }, { transaction: t });
 
         await context.services.journey.addSimpleLog(context, user, {
-          activity: `The tender ${document.type} document have been successfully uploaded.`,
-          property: `${document.type} documents`,
+          activity: `Document have been successfully uploaded.`,
+          property: `Document`,
           updated: document.name
         }, id, "tender");
       };
@@ -295,8 +309,8 @@ export const tenderService = (): TenderService => {
 
       for (const document of documents) {
         await context.services.journey.addSimpleLog(context, user, {
-          activity: `The tender ${type} document have been successfully removed.`,
-          property: `${type} documents`,
+          activity: `Document have been successfully removed.`,
+          property: `Documents`,
           updated: document.name
         }, id, "tender");
 
@@ -319,8 +333,8 @@ export const tenderService = (): TenderService => {
 
       if (document) {
         await context.services.journey.addSimpleLog(context, user, {
-          activity: `The tender ${document.type} document have been successfully removed.`,
-          property: `${document.type} documents`,
+          activity: `Document have been successfully removed.`,
+          property: `Document`,
           updated: document.name
         }, id, "tender");
 
@@ -337,6 +351,7 @@ export const tenderService = (): TenderService => {
   const createTender = async (context: Context, tenantId: number, user: DecodedUser, data: CreateTenderProperties): Promise<Partial<Tender> | null> => {
     try {
       const tender = await context.models.Tender.create({ ...data, tenantId, createdBy: user.id });
+
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender have been successfully created.",
       }, tender.id, "tender");
@@ -368,6 +383,11 @@ export const tenderService = (): TenderService => {
       }, { transaction: t });
 
       await copyTenderItem(context, tenderId, newTender.id, user, t);
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender have been successfully copied.",
+      }, tenderId, "tender", t);
+
       await t.commit();
       return newTender;
     } catch (error) {
@@ -405,7 +425,7 @@ export const tenderService = (): TenderService => {
       }
 
       const updatedTender = updated[0];
-      const tenderNumber = await generateTenderNumber(context, updatedTender);
+      const tenderNumber = await generateTenderNumber(context, user, updatedTender);
       if (tenderNumber) {
         await updatedTender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
       }
@@ -429,8 +449,8 @@ export const tenderService = (): TenderService => {
 
       await context.services.journey.addDiffLogs(context, user, {
         activity: "The tender has been successfully updated.",
-        existed: tender.toJSON(),
-        updated: updatedTender.toJSON()
+        existed: tender,
+        updated: data
       }, tender.id, "tender", t);
 
       await t.commit();
@@ -473,12 +493,17 @@ export const tenderService = (): TenderService => {
       const numMax: number | null = await context.models.TenderItem.max("num", { where: { tenderId } });
       const max = numMax ? Number(numMax) + 1 : 1;
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender item have been successfully created.",
+      }, tenderId, "tender");
+
       return await context.models.TenderItem.create({
         ...data,
         tenderId,
         createdBy: user.id,
         num: max
       } as TenderItem);
+
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -494,6 +519,12 @@ export const tenderService = (): TenderService => {
       if (!tenderItem) {
         return null;
       }
+
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: "The tender item have been successfully updated.",
+        existed: tenderItem,
+        updated: data
+      }, tenderId, "tender");
 
       await tenderItem.update({ ...data, updatedBy: user.id });
       return tenderItem;
@@ -531,6 +562,10 @@ export const tenderService = (): TenderService => {
         }
       ), { transaction: t };
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender item have been successfully reordered.",
+      }, tenderId, "tender", t);
+
       await t.commit();
 
       return { success: true };
@@ -542,9 +577,14 @@ export const tenderService = (): TenderService => {
     }
   }
 
-  const removeTenderItem = async (context: Context, tenderId: number, id: number): Promise<{ success: boolean }> => {
+  const removeTenderItem = async (context: Context, user: DecodedUser, tenderId: number, id: number): Promise<{ success: boolean }> => {
     try {
-      await context.models.TenderItem.destroy({ where: { id, tenderId } })
+      await context.models.TenderItem.destroy({ where: { id, tenderId } });
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender item have been successfully removed.",
+      }, tenderId, "tender");
+
       return { success: true };
     } catch (error) {
       context.logger.error(error);
@@ -571,6 +611,10 @@ export const tenderService = (): TenderService => {
       if (!transaction) {
         await t.commit();
       }
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: "The tender items have been successfully copied.",
+      }, targetTenderId, "tender");
 
       return { success: true };
     } catch (error) {
