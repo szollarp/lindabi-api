@@ -5,11 +5,15 @@ export interface VersionService {
   get: () => string
 }
 
+/**
+ * Creates a VersionService instance.
+ * @returns {VersionService} An object that provides the get method to fetch the application version.
+ */
 export const versionService = (): VersionService => {
   const get = (): string => {
+    const filePath = path.resolve(__dirname, "version.txt");
     try {
-      const filePath = path.resolve(__dirname, "version.txt");
-      return readFileSync(filePath, "utf8").toString();
+      return readFileSync(filePath, "utf8").trim();
     } catch {
       return "local";
     }

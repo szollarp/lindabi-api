@@ -3,11 +3,14 @@ import type { Sequelize } from "sequelize";
 
 import { CreateProjectContactProperties, ProjectContact } from "./interfaces/project-contact";
 import type { Models } from ".";
+import { Contact } from "./interfaces/contact";
 
 export class ProjectContactModel extends Model<ProjectContact, CreateProjectContactProperties> implements ProjectContact {
   public projectId!: number;
 
   public contactId!: number;
+
+  public readonly contact?: Contact;
 
   public userContact!: boolean;
 
@@ -73,6 +76,7 @@ export const ProjectContactFactory = (sequelize: Sequelize): typeof ProjectConta
     ProjectContactModel.belongsToMany(models.Contact, {
       foreignKey: "contact_id",
       through: "project_contacts",
+      "as": "contact"
     });
   };
 

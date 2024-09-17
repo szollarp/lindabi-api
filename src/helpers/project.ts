@@ -26,7 +26,6 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
               required: true,
             },
           ],
-          required: true,
         },
         {
           model: context.models.Contact,
@@ -45,7 +44,6 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
               required: true,
             },
           ],
-          required: true,
         },
       ],
       where: { tenantId: user.tenant },

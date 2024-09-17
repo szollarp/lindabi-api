@@ -2,11 +2,14 @@ import { Model, DataTypes } from "sequelize";
 import type { Sequelize } from "sequelize";
 import { CreateProjectSupervisorProperties, ProjectSupervisor } from "./interfaces/project-supervisor";
 import type { Models } from ".";
+import { Contact } from "./interfaces/contact";
 
 export class ProjectSupervisorModel extends Model<ProjectSupervisor, CreateProjectSupervisorProperties> implements ProjectSupervisor {
   public projectId!: number;
 
   public contactId!: number;
+
+  public readonly contact?: Contact;
 
   public readonly startDate!: Date | null;
 
@@ -66,6 +69,7 @@ export const ProjectSupervisorFactory = (sequelize: Sequelize): typeof ProjectSu
     ProjectSupervisorModel.belongsToMany(models.Contact, {
       foreignKey: "contact_id",
       through: "project_supervisors",
+      as: "contact"
     });
   };
 

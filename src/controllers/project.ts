@@ -333,8 +333,8 @@ export class ProjectController extends Controller {
   @Delete("/{id}/items/{itemId}")
   @Security("jwtToken", ["Tenant", "Project:Update"])
   public async removeProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
-    const { context } = request;
-    return await context.services.project.removeProjectItem(context, id, itemId);
+    const { context, user } = request;
+    return await context.services.project.removeProjectItem(context, user, id, itemId);
   }
 
   /**

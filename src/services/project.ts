@@ -1,6 +1,6 @@
 import { NotAcceptable } from "http-errors";
 import type { Context, DecodedUser } from "../types";
-import type { CreateProjectBody, CreateProjectProperties, Project } from "../models/interfaces/project";
+import type { CreateProjectBody, Project } from "../models/interfaces/project";
 import type { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "../models/interfaces/document";
 import { PROJECT_COLORS, PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE, PROJECT_STATUS, TENDER_STATUS } from "../constants";
 import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
@@ -9,7 +9,7 @@ import { CreateMilestoneProperties, Milestone } from "../models/interfaces/miles
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
 import { Journey } from "../models/interfaces/journey";
 import { getUserProjectIds } from "../helpers/project";
-import { CreateProjectCommentProperties, ProjectComment } from "../models/interfaces/project-comment";
+import { ProjectComment } from "../models/interfaces/project-comment";
 
 export interface ProjectService {
   copyFromTender: (context: Context, data: CreateProjectBody, user: DecodedUser) => Promise<{ id: number }>
@@ -28,7 +28,7 @@ export interface ProjectService {
   createProjectItem: (context: Context, projectId: number, user: DecodedUser, data: CreateProjectItemProperties) => Promise<ProjectItem>
   updateProjectItem: (context: Context, projectId: number, id: number, user: DecodedUser, data: Partial<ProjectItem>) => Promise<Partial<ProjectItem> | null>
   updateProjectItemOrder: (context: Context, projectId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
-  removeProjectItem: (context: Context, projectId: number, id: number) => Promise<{ success: boolean }>
+  removeProjectItem: (context: Context, user: DecodedUser, projectId: number, id: number) => Promise<{ success: boolean }>
   getDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
   getDocument: (context: Context, id: number, documentId: number) => Promise<Partial<Document> | null>
   getJourneys: (context: Context, id: number) => Promise<Partial<Journey>[] | []>
@@ -45,7 +45,7 @@ export const projectService = (): ProjectService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      const { tenderId } = data;
+      const { tenderId, contractOption } = data;
       const tender = await context.models.Tender.findOne({
         where: { id: tenderId },
         attributes: ["id", "type", "number", "locationId", "customerId", "contractorId", "notes", "survey", "locationDescription", "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount"],
@@ -77,6 +77,7 @@ export const projectService = (): ProjectService => {
       //TODO: Add validation for the items
       const project = await context.models.Project.create({
         ...attributes,
+        contractOption,
         tenderId,
         netAmount,
         vatAmount,
@@ -127,6 +128,12 @@ export const projectService = (): ProjectService => {
 
       await tender.update({ status: TENDER_STATUS.ORDERED }, { transaction: t });
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project have been successfully created from the tender.`,
+        property: "Project",
+        updated: tender.number
+      }, project.id, "project");
+
       await t.commit();
       return { id: project.id };
     } catch (error) {
@@ -146,6 +153,12 @@ export const projectService = (): ProjectService => {
       if (!project) {
         return { updated: false };
       }
+
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: `The project have been successfully updated.`,
+        existed: project,
+        updated: data
+      }, project.id, "project");
 
       await project.update({ ...data, updatedBy: user.id });
       return { updated: true };
@@ -281,6 +294,12 @@ export const projectService = (): ProjectService => {
       }
 
       await projectContact.update(body);
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: `The project contact have been successfully updated.`,
+        existed: projectContact,
+        updated: body
+      }, projectId, "project");
+
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -313,6 +332,13 @@ export const projectService = (): ProjectService => {
         customerContact: false,
         canShow: !!contact.userId
       });
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project contact have been successfully added.`,
+        property: "Project Contact",
+        updated: contact.name
+      }, projectId, "project");
+
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -322,6 +348,13 @@ export const projectService = (): ProjectService => {
   const removeProjectContact = async (context: Context, user: DecodedUser, projectId: number, contactId: number): Promise<void> => {
     try {
       const projectContact = await context.models.ProjectContact.findOne({
+        include: [
+          {
+            model: context.models.Contact,
+            as: "contact",
+            attributes: ["name"]
+          }
+        ],
         where: { projectId, contactId }
       });
 
@@ -330,6 +363,14 @@ export const projectService = (): ProjectService => {
       }
 
       await projectContact.destroy();
+
+      const name = projectContact.contact?.name ?? "Unknown";
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project contact have been successfully removed.`,
+        property: "Project Contact",
+        updated: name
+      }, projectId, "project");
+
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -369,6 +410,12 @@ export const projectService = (): ProjectService => {
         startDate: new Date(),
       }, { transaction: t });
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project supervisor have been successfully added.`,
+        property: "Project Supervisor",
+        updated: contact.name
+      }, projectId, "project");
+
       await t.commit();
     } catch (error) {
       await t.rollback();
@@ -395,6 +442,13 @@ export const projectService = (): ProjectService => {
         where: { projectId, endDate: projectSupervisor.startDate },
         transaction: t
       });
+
+      const name = projectSupervisor.contact?.name ?? "Unknown";
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project supervisor have been successfully removed.`,
+        property: "Project Supervisor",
+        updated: name
+      }, projectId, "project");
 
       await t.commit();
     } catch (error) {
@@ -455,6 +509,12 @@ export const projectService = (): ProjectService => {
         });
       }
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The milestone have been successfully added.`,
+        property: "Milestone",
+        updated: milestone.name
+      }, projectId, "project");
+
       await t.commit();
       return { updated: true };
     } catch (error) {
@@ -479,6 +539,12 @@ export const projectService = (): ProjectService => {
       if (!milestone) {
         throw new NotAcceptable("Milestone not found");
       }
+
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: `The milestone have been successfully updated.`,
+        existed: milestone,
+        updated: body
+      }, projectId, "project");
 
       await milestone.update(data, { transaction: t });
 
@@ -519,6 +585,12 @@ export const projectService = (): ProjectService => {
         throw new NotAcceptable("Milestone not found");
       }
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The milestone have been successfully removed.`,
+        property: "Milestone",
+        updated: milestone.name
+      }, projectId, "project");
+
       await milestone.destroy({ transaction: t });
 
       await t.commit();
@@ -536,12 +608,20 @@ export const projectService = (): ProjectService => {
       const numMax: number | null = await context.models.ProjectItem.max("num", { where: { projectId } });
       const max = numMax ? Number(numMax) + 1 : 1;
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project item have been successfully created.`,
+        property: "Project Item",
+        updated: data.name
+      }, projectId, "project");
+
+
       return await context.models.ProjectItem.create({
         ...data,
         projectId,
         createdBy: user.id,
         num: max
       } as any);
+
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -557,6 +637,12 @@ export const projectService = (): ProjectService => {
       if (!projectItem) {
         return null;
       }
+
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: `The project item have been successfully updated.`,
+        existed: projectItem,
+        updated: data
+      }, projectId, "project");
 
       await projectItem.update({ ...data, updatedBy: user.id });
       return projectItem;
@@ -594,6 +680,12 @@ export const projectService = (): ProjectService => {
         }
       ), { transaction: t };
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project item have been successfully updated.`,
+        property: "Project Item",
+        updated: item.name
+      }, projectId, "project");
+
       await t.commit();
 
       return { success: true };
@@ -605,9 +697,21 @@ export const projectService = (): ProjectService => {
     }
   }
 
-  const removeProjectItem = async (context: Context, projectId: number, id: number): Promise<{ success: boolean }> => {
+  const removeProjectItem = async (context: Context, user: DecodedUser, projectId: number, id: number): Promise<{ success: boolean }> => {
     try {
-      await context.models.ProjectItem.destroy({ where: { id, projectId } })
+      const projectItem = await context.models.ProjectItem.findOne({
+        where: { id, projectId },
+        attributes: ["id", "name"]
+      });
+
+      await projectItem?.destroy();
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project item have been successfully removed.`,
+        property: "Project Item",
+        updated: projectItem?.name,
+      }, projectId, "project");
+
       return { success: true };
     } catch (error) {
       context.logger.error(error);
@@ -658,10 +762,10 @@ export const projectService = (): ProjectService => {
         }, { transaction: t });
 
         await context.services.journey.addSimpleLog(context, user, {
-          activity: `The tender ${document.type} document have been successfully uploaded.`,
+          activity: `The project document have been successfully uploaded.`,
           property: `${document.type} documents`,
           updated: document.name
-        }, id, "tender");
+        }, id, "project");
       };
 
       await t.commit();
@@ -707,7 +811,7 @@ export const projectService = (): ProjectService => {
       if (document) {
         await context.services.journey.addSimpleLog(context, user, {
           activity: `${document.type} document have been successfully removed.`,
-          property: `${document.type} documents`,
+          property: `Document Name`,
           updated: document.name
         }, id, "project");
 
@@ -749,6 +853,12 @@ export const projectService = (): ProjectService => {
         createdBy: user.id
       } as any, { transaction: t });
 
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project comment have been successfully added.`,
+        property: "Project Comment",
+        updated: body.notes
+      }, projectId, "project");
+
       await t.commit();
       return { updated: true };
     } catch (error) {
@@ -771,6 +881,12 @@ export const projectService = (): ProjectService => {
       if (!comment) {
         throw new NotAcceptable("Comment not found");
       }
+
+      await context.services.journey.addDiffLogs(context, user, {
+        activity: `The project comment have been successfully updated.`,
+        existed: comment,
+        updated: body
+      }, projectId, "project");
 
       await comment.update({
         ...body,
@@ -799,6 +915,12 @@ export const projectService = (): ProjectService => {
       if (!comment) {
         throw new NotAcceptable("Comment not found");
       }
+
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `The project comment have been successfully removed.`,
+        property: "Project Comment",
+        updated: comment.notes
+      }, projectId, "project");
 
       await comment.destroy({ transaction: t });
 

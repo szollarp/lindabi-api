@@ -2853,7 +2853,7 @@
 						"type": "number",
 						"format": "double"
 					},
-					"uploadOption": {
+					"contractOption": {
 						"type": "string",
 						"enum": [
 							"upload",
@@ -2864,7 +2864,7 @@
 				},
 				"required": [
 					"tenderId",
-					"uploadOption"
+					"contractOption"
 				],
 				"type": "object",
 				"additionalProperties": false
