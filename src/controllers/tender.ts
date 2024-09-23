@@ -17,7 +17,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tender:Create"])
+  @Security("jwtToken", ["Tenant", "Tender:Create"])
   public async createTender(@Request() request: ContextualRequest, @Body() body: CreateTenderProperties): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     const tender = await context.services.tender.createTender(context, user.tenant, user, body);
@@ -38,7 +38,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/copy")
-  @Security("jwtToken", ["Tender:Create"])
+  @Security("jwtToken", ["Tenant", "Tender:Create"])
   public async copyTender(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     return await context.services.tender.copyTender(context, user, id);
@@ -55,7 +55,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/send")
-  @Security("jwtToken", ["Tender:Create"])
+  @Security("jwtToken", ["Tenant", "Tender:Create"])
   public async sendEmail(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { message: string }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.sendTenderViaEmail(context, user, id, body.message);
@@ -70,7 +70,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tender:List"])
+  @Security("jwtToken", ["Tenant", "Tender:List"])
   public async getTenders(@Request() request: ContextualRequest): Promise<Partial<Tender>[]> {
     const { context, user } = request;
     return await context.services.tender.getTenders(context, user.tenant);

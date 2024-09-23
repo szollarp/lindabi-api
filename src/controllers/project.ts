@@ -55,7 +55,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Project:List"])
+  @Security("jwtToken", ["Tenant", "Project:List"])
   public async getProjects(@Request() request: ContextualRequest): Promise<Partial<Project>[]> {
     const { context, user } = request;
     return await context.services.project.getProjects(context, user);
