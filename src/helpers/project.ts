@@ -53,7 +53,7 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
       .filter((project) => {
         const { contacts, supervisors, createdBy } = project.toJSON();
 
-        if (user.isSystemAdmin || createdBy === user.id) {
+        if (user.isSystemAdmin || (user.isManager && hasPermission(user, "Project:List")) || (createdBy === user.id && hasPermission(user, "Project:List"))) {
           return true
         }
 

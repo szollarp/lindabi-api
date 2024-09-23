@@ -91,6 +91,12 @@ export enum MILESTONE_STATUS {
   PAID = "paid",
 };
 
+export enum STATUS_REPORT_STATUS {
+  FINE = "fine",
+  INTERESTING = "interesting",
+  ISSUE = "issue"
+};
+
 export const PROJECT_COLORS = [
   "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080",
   "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#FFFFFF", "#000000",

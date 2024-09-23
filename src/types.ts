@@ -65,6 +65,7 @@ export interface DecodedUser {
   id: number
   name: string
   tenant: number
+  isManager: boolean
   isSystemAdmin: boolean
   userType: USER_TYPE.EMPLOYEE | USER_TYPE.USER
   permissions?: string[]

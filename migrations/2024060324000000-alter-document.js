@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     return queryInterface.addColumn("documents", "preview", {
-      type: Sequelize.DataTypes.STRING,
+      type: Sequelize.DataTypes.TEXT,
       allowNull: true
     });
   },

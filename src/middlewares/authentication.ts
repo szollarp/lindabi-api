@@ -60,7 +60,7 @@ const hasMePermission = (user: User, permissions: string[], requestPath: string)
 };
 
 export const expressAuthentication = async (request: Request, securityName: string, inputPermissions?: string[]): Promise<DecodedUser> => {
-  let isSystemAdmin = false;
+  let isSystemAdmin = false, isManager = false;
   let userType = USER_TYPE.USER;
 
   const { context, path } = request;
@@ -109,7 +109,9 @@ export const expressAuthentication = async (request: Request, securityName: stri
     const shouldUseMePermission = hasMePermission(userJson, permissions, path);
     const shouldUserRequiredPermission = hasPermission(userJson, permissions[0]);
     const shouldUserTenant = hasTenantPermission(user, tenant);
+
     isSystemAdmin = hasSystemAdmin(userJson);
+    isManager = userJson.role!.name === "Manager";
 
     if (!isSystemAdmin && !shouldUserRequiredPermission && !shouldUseMePermission && !shouldUserTenant) {
       throw new Forbidden("You do not have permission to access this resource.");
@@ -122,6 +124,7 @@ export const expressAuthentication = async (request: Request, securityName: stri
     id: decodedToken.user.id,
     name: decodedToken.user.name,
     permissions,
+    isManager,
     isSystemAdmin,
     userType,
     tenant

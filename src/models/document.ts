@@ -48,7 +48,7 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
         allowNull: true
       },
       preview: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true
       },
       size: {
