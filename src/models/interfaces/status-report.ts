@@ -4,8 +4,9 @@ import { Document } from "./document";
 export interface StatusReport {
   id: number
   dueDate: Date
+  availableToClient: boolean
   status: STATUS_REPORT_STATUS
-  notes?: string
+  notes?: string | null
   projectId: number
   createdOn?: Date
   updatedOn?: Date | null

@@ -7,6 +7,7 @@ import { PostmarkService } from "./helpers/postmark";
 import { getDatabaseConfig } from "./helpers/database";
 import { createModels } from "./models";
 import type { Context } from "./types";
+import { AzureStorageService } from "./helpers/azure-storage";
 
 export const create = async (): Promise<Context> => {
   const env: string = config.get("env") ?? "development";
@@ -15,7 +16,9 @@ export const create = async (): Promise<Context> => {
   const databaseConfig: Options = getDatabaseConfig();
   const services = createServices();
 
-  const models = await createModels(databaseConfig, !isProduction, !isProduction);
+  const storage = new AzureStorageService(config.get("azure.storage"));
+
+  const models = await createModels(databaseConfig, !isProduction, !isProduction, storage);
   await models.sequelize.authenticate();
 
   const serviceBus = new AzureServiceBus(config.get("serviceBus.namespace"));

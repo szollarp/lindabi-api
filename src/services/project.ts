@@ -242,7 +242,8 @@ export const projectService = (): ProjectService => {
             include: [
               {
                 model: context.models.Document,
-                as: "documents"
+                as: "documents",
+                attributes: ["id", "name", "type", "mimeType", "stored"]
               }
             ]
           },
@@ -260,7 +261,7 @@ export const projectService = (): ProjectService => {
               {
                 model: context.models.Document,
                 as: "documents",
-                attributes: ["id", "name", "type", "size", "mimeType"]
+                attributes: ["id", "name", "type", "mimeType", "stored"]
               }
             ]
           },
@@ -280,7 +281,6 @@ export const projectService = (): ProjectService => {
         ],
       });
     } catch (error) {
-      context.logger.error(error);
       throw error;
     }
   };
@@ -743,7 +743,7 @@ export const projectService = (): ProjectService => {
     try {
       return await context.models.Document.findAll({
         where: { ownerId: id, ownerType: "project" },
-        attributes: ["id", "name", "type", "size", "preview", "mimeType"],
+        attributes: ["id", "name", "type", "mimeType", "stored"],
       });
     } catch (error) {
       context.logger.error(error);
@@ -755,7 +755,7 @@ export const projectService = (): ProjectService => {
     try {
       return await context.models.Document.findOne({
         where: { ownerId: id, ownerType: "project", id: documentId },
-        attributes: ["id", "data", "mimeType", "name"],
+        attributes: ["id", "name", "type", "mimeType", "stored"],
       });
     } catch (error) {
       context.logger.error(error);

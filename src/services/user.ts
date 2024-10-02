@@ -1,19 +1,18 @@
+import { Op } from "sequelize";
 import { NotAcceptable, Unauthorized } from "http-errors";
 import { createRandomToken } from "../helpers/token";
 import { USER_STATUS, USER_TYPE } from "../constants";
 import type {
-  CreateUserProperties, Notifications, UpdatePasswordProperties,
-  UpdateUserProperties, User
+  CreateUserProperties, Notifications, UpdatePasswordProperties, User
 } from "../models/interfaces/user";
 import type { Context } from "../types";
 import { createAccountVerifyToken } from "../helpers/jwt";
 import { hashPassword } from "../helpers/password";
 import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-factor";
-import { Op } from "sequelize";
 
 export interface UserService {
   list: (context: Context, tenantId: number, entity: USER_TYPE) => Promise<Array<Partial<User>>>
-  get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User>>
+  get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User> | null>
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
@@ -35,17 +34,11 @@ export const userService = (): UserService => {
   const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER): Promise<Array<Partial<User>>> => {
     try {
       const where = entity === USER_TYPE.USER ? { tenantId } : { tenantId, entity };
-      const users = await context.models.User.findAll({
+      return await context.models.User.findAll({
         where,
         attributes: USER_ATTRIBUTES,
         order: [["id", "ASC"]],
         include: [{
-          model: context.models.Document,
-          attributes: ["data", "mimeType", "name", "properties", "type", "companyId", "approved"],
-          as: "documents",
-          foreignKey: "ownerId",
-          required: false
-        }, {
           model: context.models.Role,
           attributes: ["id", "name"],
           as: "role"
@@ -54,11 +47,12 @@ export const userService = (): UserService => {
           attributes: ["id", "phoneNumber", "email"],
           as: "contact",
           required: false
-        },
-        ]
+        }, {
+          model: context.models.Document,
+          as: "documents",
+          attributes: ["id", "name", "type", "mimeType", "stored"]
+        }]
       });
-
-      return users;
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -113,10 +107,10 @@ export const userService = (): UserService => {
     }
   };
 
-  const get = async (context: Context, tenantId: number | null, id: number): Promise<Partial<User>> => {
+  const get = async (context: Context, tenantId: number | null, id: number): Promise<Partial<User | null>> => {
     try {
       const where = !tenantId ? { id } : { id, tenantId };
-      const user = await context.models.User.findOne({
+      return await context.models.User.findOne({
         where,
         attributes: USER_ATTRIBUTES,
         include: [{
@@ -128,12 +122,6 @@ export const userService = (): UserService => {
             attributes: ["name", "dateStart", "dateEnd"],
             as: "subscriptions"
           }]
-        }, {
-          model: context.models.Document,
-          order: [["id", "ASC"]],
-          attributes: ["data", "mimeType", "name", "properties", "type", "id", "companyId", "approved"],
-          as: "documents",
-          foreignKey: "ownerId"
         }, {
           model: context.models.Role,
           attributes: ["id", "name"],
@@ -161,14 +149,12 @@ export const userService = (): UserService => {
           as: "contact",
           attributes: ["id"],
           required: false
+        }, {
+          model: context.models.Document,
+          as: "documents",
+          attributes: ["id", "name", "type", "mimeType", "stored", "properties", "approved"],
         }]
       });
-
-      if (user == null) {
-        throw Unauthorized("ERROR_AUTH_FAILED");
-      }
-
-      return user;
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -182,14 +168,7 @@ export const userService = (): UserService => {
       const where = !tenantId ? { id } : { id, tenantId };
       const user = await context.models.User.findOne({
         attributes: USER_ATTRIBUTES,
-        where,
-        include: [{
-          model: context.models.Document,
-          where: { type: "avatar" },
-          attributes: ["data", "mimeType"],
-          as: "documents",
-          required: false
-        }]
+        where
       });
 
       if (user == null) {
@@ -208,7 +187,6 @@ export const userService = (): UserService => {
       }
 
       await t.commit();
-
       return user;
     } catch (error) {
       await t.rollback();

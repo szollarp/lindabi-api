@@ -190,7 +190,7 @@ export class AuthenticationController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("me")
   @Security("jwtToken", [])
-  public async getMe(@Request() request: ContextualRequest): Promise<Partial<User>> {
+  public async getMe(@Request() request: ContextualRequest): Promise<Partial<User | null>> {
     const { context, user } = request;
     return await context.services.user.get(context, user.tenant, user.id);
   }

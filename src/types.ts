@@ -20,6 +20,7 @@ import { type NotificationService } from "./services/notification";
 import { type EmailService } from "./services/email";
 import { type ProjectService } from "./services/project";
 import { type Models } from "./models";
+import { type StatusReportService } from "./services/status-report";
 import { USER_TYPE } from "./constants";
 
 export interface Services {
@@ -39,6 +40,7 @@ export interface Services {
   notification: NotificationService
   email: EmailService
   project: ProjectService
+  statusReport: StatusReportService
 }
 
 export interface Helpers {

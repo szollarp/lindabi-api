@@ -14,6 +14,7 @@ import { journeyService } from "./journey";
 import { notificationService } from "./notification"
 import { emailService } from "./email"
 import { projectService } from "./project";
+import { statusReportService } from "./status-report";
 
 import type { Services } from "../types";
 
@@ -33,5 +34,6 @@ export default (): Services => ({
   journey: journeyService(),
   notification: notificationService(),
   email: emailService(),
-  project: projectService()
+  project: projectService(),
+  statusReport: statusReportService()
 });

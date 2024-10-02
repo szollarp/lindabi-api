@@ -299,6 +299,7 @@
 					"tender",
 					"project",
 					"milestone",
+					"report",
 					null
 				],
 				"nullable": true
@@ -325,10 +326,6 @@
 						"type": "string",
 						"nullable": true
 					},
-					"preview": {
-						"type": "string",
-						"nullable": true
-					},
 					"type": {
 						"$ref": "#/components/schemas/DocumentType"
 					},
@@ -340,16 +337,8 @@
 					"ownerType": {
 						"$ref": "#/components/schemas/DocumentOwnerType"
 					},
-					"data": {
-						"type": "string"
-					},
 					"mimeType": {
 						"type": "string"
-					},
-					"size": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
 					},
 					"createdOn": {
 						"type": "string",
@@ -377,11 +366,27 @@
 					},
 					"approved": {
 						"type": "boolean"
+					},
+					"stored": {
+						"properties": {
+							"thumbnail": {
+								"type": "string"
+							},
+							"resized": {
+								"type": "string"
+							},
+							"original": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"original"
+						],
+						"type": "object"
 					}
 				},
 				"required": [
 					"type",
-					"data",
 					"mimeType"
 				],
 				"type": "object",
@@ -1581,66 +1586,197 @@
 			"UpdateUserProperties": {
 				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_"
 			},
-			"Pick_Document.Exclude_keyofDocument.id-or-createdOn-or-updatedOn__": {
+			"Partial_User-or-null_": {
 				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"accountVerifyToken": {
+						"$ref": "#/components/schemas/AccountVerifyToken"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"forgottenPasswordToken": {
+						"$ref": "#/components/schemas/ForgottenPasswordToken"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
 					"properties": {
-						"$ref": "#/components/schemas/DocumentProperties"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
-					"preview": {
-						"type": "string"
-					},
-					"type": {
-						"$ref": "#/components/schemas/DocumentType"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"ownerType": {
-						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"data": {
-						"type": "string"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"size": {
-						"type": "number",
-						"format": "double"
-					},
-					"companyId": {
+					"billing": {
 						"anyOf": [
 							{
-								"type": "string"
+								"properties": {},
+								"type": "object"
 							},
 							{
-								"type": "number",
-								"format": "double"
+								"$ref": "#/components/schemas/UserBilling"
 							}
 						]
-					},
-					"approved": {
-						"type": "boolean"
 					}
 				},
-				"required": [
-					"type",
-					"data",
-					"mimeType"
-				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_Document.id-or-createdOn-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Document.Exclude_keyofDocument.id-or-createdOn-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateDocumentProperties": {
-				"$ref": "#/components/schemas/Omit_Document.id-or-createdOn-or-updatedOn_"
+				"description": "Make all properties in T optional"
 			},
 			"UpdatePasswordProperties": {
 				"properties": {
@@ -2531,67 +2667,6 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
-			"Partial_Document_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"preview": {
-						"type": "string"
-					},
-					"type": {
-						"$ref": "#/components/schemas/DocumentType"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"ownerType": {
-						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"data": {
-						"type": "string"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"size": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/DocumentProperties"
-					},
-					"companyId": {
-						"anyOf": [
-							{
-								"type": "string"
-							},
-							{
-								"type": "number",
-								"format": "double"
-							}
-						]
-					},
-					"approved": {
-						"type": "boolean"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
 			"Partial_Journey_": {
 				"properties": {
 					"id": {
@@ -2769,6 +2844,63 @@
 			},
 			"CreateTenantProperties": {
 				"$ref": "#/components/schemas/Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_"
+			},
+			"STATUS_REPORT_STATUS": {
+				"enum": [
+					"fine",
+					"interesting",
+					"issue"
+				],
+				"type": "string"
+			},
+			"Partial_StatusReport_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"availableToClient": {
+						"type": "boolean"
+					},
+					"status": {
+						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
 			},
 			"Partial_Role_": {
 				"properties": {
@@ -3515,6 +3647,74 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"Partial_Document_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/DocumentType"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"ownerType": {
+						"$ref": "#/components/schemas/DocumentOwnerType"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
+					},
+					"approved": {
+						"type": "boolean"
+					},
+					"stored": {
+						"properties": {
+							"thumbnail": {
+								"type": "string"
+							},
+							"resized": {
+								"type": "string"
+							},
+							"original": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"original"
+						],
+						"type": "object"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"Partial_ProjectItem_": {
 				"properties": {
 					"id": {
@@ -3597,11 +3797,11 @@
 					"unit": {
 						"type": "string"
 					},
-					"netAmount": {
+					"projectId": {
 						"type": "number",
 						"format": "double"
 					},
-					"projectId": {
+					"netAmount": {
 						"type": "number",
 						"format": "double"
 					}
@@ -4528,7 +4728,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
+									"$ref": "#/components/schemas/Partial_User-or-null_"
 								}
 							}
 						}
@@ -4609,25 +4809,15 @@
 				]
 			}
 		},
-		"/users/{id}/avatar": {
+		"/users/{id}/documents": {
 			"put": {
-				"operationId": "UpdateUserProfilePicture",
+				"operationId": "UploadDocuments",
 				"responses": {
 					"200": {
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -4655,16 +4845,34 @@
 							"format": "double",
 							"type": "number"
 						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
 					}
 				],
 				"requestBody": {
-					"description": "The properties to update the profile picture.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateDocumentProperties",
-								"description": "The properties to update the profile picture."
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
@@ -5767,12 +5975,7 @@
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_Document_"
-									},
-									"type": "array"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -5809,17 +6012,7 @@
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -5846,19 +6039,34 @@
 							"format": "double",
 							"type": "number"
 						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
 					}
 				],
 				"requestBody": {
-					"description": "A partial document objects containing the data to update.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"items": {
-									"$ref": "#/components/schemas/CreateDocumentProperties"
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
 								},
-								"type": "array",
-								"description": "A partial document objects containing the data to update."
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
@@ -5873,14 +6081,7 @@
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/Partial_Document_"
-										}
-									],
-									"nullable": true
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -5921,7 +6122,7 @@
 				]
 			},
 			"delete": {
-				"operationId": "RemoveTenderDocument",
+				"operationId": "RemoveDocument",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -5929,12 +6130,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"success": {
+										"removed": {
 											"type": "boolean"
 										}
 									},
 									"required": [
-										"success"
+										"removed"
 									],
 									"type": "object"
 								}
@@ -6024,7 +6225,7 @@
 		},
 		"/tenders/{id}/documents-by-type": {
 			"delete": {
-				"operationId": "RemoveAllTenderDocuments",
+				"operationId": "RemoveDocuments",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -6032,12 +6233,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"success": {
+										"removed": {
 											"type": "boolean"
 										}
 									},
 									"required": [
-										"success"
+										"removed"
 									],
 									"type": "object"
 								}
@@ -6074,7 +6275,7 @@
 						"name": "type",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"$ref": "#/components/schemas/DocumentType"
 						}
 					}
 				]
@@ -6361,9 +6562,9 @@
 				]
 			}
 		},
-		"/tenants/{id}/logo": {
+		"/tenants/{id}/documents": {
 			"put": {
-				"operationId": "UpdateLogo",
+				"operationId": "UploadDocuments",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -6408,17 +6609,105 @@
 					}
 				],
 				"requestBody": {
-					"description": "Contains the image data and metadata for the logo.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateDocumentProperties",
-								"description": "Contains the image data and metadata for the logo."
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
 				}
+			}
+		},
+		"/status-reports": {
+			"get": {
+				"operationId": "GetStatusReports",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_StatusReport_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all status reports within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"StatusReport:List\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/status-reports/related-projects": {
+			"get": {
+				"operationId": "GetRelatedProjects",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"id": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"name",
+											"id"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/statistics/overview": {
@@ -7406,6 +7695,75 @@
 				]
 			}
 		},
+		"/projects/{id}/milestones/{mid}/documents": {
+			"put": {
+				"operationId": "UploadMilestoneDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified milestone by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:UpdateMilestones\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:UpdateMilestones"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the milestone.",
+						"in": "path",
+						"name": "mid",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
 		"/projects/{id}/milestones/{mid}/documents/{did}": {
 			"delete": {
 				"operationId": "RemoveMilestoneDocument",
@@ -7825,17 +8183,7 @@
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -7862,19 +8210,34 @@
 							"format": "double",
 							"type": "number"
 						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
 					}
 				],
 				"requestBody": {
-					"description": "A partial document objects containing the data to update.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"items": {
-									"$ref": "#/components/schemas/CreateDocumentProperties"
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
 								},
-								"type": "array",
-								"description": "A partial document objects containing the data to update."
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
@@ -7945,12 +8308,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"success": {
+										"removed": {
 											"type": "boolean"
 										}
 									},
 									"required": [
-										"success"
+										"removed"
 									],
 									"type": "object"
 								}
@@ -8040,7 +8403,7 @@
 		},
 		"/projects/{id}/documents-by-type": {
 			"delete": {
-				"operationId": "RemoveProjectDocuments",
+				"operationId": "RemoveDocuments",
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -8048,12 +8411,12 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"success": {
+										"removed": {
 											"type": "boolean"
 										}
 									},
 									"required": [
-										"success"
+										"removed"
 									],
 									"type": "object"
 								}
@@ -8090,7 +8453,7 @@
 						"name": "type",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"$ref": "#/components/schemas/DocumentType"
 						}
 					}
 				]
@@ -8739,551 +9102,6 @@
 				],
 				"security": [],
 				"parameters": []
-			}
-		},
-		"/employees": {
-			"get": {
-				"operationId": "GetEmployees",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_User_"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Retrieves a list of employees.\nSecured with JWT token and requires \"Employee:List\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:List",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateEmployee",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
-								}
-							}
-						}
-					}
-				},
-				"description": "Creates a new employee.\nSecured with JWT token and requires \"Employee:Create\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Create",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"description": "Properties required to create an employee.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateUserProperties",
-								"description": "Properties required to create an employee."
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteEmployees",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "Deletes multiple employees by their IDs.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Delete",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"description": "An object containing an array of employee IDs to delete.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"ids": {
-										"items": {
-											"type": "number",
-											"format": "double"
-										},
-										"type": "array"
-									}
-								},
-								"required": [
-									"ids"
-								],
-								"type": "object",
-								"description": "An object containing an array of employee IDs to delete."
-							}
-						}
-					}
-				}
-			}
-		},
-		"/employees/{id}": {
-			"put": {
-				"operationId": "UpdateEmployee",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
-								}
-							}
-						}
-					}
-				},
-				"description": "Updates an existing employee.\nSecured with JWT token and requires \"Employee:Update\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Update",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee to update.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"description": "Properties to update in the employee.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Partial_User_",
-								"description": "Properties to update in the employee."
-							}
-						}
-					}
-				}
-			},
-			"get": {
-				"operationId": "GetEmployee",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
-								}
-							}
-						}
-					}
-				},
-				"description": "Retrieves a single employee by ID.\nSecured with JWT token and requires \"Employee:Get\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Get",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee to retrieve.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"delete": {
-				"operationId": "DeleteEmployee",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "Deletes a employee by ID.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Delete",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee to delete.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/employees/{id}/documents": {
-			"post": {
-				"operationId": "AddDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "Adds a document to an employee's record specified by the employee ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can add documents.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Update",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The unique identifier of the employee to whom the document will be added.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"description": "The properties of the document to be created.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateDocumentProperties",
-								"description": "The properties of the document to be created."
-							}
-						}
-					}
-				}
-			}
-		},
-		"/employees/{ownerId}/document/{id}": {
-			"delete": {
-				"operationId": "RemoveDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"removed": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"removed"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "Removes a document from an employee's record. This method requires \"Employee:Update\" permission and is secured with JWT,\nallowing only authorized users to delete documents.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Update",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee from whom the document will be removed.",
-						"in": "path",
-						"name": "ownerId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"description": "The unique identifier of the document to be removed.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UpdateDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Document"
-								}
-							}
-						}
-					}
-				},
-				"description": "Updates a specific document for an employee identified by the document ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized personnel can make changes to documents.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Update",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee whose document is being updated.",
-						"in": "path",
-						"name": "ownerId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"description": "The unique identifier of the document to update.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"description": "The partial updates to be applied to the document.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Partial_Document_",
-								"description": "The partial updates to be applied to the document."
-							}
-						}
-					}
-				}
-			}
-		},
-		"/employees/{id}/check-documents": {
-			"get": {
-				"operationId": "CheckDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Checks the status of documents associated with a specific employee. This method is secured with JWT and requires\n\"Employee:Get\" permission, allowing for verification of document status by authorized users.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Get",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee whose documents are being checked.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/employees/{id}/billing": {
-			"put": {
-				"operationId": "UpdateBilling",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
-								}
-							}
-						}
-					}
-				},
-				"description": "Updates the billing information for an employee by ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can update billing details.",
-				"tags": [
-					"Employee"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Employee:Update",
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The ID of the employee whose billing information is being updated.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"description": "The billing information to update.",
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/UserBilling",
-								"description": "The billing information to update."
-							}
-						}
-					}
-				}
 			}
 		},
 		"/contacts": {
@@ -10006,25 +9824,52 @@
 				]
 			}
 		},
-		"/companies/{id}/document": {
-			"post": {
-				"operationId": "UpdateDocument",
+		"/companies/{id}/documents": {
+			"get": {
+				"operationId": "GetDocuments",
 				"responses": {
 					"200": {
 						"description": "OK",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Fetches detailed information about a specific company identified by its ID. This method ensures that only\nauthenticated users with appropriate permissions can access company details. The endpoint uses JWT for security.",
+				"tags": [
+					"Company"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Company:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the company to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
 							}
 						}
 					}
@@ -10051,16 +9896,34 @@
 							"format": "double",
 							"type": "number"
 						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
 					}
 				],
 				"requestBody": {
-					"description": "Contains the image data and metadata for the logo.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateDocumentProperties",
-								"description": "Contains the image data and metadata for the logo."
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
@@ -10445,7 +10308,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Partial_User_"
+									"$ref": "#/components/schemas/Partial_User-or-null_"
 								}
 							}
 						}
@@ -10461,6 +10324,577 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/employees": {
+			"get": {
+				"operationId": "GetEmployees",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_User_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of employees.\nSecured with JWT token and requires \"Employee:List\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:List",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new employee.\nSecured with JWT token and requires \"Employee:Create\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Create",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "Properties required to create an employee.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateUserProperties",
+								"description": "Properties required to create an employee."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteEmployees",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple employees by their IDs.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Delete",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of employee IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of employee IDs to delete."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{id}": {
+			"put": {
+				"operationId": "UpdateEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates an existing employee.\nSecured with JWT token and requires \"Employee:Update\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Properties to update in the employee.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_User_",
+								"description": "Properties to update in the employee."
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a single employee by ID.\nSecured with JWT token and requires \"Employee:Get\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteEmployee",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a employee by ID.\nSecured with JWT token and requires \"Employee:Delete\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Delete",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee to delete.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/employees/{id}/documents": {
+			"post": {
+				"operationId": "AddDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Adds a document to an employee's record specified by the employee ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can add documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the employee to whom the document will be added.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"type": {
+										"type": "string"
+									},
+									"approved": {
+										"type": "string"
+									},
+									"startOfValidity": {
+										"type": "string"
+									},
+									"endOfValidity": {
+										"type": "string"
+									},
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"type",
+									"approved",
+									"startOfValidity",
+									"endOfValidity",
+									"files"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{ownerId}/document/{id}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a document from an employee's record. This method requires \"Employee:Update\" permission and is secured with JWT,\nallowing only authorized users to delete documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee from whom the document will be removed.",
+						"in": "path",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Document"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates a specific document for an employee identified by the document ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized personnel can make changes to documents.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose document is being updated.",
+						"in": "path",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The partial updates to be applied to the document.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Document_",
+								"description": "The partial updates to be applied to the document."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/employees/{id}/check-documents": {
+			"get": {
+				"operationId": "CheckDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Checks the status of documents associated with a specific employee. This method is secured with JWT and requires\n\"Employee:Get\" permission, allowing for verification of document status by authorized users.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose documents are being checked.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/employees/{id}/billing": {
+			"put": {
+				"operationId": "UpdateBilling",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the billing information for an employee by ID. This operation is secured with JWT and requires\n\"Employee:Update\" permission, ensuring that only authorized users can update billing details.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Update",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee whose billing information is being updated.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The billing information to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserBilling",
+								"description": "The billing information to update."
+							}
+						}
+					}
+				}
 			}
 		}
 	},

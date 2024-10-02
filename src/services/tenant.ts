@@ -22,21 +22,18 @@ export const tenantService = (): TenantService => ({
 
 const getTenants = async (context: Context): Promise<Array<Partial<Tenant>>> => {
   try {
-    const tenants = await context.models.Tenant.findAll({
+    return await context.models.Tenant.findAll({
       attributes: ["id", "name", "status", "taxNumber", "registrationNumber"],
       include: [{
-        model: context.models.Document,
-        attributes: ["data", "mimeType", "type"],
-        as: "documents",
-        foreignKey: "ownerId"
-      }, {
         model: context.models.Subscription,
         attributes: ["id", "name", "dateStart", "dateEnd"],
         as: "subscriptions"
+      }, {
+        model: context.models.Document,
+        as: "documents",
+        attributes: ["id", "name", "type", "mimeType", "stored"]
       }]
     });
-
-    return tenants;
   } catch (error) {
     context.logger.error(error);
     throw error;
@@ -48,14 +45,13 @@ const getTenant = async (context: Context, id: number): Promise<Partial<Tenant> 
     return await context.models.Tenant.findByPk(id, {
       attributes: ["id", "name", "status", "taxNumber", "email", "country", "region", "city", "address", "zipCode", "registrationNumber", "bankAccount"],
       include: [{
-        model: context.models.Document,
-        attributes: ["data", "mimeType", "type"],
-        as: "documents",
-        foreignKey: "ownerId"
-      }, {
         model: context.models.Subscription,
         attributes: ["id", "name", "dateStart", "dateEnd"],
         as: "subscriptions"
+      }, {
+        model: context.models.Document,
+        as: "documents",
+        attributes: ["id", "name", "type", "mimeType", "stored"]
       }]
     });
   } catch (error) {

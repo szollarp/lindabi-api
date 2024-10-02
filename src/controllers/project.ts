@@ -1,13 +1,14 @@
 import {
   Controller, Route, Request, SuccessResponse, Get, Tags,
   Security, Body, Put, Path, Post, Delete,
-  Query
+  Query,
+  UploadedFiles
 } from "tsoa";
 import type { ContextualRequest } from "../types";
 import { CreateProjectBody, Project } from "../models/interfaces/project";
 import { CreateMilestoneProperties, Milestone } from "../models/interfaces/milestone";
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
-import { CreateDocumentProperties, Document } from "../models/interfaces/document";
+import { Document, DocumentType } from "../models/interfaces/document";
 import { Journey } from "../models/interfaces/journey";
 import { ProjectComment } from "../models/interfaces/project-comment";
 
@@ -233,6 +234,24 @@ export class ProjectController extends Controller {
   }
 
   /**
+   * Upload documents for the specified milestone by their ID.
+   * This endpoint is protected by JWT authentication, requiring "Project:UpdateMilestones" permission.
+   *
+   * @param mid The unique identifier of the milestone.
+   * @param body A partial document objects containing the data to update.
+   * @returns A milestone documents objects containing partial information, or null if no documents is found. 
+   * Sensitive information is omitted.
+   */
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Put("/{id}/milestones/{mid}/documents")
+  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  public async uploadMilestoneDocuments(@Request() request: ContextualRequest, @Path() mid: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
+    const { context, user } = request;
+    return await context.services.document.upload(context, user, mid, "milestone", type, files, {}, false);
+  }
+
+  /**
    * Removes a document from a specific milestone within a project. This method is secured with JWT and requires "Project:UpdateMilestones" permission,
    * ensuring that only authorized users can delete milestone documents.
    *
@@ -246,7 +265,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<{ removed: boolean }> {
     const { context, user } = request;
-    return await context.services.document.remove(context, mid, did, "milestone");
+    return await context.services.document.removeDocument(context, mid, did, "milestone");
   }
 
   /**
@@ -263,7 +282,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:GetMilestones"])
   public async getMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<Partial<Document> | null> {
     const { context } = request;
-    return await context.services.document.get(context, mid, did, "milestone");
+    return await context.services.document.getDocument(context, mid, did, "milestone");
   }
 
   /**
@@ -350,7 +369,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:GetDocuments"])
   public async getDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Document>[]> {
     const { context } = request;
-    return await context.services.project.getDocuments(context, id);
+    return await context.services.document.getDocuments(context, id, "project");
   }
 
   /**
@@ -368,7 +387,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:GetDocuments"])
   public async getDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<Partial<Document> | null> {
     const { context } = request;
-    return await context.services.project.getDocument(context, id, documentId);
+    return await context.services.document.getDocument(context, documentId, id, "project");
   }
 
   /**
@@ -400,9 +419,9 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
   @Security("jwtToken", ["Tenant", "Project:UpdateDocuments"])
-  public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateDocumentProperties[]): Promise<{ uploaded: boolean }> {
+  public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[],): Promise<any> {
     const { context, user } = request;
-    return await context.services.project.uploadDocuments(context, id, user, body);
+    return await context.services.document.upload(context, user, id, "project", type, files, {}, false);
   }
 
   /**
@@ -418,9 +437,9 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
   @Security("jwtToken", ["Tenant", "Tender:DeleteDocument"])
-  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ success: boolean }> {
-    const { context, user } = request;
-    return await context.services.project.removeDocument(context, id, user, documentId);
+  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
+    const { context } = request;
+    return await context.services.document.removeDocument(context, id, documentId, "project");
   }
 
   /**
@@ -435,9 +454,9 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
   @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
-  public async removeProjectDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: string,): Promise<{ success: boolean }> {
-    const { context, user } = request;
-    return await context.services.project.removeDocuments(context, id, user, type);
+  public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
+    const { context } = request;
+    return await context.services.document.removeDocuments(context, id, "project", type);
   }
 
   /**

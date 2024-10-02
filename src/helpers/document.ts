@@ -1,6 +1,8 @@
 import moment from "moment";
 import { Document, DocumentProperties } from "../models/interfaces/document";
 import { Company } from "../models/interfaces/company";
+import { Context } from "../types";
+import { AzureStorageService } from "./azure-storage";
 
 export const isEmployeeDocumentInvalid = (type: string, documents: Document[] | undefined, properties: DocumentProperties, company?: Partial<Company>): { document: string, company?: string | null, approved?: boolean } | null => {
   const propertyKey = `${type}-${company?.id || "null"}`;
@@ -31,3 +33,20 @@ export const isEmployeeDocumentInvalid = (type: string, documents: Document[] | 
 
   return null;
 };
+
+export const isImage = (mimeType: string): boolean => {
+  const imageMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/webp',
+    'image/svg+xml',
+    'image/tiff',
+    'image/x-icon',
+    'image/heif',
+    'image/heic',
+  ];
+
+  return imageMimeTypes.includes(mimeType.toLowerCase());
+}

@@ -1,4 +1,4 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete, UploadedFiles } from "tsoa";
 import type { CreateTenantProperties, Tenant } from "../models/interfaces/tenant";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties } from "../models/interfaces/document";
@@ -79,11 +79,11 @@ export class TenantController extends Controller {
    */
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
-  @Put("{id}/logo")
+  @Put("{id}/documents")
   @Security("jwtToken", ["Tenant:Update"])
-  public async updateLogo(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @UploadedFiles() files: Express.Multer.File[]): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "tenant", false);
+    return await context.services.document.upload(context, user, id, "tenant", "logo", files, {}, true);
   }
 
   /**

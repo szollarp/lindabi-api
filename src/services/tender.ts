@@ -143,7 +143,8 @@ export const tenderService = (): TenderService => {
             include: [
               {
                 model: context.models.Document,
-                as: "documents"
+                as: "documents",
+                attributes: ["id", "name", "type", "mimeType", "stored"]
               }
             ]
           },
@@ -246,7 +247,7 @@ export const tenderService = (): TenderService => {
     try {
       return await context.models.Document.findAll({
         where: { ownerId: id, ownerType: "tender" },
-        attributes: ["id", "name", "type", "size", "preview", "mimeType"],
+        attributes: ["id", "name", "stored", "mimeType"],
       });
     } catch (error) {
       context.logger.error(error);
@@ -258,7 +259,7 @@ export const tenderService = (): TenderService => {
     try {
       return await context.models.Document.findOne({
         where: { ownerId: id, ownerType: "tender", id: documentId },
-        attributes: ["id", "data", "mimeType", "name"],
+        attributes: ["id", "mimeType", "name", "stored"],
       });
     } catch (error) {
       context.logger.error(error);

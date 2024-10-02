@@ -4,6 +4,7 @@ import type { Company, CreateCompanyProperties } from "../models/interfaces/comp
 import type { Contact } from "../models/interfaces/contact";
 import { COMPANY_TYPE } from "../constants";
 import { Location } from "../models/interfaces/location";
+import { Document } from "@react-pdf/renderer";
 
 export interface CompanyService {
   getCompanies: (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER) => Promise<Array<Partial<Company>>>
@@ -14,6 +15,7 @@ export interface CompanyService {
   deleteCompanies: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
   addContacts: (context: Context, tenantId: number, id: number, contacts: Partial<Contact>[]) => Promise<{ success: boolean }>
   addLocations: (context: Context, tenantId: number, id: number, locations: Partial<Location>[]) => Promise<{ success: boolean }>
+  getDocuments: (context: Context, ownerId: number) => Promise<Partial<Document>[]>
 }
 
 export const companyService = (): CompanyService => {
@@ -22,23 +24,24 @@ export const companyService = (): CompanyService => {
       return await context.models.Company.findAll({
         attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default"],
         where: { tenantId, type },
-        include: [{
-          model: context.models.Document,
-          attributes: ["data", "mimeType", "type"],
-          as: "documents",
-          foreignKey: "ownerId"
-        },
-        {
-          model: context.models.Location,
-          attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
-          as: "locations",
-          through: { attributes: [] }
-        }, {
-          model: context.models.Contact,
-          attributes: ["id", "name", "email", "phoneNumber", "status"],
-          as: "contacts",
-          through: { attributes: [] }
-        }]
+        include: [
+          {
+            model: context.models.Document,
+            attributes: ["id", "name", "type", "mimeType", "stored"],
+            as: "documents",
+            foreignKey: "ownerId"
+          },
+          {
+            model: context.models.Location,
+            attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
+            as: "locations",
+            through: { attributes: [] }
+          }, {
+            model: context.models.Contact,
+            attributes: ["id", "name", "email", "phoneNumber", "status"],
+            as: "contacts",
+            through: { attributes: [] }
+          }]
       });
     } catch (error) {
       context.logger.error(error);
@@ -51,11 +54,6 @@ export const companyService = (): CompanyService => {
       return await context.models.Company.findOne({
         where: { tenantId, id },
         include: [{
-          model: context.models.Document,
-          attributes: ["data", "mimeType", "type"],
-          as: "documents",
-          foreignKey: "ownerId"
-        }, {
           model: context.models.Location,
           attributes: ["id", "name", "country", "city", "address", "zipCode", "status"],
           as: "locations",
@@ -65,12 +63,25 @@ export const companyService = (): CompanyService => {
           attributes: ["id", "name", "email", "phoneNumber", "status"],
           as: "contacts",
           through: { attributes: [] }
+        }, {
+          model: context.models.Document,
+          attributes: ["id", "name", "type", "mimeType", "stored"],
+          as: "documents",
+          foreignKey: "ownerId"
         }]
       });
     } catch (error) {
       context.logger.error(error);
       throw error;
     }
+  };
+
+  const getDocuments = async (context: Context, ownerId: number): Promise<Partial<Document>[]> => {
+    return await context.models.Document.findAll({
+      where: { ownerId, ownerType: "company" },
+      attributes: ["id", "name", "type", "mimeType", "stored"],
+      raw: true
+    });
   };
 
   const createCompany = async (context: Context, tenantId: number, createdBy: number, data: CreateCompanyProperties): Promise<Partial<Company> | null> => {
@@ -234,6 +245,7 @@ export const companyService = (): CompanyService => {
 
   return {
     getCompanies,
+    getDocuments,
     getCompany,
     createCompany,
     updateCompany,

@@ -1,13 +1,11 @@
 import React from 'react';
-import { renderToBuffer, renderToFile } from "@react-pdf/renderer";
+// import { renderToBuffer } from '@react-pdf/renderer';
 import type { ServiceBusReceivedMessage } from "@azure/service-bus";
 import { WEBSITE_ENDPOINTS } from "../constants";
 import getWelcomeNewUserTemplate from "../helpers/email-template/welcome";
 import type { SendEmailOptions, SendTemplateEmailOptions } from "../helpers/postmark";
 import getPasswordResetTemplate from "../helpers/email-template/password-reset";
 import type { Context } from "../types";
-
-import { Tender } from "../models/interfaces/tender";
 import { generatePdfFilename } from "../helpers/tender";
 import TenderPDF from '../react/tender-pdf-template';
 
@@ -53,6 +51,8 @@ const handleForgottenPasswordEmail = async (context: Context, userId: number) =>
 };
 
 const handleSendTender = async (context: Context, tenderId: number, htmlBody: string) => {
+  const { renderToBuffer } = await import('@react-pdf/renderer');
+
   const tender = await context.models.Tender.findOne({
     where: { id: tenderId },
     include: [

@@ -1,7 +1,7 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete, Query } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete, Query, UploadedFiles } from "tsoa";
 import type { ContextualRequest } from "../types";
 import type { CreateTenderProperties, Tender } from "../models/interfaces/tender";
-import { CreateDocumentProperties, Document } from "../models/interfaces/document";
+import { DocumentType } from "../models/interfaces/document";
 import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 
@@ -200,9 +200,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("{id}/documents")
   @Security("jwtToken", ["Tenant", "Tender:Get"])
-  public async getTenderDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Document>[]> {
+  public async getTenderDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<any> {
     const { context } = request;
-    return await context.services.tender.getTenderDocuments(context, id);
+    return await context.services.document.getDocuments(context, id, "tender");
   }
 
   /**
@@ -218,9 +218,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("{id}/documents/{documentId}")
   @Security("jwtToken", ["Tenant", "Tender:Get"])
-  public async getTenderDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<Partial<Document> | null> {
+  public async getTenderDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<any> {
     const { context } = request;
-    return await context.services.tender.getTenderDocument(context, id, documentId);
+    return await context.services.document.getDocument(context, documentId, id, "tender");
   }
 
   /**
@@ -252,9 +252,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async uploadTenderDocuments(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateDocumentProperties[]): Promise<{ uploaded: boolean }> {
+  public async uploadTenderDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
-    return await context.services.tender.uploadTenderDocuments(context, id, user, body);
+    return await context.services.document.upload(context, user, id, "tender", type, files, {}, false);
   }
 
   /**
@@ -270,9 +270,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async removeTenderDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ success: boolean }> {
-    const { context, user } = request;
-    return await context.services.tender.removeTenderDocument(context, id, user, documentId);
+  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
+    const { context } = request;
+    return await context.services.document.removeDocument(context, id, documentId, "tender");
   }
 
   /**
@@ -287,9 +287,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async removeAllTenderDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: string,): Promise<{ success: boolean }> {
-    const { context, user } = request;
-    return await context.services.tender.removeAllTenderDocuments(context, id, user, type);
+  public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
+    const { context } = request;
+    return await context.services.document.removeDocuments(context, id, "tender", type);
   }
 
   /**

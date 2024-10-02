@@ -59,14 +59,6 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   declare tenantId?: ForeignKey<Tenant["id"]>;
 
-  public createDocument!: HasOneGetAssociationMixin<DocumentModel>;
-
-  public getDocument!: HasOneGetAssociationMixin<DocumentModel>;
-
-  declare document?: NonAttribute<Document>;
-
-  declare documentId?: ForeignKey<Document["id"]>;
-
   public createLocation!: HasManyCreateAssociationMixin<LocationModel>;
 
   public addLocation!: HasManyAddAssociationMixin<LocationModel, number>;
@@ -95,12 +87,18 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   declare contactIds?: ForeignKey<Contact["id"]>[];
 
+  declare documents?: NonAttribute<Document[]>;
+
+  declare documentIds?: ForeignKey<Document["id"]>[];
+
+  public getDocuments!: HasManyGetAssociationsMixin<DocumentModel>;
+
   public static associate: (models: Models) => void;
 
   public static associations: {
-    logo: Association<CompanyModel, DocumentModel>
     locations: Association<CompanyModel, LocationModel>
     contacts: Association<CompanyModel, ContactModel>
+    documents: Association<CompanyModel, DocumentModel>
   };
 };
 

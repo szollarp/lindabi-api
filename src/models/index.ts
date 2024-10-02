@@ -23,6 +23,8 @@ import { MilestoneFactory, type MilestoneModel } from "./milestone";
 import { ProjectContactFactory, type ProjectContactModel } from "./project-contact";
 import { ProjectSupervisorFactory, ProjectSupervisorModel } from "./project-supervisor";
 import { ProjectCommentFactory, ProjectCommentModel } from "./project-comment";
+import { StatusReportFactory, StatusReportModel } from "./status-report";
+import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
   sequelize: Sequelize
@@ -50,9 +52,10 @@ export interface Models {
   ProjectSupervisor: typeof ProjectSupervisorModel
   Milestone: typeof MilestoneModel
   ProjectComment: typeof ProjectCommentModel
+  StatusReport: typeof StatusReportModel
 };
 
-export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false): Promise<Models> => {
+export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
   const sequelize = new Sequelize({ benchmark, logging, ...databaseConfig });
 
   const models: Models = {
@@ -69,7 +72,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Contact: ContactFactory(sequelize),
     Company: CompanyFactory(sequelize),
     Location: LocationFactory(sequelize),
-    Document: DocumentFactory(sequelize),
+    Document: DocumentFactory(sequelize, storage),
     Tender: TenderFactory(sequelize),
     TenderItem: TenderItemFactory(sequelize),
     Journey: JourneyFactory(sequelize),
@@ -80,6 +83,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     ProjectSupervisor: ProjectSupervisorFactory(sequelize),
     Milestone: MilestoneFactory(sequelize),
     ProjectComment: ProjectCommentFactory(sequelize),
+    StatusReport: StatusReportFactory(sequelize),
     sequelize
   };
 

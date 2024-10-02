@@ -1,8 +1,9 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete, UploadedFiles, FormField } from "tsoa";
 import type { CreateUserProperties, User, UserBilling } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
-import { CreateDocumentProperties, Document } from "../models/interfaces/document";
+import { CreateDocumentProperties, Document, DocumentType } from "../models/interfaces/document";
 import { USER_TYPE } from "../constants";
+import app from "../app";
 
 @Route("employees")
 export class EmployeeController extends Controller {
@@ -96,7 +97,7 @@ export class EmployeeController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("{id}")
   @Security("jwtToken", ["Employee:Get", "Tenant"])
-  public async getEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User>> {
+  public async getEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User | null>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
     return await context.services.user.get(context, tenant, id);
@@ -132,9 +133,18 @@ export class EmployeeController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("{id}/documents")
   @Security("jwtToken", ["Employee:Update", "Tenant"])
-  public async addDocument(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateDocumentProperties): Promise<{ uploaded: boolean }> {
-    const { context } = request;
-    return await context.services.document.upload(context, id, body, "user", true);
+  public async addDocument(
+    @Request() request: ContextualRequest,
+    @Path() id: number,
+    @FormField() type: DocumentType,
+    @FormField() approved: boolean,
+    @FormField() startOfValidity: string,
+    @FormField() endOfValidity: string,
+    @UploadedFiles() files: Express.Multer.File[]
+  ): Promise<{ uploaded: boolean }> {
+    const { context, user } = request;
+    const properties = { approved, startOfValidity, endOfValidity };
+    return await context.services.document.upload(context, user, id, "user", type, files, properties, false);
   }
 
   /**
@@ -151,7 +161,7 @@ export class EmployeeController extends Controller {
   @Security("jwtToken", ["Employee:Update", "Tenant"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() ownerId: number, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.remove(context, ownerId, id, "user");
+    return await context.services.document.removeDocument(context, ownerId, id, "user");
   }
 
   /**

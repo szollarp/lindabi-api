@@ -1,7 +1,7 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete, UploadedFiles, Query } from "tsoa";
 import type { CreateUserProperties, Notifications, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
-import { CreateDocumentProperties } from "../models/interfaces/document";
+import { CreateDocumentProperties, DocumentType } from "../models/interfaces/document";
 import { USER_TYPE } from "../constants";
 
 @Route("users")
@@ -77,9 +77,9 @@ export class UserController extends Controller {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
     const updatedUser = await context.services.user.update(context, tenant, id, body, user.id);
-    if (updatedUser) {
-      await context.services.notification.sendUserUpdateNotification(context, updatedUser);
-    }
+    // if (updatedUser) {
+    //   await context.services.notification.sendUserUpdateNotification(context, updatedUser);
+    // }
 
     return updatedUser;
   }
@@ -96,7 +96,7 @@ export class UserController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("{id}")
   @Security("jwtToken", ["User:Get", "Me:*", "Tenant"])
-  public async getUser(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User>> {
+  public async getUser(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User | null>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
     return await context.services.user.get(context, tenant, id);
@@ -113,11 +113,12 @@ export class UserController extends Controller {
    */
   @Tags("User")
   @SuccessResponse("200", "OK")
-  @Put("{id}/avatar")
+  @Put("{id}/documents")
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
-  public async updateUserProfilePicture(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "user", false);
+    console.log({ id, type, files });
+    return await context.services.document.upload(context, user, id, "user", type, files, {}, true);
   }
 
   /**

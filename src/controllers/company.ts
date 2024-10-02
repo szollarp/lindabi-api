@@ -1,11 +1,12 @@
 import {
   Controller, Route, Request, SuccessResponse, Get, Tags,
-  Security, Body, Put, Path, Post, Delete, Query
+  Security, Body, Put, Path, Post, Delete, Query,
+  UploadedFiles
 } from "tsoa";
 import type { CreateCompanyProperties, Company } from "../models/interfaces/company";
 import type { ContextualRequest } from "../types";
 import type { COMPANY_TYPE } from "../constants";
-import type { CreateDocumentProperties } from "../models/interfaces/document";
+import type { DocumentType } from "../models/interfaces/document";
 import type { Contact } from "../models/interfaces/contact";
 import { Location } from "../models/interfaces/location";
 
@@ -44,6 +45,22 @@ export class CompanyController extends Controller {
   public async getCompany(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Company> | null> {
     const { context, user } = request;
     return await context.services.company.getCompany(context, user.tenant, id);
+  }
+
+  /**
+   * Fetches detailed information about a specific company identified by its ID. This method ensures that only
+   * authenticated users with appropriate permissions can access company details. The endpoint uses JWT for security.
+   *
+   * @param id The unique identifier of the company to retrieve.
+   * @returns The company details if found, otherwise null. Sensitive information is omitted.
+   */
+  @Tags("Company")
+  @SuccessResponse("200", "OK")
+  @Get("/{id}/documents")
+  @Security("jwtToken", ["Tenant", "Company:Get"])
+  public async getDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<any> {
+    const { context } = request;
+    return await context.services.company.getDocuments(context, id);
   }
 
   /**
@@ -90,11 +107,11 @@ export class CompanyController extends Controller {
    */
   @Tags("Company")
   @SuccessResponse("200", "OK")
-  @Post("{id}/document")
+  @Put("{id}/documents")
   @Security("jwtToken", ["Tenant", "Company:Update"])
-  public async updateDocument(@Request() request: ContextualRequest, @Body() body: CreateDocumentProperties, @Path() id: number): Promise<{ uploaded: boolean }> {
+  public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
-    return await context.services.document.upload(context, id, body, "company", false);
+    return await context.services.document.upload(context, user, id, "company", type, files, {}, true);
   }
 
   /**

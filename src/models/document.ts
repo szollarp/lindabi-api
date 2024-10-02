@@ -1,5 +1,7 @@
 import { Model, DataTypes, type Sequelize } from "sequelize";
 import { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "./interfaces/document";
+import { AzureStorageService } from "../helpers/azure-storage";
+import { isImage } from "../helpers/document";
 import type { Models } from ".";
 
 export class DocumentModel extends Model<Document, CreateDocumentProperties> implements Document {
@@ -7,13 +9,7 @@ export class DocumentModel extends Model<Document, CreateDocumentProperties> imp
 
   public name?: string | null;
 
-  public size?: number | null;
-
-  public preview?: string | null;
-
   public type!: DocumentType;
-
-  public data!: string;
 
   public mimeType!: string;
 
@@ -31,10 +27,16 @@ export class DocumentModel extends Model<Document, CreateDocumentProperties> imp
 
   public approved?: boolean;
 
+  public readonly stored!: {
+    original: string;
+    resized?: string;
+    thumbnail?: string;
+  };
+
   public static associate: (models: Models) => void;
 }
 
-export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
+export const DocumentFactory = (sequelize: Sequelize, storage: AzureStorageService): typeof DocumentModel => {
   DocumentModel.init(
     {
       id: {
@@ -47,26 +49,9 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
         type: DataTypes.STRING,
         allowNull: true
       },
-      preview: {
-        type: DataTypes.TEXT,
-        allowNull: true
-      },
-      size: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: 0
-      },
       type: {
         type: DataTypes.STRING,
         allowNull: false
-      },
-      data: {
-        type: DataTypes.BLOB("long"),
-        allowNull: false,
-        get() {
-          const data = this.getDataValue("data");
-          return data !== null ? Buffer.from(data).toString() : null;
-        }
       },
       mimeType: {
         type: DataTypes.STRING,
@@ -102,7 +87,26 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: false
-      }
+      },
+      stored: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          try {
+            const original = storage.generateSasUrl(this.name!);
+
+            if (!isImage(this.mimeType)) {
+              return { original };
+            }
+
+            const resized = storage.generateSasUrl(`resized/${this.name!}`);
+            const thumbnail = storage.generateSasUrl(`thumbnail/${this.name!}`);
+
+            return { original, resized, thumbnail };
+          } catch (e) {
+            return {};
+          }
+        },
+      },
     },
     {
       sequelize,
@@ -161,6 +165,14 @@ export const DocumentFactory = (sequelize: Sequelize): typeof DocumentModel => {
       as: "milestone",
       scope: {
         ownerType: "milestone"
+      }
+    });
+
+    DocumentModel.belongsTo(models.StatusReport, {
+      foreignKey: "owner_id",
+      as: "report",
+      scope: {
+        ownerType: "report"
       }
     });
   };

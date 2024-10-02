@@ -61,5 +61,29 @@
   "website": {
     "hostname": "http://localhost:8083"
   },
-  "tmp": "tmp"
+  "tmp": "tmp",
+  "azure": {
+    "storage": {
+      "accountName": "",
+      "accountKey": "",
+      "containerName": "",
+      "connectionString": ""
+    }
+  },
+  "upload": {
+    "image": {
+      "sizes": {
+        "resized": {
+          "width": 2048,
+          "height": 1536,
+          "fit": "inside"
+        },
+        "thumbnail": {
+          "width": 250,
+          "height": 250,
+          "fit": "cover"
+        }
+      }
+    }
+  }
 }

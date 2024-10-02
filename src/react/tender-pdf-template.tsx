@@ -1,10 +1,7 @@
 import React from 'react';
-
-import { Page, View, Text, Font, Image, StyleSheet, Document } from '@react-pdf/renderer';
 import { Style } from '@react-pdf/types';
 import { useMemo } from 'react';
 import { Tender } from '../models/interfaces/tender';
-import { Document as DocumentType } from '../models/interfaces/document';
 import {
   getDiscountAmount, getNetAmount, getRoundAmount,
   getTotalAmount, getTotalNetAmount, getTotalVatAmount
@@ -12,160 +9,180 @@ import {
 import { fDate, fPercent, fCurrency } from "../format";
 import { DocumentModel } from '../models/document';
 
-Font.register({
-  family: 'Roboto',
-  fonts: [{ src: 'src/react/assets/Roboto-Regular.ttf' }, { src: 'src/react/assets/Roboto-Bold.ttf' }],
-});
-
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        col3: { width: '33%' },
-        col4: { width: '25%' },
-        col8: { width: '75%' },
-        col6: { width: '50%' },
-        mb4: { marginBottom: 4 },
-        mb8: { marginBottom: 8 },
-        mb20: { marginBottom: 20 },
-        mb40: { marginBottom: 40 },
-        h1: {
-          fontWeight: 800,
-          lineHeight: 80 / 64,
-          fontSize: 40
-        },
-        h2: {
-          fontWeight: 800,
-          lineHeight: 64 / 48,
-          fontSize: 32
-        },
-        h3: { fontSize: 16, fontWeight: 700 },
-        h4: { fontSize: 13, fontWeight: 700 },
-        h6: { fontSize: 11, fontWeight: 500 },
-        body1: { fontSize: 10 },
-        body2: { fontSize: 9 },
-        subtitle1: { fontSize: 10, fontWeight: 700 },
-        subtitle2: { fontSize: 9, fontWeight: 700 },
-        alignRight: { textAlign: 'right' },
-        page: {
-          fontSize: 9,
-          lineHeight: 1.5,
-          fontFamily: 'Roboto',
-          backgroundColor: '#FFFFFF',
-          padding: '40px 24px 120px 24px',
-        },
-        title: {
-          color: '#33478a'
-        },
-        viewHeader: {
-          backgroundColor: '#4b6999',
-        },
-        box: {
-          border: '1px solid #f2f2f2'
-        },
-        dotted: {
-          borderTop: '1px dotted #4b6999'
-        },
-        boxHeader: {
-          backgroundColor: '#5889ad',
-          color: 'white',
-          paddingLeft: 8,
-          paddingTop: 4,
-          height: 20
-        },
-        boxContent: {
-          paddingLeft: 8,
-          paddingTop: 4,
-          minHeight: 20,
-        },
-        summaryContent: {
-          paddingLeft: 8,
-          paddingTop: 4,
-          minHeight: 15,
-        },
-        boxShadow: {
-          backgroundColor: '#ecf2f4'
-        },
-        footer: {
-          left: 0,
-          right: 0,
-          bottom: 0,
-          padding: 24,
-          margin: 'auto',
-          borderTopWidth: 1,
-          borderStyle: 'solid',
-          position: 'absolute',
-          borderColor: '#DFE3E8',
-        },
-        gridContainer: {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-
-        },
-        table: {
-          display: 'flex',
-          width: 'auto',
-          border: '1px solid #f2f2f2'
-        },
-        tableHeader: {
-          backgroundColor: '#5889ad',
-          color: 'white',
-          height: 25,
-          fontSize: 8,
-          flexDirection: 'row',
-          paddingLeft: 8,
-          paddingTop: 4,
-          lineHeight: 1
-        },
-        tableRow: {
-          height: 25,
-          paddingLeft: 8,
-          paddingTop: 5,
-          flexDirection: 'row',
-          fontSize: 8,
-        },
-        noBorder: {
-          paddingTop: 8,
-          paddingBottom: 0,
-          borderBottomWidth: 0,
-        },
-        tableCell_1: {
-          width: '3%',
-          textAlign: 'left',
-        },
-        tableCell_4: {
-          width: '10%',
-          textAlign: 'right',
-        },
-        tableCell_2: {
-          width: '12.8%',
-          paddingRight: 16,
-          textAlign: 'right',
-        },
-        tableCell_3: {
-          width: '23%',
-          textAlign: 'left',
-        },
-        bold: {
-          fontWeight: 700
-        },
-        none: {}
-      }),
-    []
-  );
-
 type TenderPDFProps = {
   tender: Tender;
 };
 
 const TenderPDF = ({ tender }: TenderPDFProps) => {
-  const styles = useStyles();
+  let styles: any, Page: any, View: any, Text: any, Font: any, Image: any, StyleSheet: any, Document: any;
+
+  React.useEffect(() => {
+    const useStyles = () =>
+      useMemo(
+        () =>
+          StyleSheet.create({
+            col3: { width: '33%' },
+            col4: { width: '25%' },
+            col8: { width: '75%' },
+            col6: { width: '50%' },
+            mb4: { marginBottom: 4 },
+            mb8: { marginBottom: 8 },
+            mb20: { marginBottom: 20 },
+            mb40: { marginBottom: 40 },
+            h1: {
+              fontWeight: 800,
+              lineHeight: 80 / 64,
+              fontSize: 40
+            },
+            h2: {
+              fontWeight: 800,
+              lineHeight: 64 / 48,
+              fontSize: 32
+            },
+            h3: { fontSize: 16, fontWeight: 700 },
+            h4: { fontSize: 13, fontWeight: 700 },
+            h6: { fontSize: 11, fontWeight: 500 },
+            body1: { fontSize: 10 },
+            body2: { fontSize: 9 },
+            subtitle1: { fontSize: 10, fontWeight: 700 },
+            subtitle2: { fontSize: 9, fontWeight: 700 },
+            alignRight: { textAlign: 'right' },
+            page: {
+              fontSize: 9,
+              lineHeight: 1.5,
+              fontFamily: 'Roboto',
+              backgroundColor: '#FFFFFF',
+              padding: '40px 24px 120px 24px',
+            },
+            title: {
+              color: '#33478a'
+            },
+            viewHeader: {
+              backgroundColor: '#4b6999',
+            },
+            box: {
+              border: '1px solid #f2f2f2'
+            },
+            dotted: {
+              borderTop: '1px dotted #4b6999'
+            },
+            boxHeader: {
+              backgroundColor: '#5889ad',
+              color: 'white',
+              paddingLeft: 8,
+              paddingTop: 4,
+              height: 20
+            },
+            boxContent: {
+              paddingLeft: 8,
+              paddingTop: 4,
+              minHeight: 20,
+            },
+            summaryContent: {
+              paddingLeft: 8,
+              paddingTop: 4,
+              minHeight: 15,
+            },
+            boxShadow: {
+              backgroundColor: '#ecf2f4'
+            },
+            footer: {
+              left: 0,
+              right: 0,
+              bottom: 0,
+              padding: 24,
+              margin: 'auto',
+              borderTopWidth: 1,
+              borderStyle: 'solid',
+              position: 'absolute',
+              borderColor: '#DFE3E8',
+            },
+            gridContainer: {
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+
+            },
+            table: {
+              display: 'flex',
+              width: 'auto',
+              border: '1px solid #f2f2f2'
+            },
+            tableHeader: {
+              backgroundColor: '#5889ad',
+              color: 'white',
+              height: 25,
+              fontSize: 8,
+              flexDirection: 'row',
+              paddingLeft: 8,
+              paddingTop: 4,
+              lineHeight: 1
+            },
+            tableRow: {
+              height: 25,
+              paddingLeft: 8,
+              paddingTop: 5,
+              flexDirection: 'row',
+              fontSize: 8,
+            },
+            noBorder: {
+              paddingTop: 8,
+              paddingBottom: 0,
+              borderBottomWidth: 0,
+            },
+            tableCell_1: {
+              width: '3%',
+              textAlign: 'left',
+            },
+            tableCell_4: {
+              width: '10%',
+              textAlign: 'right',
+            },
+            tableCell_2: {
+              width: '12.8%',
+              paddingRight: 16,
+              textAlign: 'right',
+            },
+            tableCell_3: {
+              width: '23%',
+              textAlign: 'left',
+            },
+            bold: {
+              fontWeight: 700
+            },
+            none: {}
+          }),
+        []
+      );
+    
+    const importComponent = async () => {
+      const components = await import('@react-pdf/renderer');
+      Page = components.Page;
+      View = components.View;
+      Text = components.Text;
+      Font = components.Font;
+      Image = components.Image;
+      StyleSheet = components.StyleSheet;
+    };
+
+    if (!!Font) {
+      Font.register({
+        family: 'Roboto',
+        fonts: [{ src: 'src/react/assets/Roboto-Regular.ttf' }, { src: 'src/react/assets/Roboto-Bold.ttf' }],
+      });
+    }
+
+    if (!!StyleSheet && !styles) {
+      styles = useStyles();
+    }
+    
+    importComponent();
+  }, [tender]);
 
   const getImage = (type: "logo" | "signature" | "stamp"): string | null => {
     if (!tender?.contractor?.documents) return null;
     const documents = tender.contractor.documents as DocumentModel[];
     const image = documents.find((doc) => doc.type === type);
-    return image ? image.data : null;
+    return image?.stored?.resized || null;
   };
 
   const TenderCustomerLogo = () => {
