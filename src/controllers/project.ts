@@ -2,10 +2,11 @@ import {
   Controller, Route, Request, SuccessResponse, Get, Tags,
   Security, Body, Put, Path, Post, Delete,
   Query,
-  UploadedFiles
+  UploadedFiles,
+  FormField
 } from "tsoa";
 import type { ContextualRequest } from "../types";
-import { CreateProjectBody, Project } from "../models/interfaces/project";
+import { Project } from "../models/interfaces/project";
 import { CreateMilestoneProperties, Milestone } from "../models/interfaces/milestone";
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
 import { Document, DocumentType } from "../models/interfaces/document";
@@ -25,9 +26,13 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/copy-from-tender")
   @Security("jwtToken", ["Tenant", "Project:Create"])
-  public async createProject(@Request() request: ContextualRequest, @Body() body: CreateProjectBody): Promise<{ id: number }> {
+  public async createProject(
+    @Request() request: ContextualRequest,
+    @UploadedFiles() files: Express.Multer.File[],
+    @FormField() tenderId: number,
+    @FormField() contractOption: string): Promise<{ id: number }> {
     const { context, user } = request;
-    return await context.services.project.copyFromTender(context, body, user);
+    return await context.services.project.copyFromTender(context, user, tenderId, contractOption, files);
   }
 
   /**

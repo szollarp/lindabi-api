@@ -2973,34 +2973,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateProjectBody": {
-				"properties": {
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
-					"contractOption": {
-						"type": "string",
-						"enum": [
-							"upload",
-							"later",
-							"skip"
-						]
-					}
-				},
-				"required": [
-					"tenderId",
-					"contractOption"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"Tender": {
 				"properties": {
 					"id": {
@@ -6951,13 +6923,31 @@
 				],
 				"parameters": [],
 				"requestBody": {
-					"description": "The project creation details including reference to the tender and additional parameters.",
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateProjectBody",
-								"description": "The project creation details including reference to the tender and additional parameters."
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									},
+									"tenderId": {
+										"type": "string"
+									},
+									"contractOption": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"files",
+									"tenderId",
+									"contractOption"
+								]
 							}
 						}
 					}

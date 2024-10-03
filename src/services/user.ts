@@ -168,6 +168,23 @@ export const userService = (): UserService => {
       const where = !tenantId ? { id } : { id, tenantId };
       const user = await context.models.User.findOne({
         attributes: USER_ATTRIBUTES,
+        include: [{
+          model: context.models.Role,
+          attributes: ["id", "name"],
+          as: "role",
+          nested: true,
+          include: [{
+            model: context.models.Permission,
+            attributes: ["id", "name"],
+            nested: true,
+            as: "permissions",
+            through: { attributes: [] }
+          }]
+        }, {
+          model: context.models.Document,
+          as: "documents",
+          attributes: ["id", "name", "type", "mimeType", "stored", "properties", "approved"],
+        }],
         where
       });
 

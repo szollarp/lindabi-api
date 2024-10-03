@@ -55,9 +55,3 @@ export interface Project {
 };
 
 export type CreateProjectProperties = Omit<Project, "id" | "createdOn" | "updatedBy" | "updatedOn">;
-
-export interface CreateProjectBody {
-  documents?: Array<Document>;
-  tenderId: number;
-  contractOption: "upload" | "later" | "skip";
-};

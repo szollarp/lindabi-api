@@ -1,6 +1,6 @@
 import { NotAcceptable } from "http-errors";
 import type { Context, DecodedUser } from "../types";
-import type { CreateProjectBody, Project } from "../models/interfaces/project";
+import type { Project } from "../models/interfaces/project";
 import type { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "../models/interfaces/document";
 import { PROJECT_COLORS, PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE, PROJECT_STATUS, TENDER_STATUS } from "../constants";
 import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
@@ -12,7 +12,7 @@ import { getUserProjectIds } from "../helpers/project";
 import { ProjectComment } from "../models/interfaces/project-comment";
 
 export interface ProjectService {
-  copyFromTender: (context: Context, data: CreateProjectBody, user: DecodedUser) => Promise<{ id: number }>
+  copyFromTender: (context: Context, user: DecodedUser, tenderId: number, contractOption: string, files: Express.Multer.File[]) => Promise<{ id: number }>
   updateProject: (context: Context, id: number, data: Partial<Project>, user: DecodedUser) => Promise<{ updated: boolean }>
   getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>
   getProject: (context: Context, tenantId: number, id: number) => Promise<Partial<Project> | null>
@@ -43,14 +43,14 @@ export interface ProjectService {
 }
 
 export const projectService = (): ProjectService => {
-  const copyFromTender = async (context: Context, data: CreateProjectBody, user: DecodedUser): Promise<{ id: number }> => {
+  const copyFromTender = async (context: Context, user: DecodedUser, tenderId: number, contractOption: string, files: Express.Multer.File[]): Promise<{ id: number }> => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      const { tenderId, contractOption } = data;
       const tender = await context.models.Tender.findOne({
         where: { id: tenderId },
-        attributes: ["id", "type", "number", "locationId", "customerId", "contractorId", "notes", "survey", "locationDescription", "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount"],
+        attributes: ["id", "type", "number", "locationId", "customerId", "contractorId", "notes", "survey", "locationDescription",
+          "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount"],
         include: [{
           model: context.models.TenderItem,
           as: "items",
@@ -76,7 +76,6 @@ export const projectService = (): ProjectService => {
       const vatAmount = getTotalVatAmount(tender);
       const { items, customer, ...attributes } = tender.toJSON();
 
-      //TODO: Add validation for the items
       const project = await context.models.Project.create({
         ...attributes,
         contractOption,
@@ -102,18 +101,8 @@ export const projectService = (): ProjectService => {
         } as any, { transaction: t });
       }
 
-      if (data.documents && data.documents.length) {
-        const documents = data.documents.map((document) => ({
-          ...document,
-          ownerId: project.id,
-          ownerType: "project" as DocumentOwnerType,
-          createdBy: user.id,
-          type: "contract" as DocumentType
-        }));
-
-        await context.models.Document.bulkCreate(documents, {
-          transaction: t
-        });
+      if (files && files.length > 0) {
+        await context.services.document.upload(context, user, project.id, "project", "contract", files, {}, false);
       }
 
       if (customer!.contacts && customer!.contacts.length) {
@@ -139,8 +128,6 @@ export const projectService = (): ProjectService => {
       await t.commit();
       return { id: project.id };
     } catch (error) {
-      context.logger.error(error);
-
       await t.rollback();
       throw error;
     }

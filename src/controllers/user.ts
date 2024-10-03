@@ -77,9 +77,9 @@ export class UserController extends Controller {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
     const updatedUser = await context.services.user.update(context, tenant, id, body, user.id);
-    // if (updatedUser) {
-    //   await context.services.notification.sendUserUpdateNotification(context, updatedUser);
-    // }
+    if (updatedUser) {
+      await context.services.notification.sendUserUpdateNotification(context, updatedUser);
+    }
 
     return updatedUser;
   }
@@ -117,7 +117,6 @@ export class UserController extends Controller {
   @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
-    console.log({ id, type, files });
     return await context.services.document.upload(context, user, id, "user", type, files, {}, true);
   }
 
