@@ -79,8 +79,7 @@ export const companyService = (): CompanyService => {
   const getDocuments = async (context: Context, ownerId: number): Promise<Partial<Document>[]> => {
     return await context.models.Document.findAll({
       where: { ownerId, ownerType: "company" },
-      attributes: ["id", "name", "type", "mimeType", "stored"],
-      raw: true
+      attributes: ["id", "name", "type", "mimeType", "stored"]
     });
   };
 
