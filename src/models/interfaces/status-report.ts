@@ -15,4 +15,4 @@ export interface StatusReport {
   documents?: Document[]
 };
 
-export type CreateStatusReportProperties = Omit<StatusReport, "id" | "projectId" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateStatusReportProperties = Omit<StatusReport, "id" | "createdAt" | "createdOn" | "updatedBy" | "updatedOn">;

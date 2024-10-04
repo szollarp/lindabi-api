@@ -2902,6 +2902,52 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"availableToClient": {
+						"type": "boolean"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"status",
+					"dueDate",
+					"availableToClient",
+					"projectId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateStatusReportProperties": {
+				"$ref": "#/components/schemas/Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
 			"Partial_Role_": {
 				"properties": {
 					"id": {
@@ -6635,6 +6681,61 @@
 					}
 				],
 				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateStatusReport",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/Partial_StatusReport_"
+										},
+										{
+											"properties": {
+												"exists": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"exists"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new status report with the provided properties. This operation is secured and\nrequires a JWT token with \"StatusReport:Create\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties required to create a new status report.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateStatusReportProperties",
+								"description": "The properties required to create a new status report."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/status-reports/related-projects": {
@@ -6668,6 +6769,7 @@
 						}
 					}
 				},
+				"description": "Retrieves a list of projects related to the current user. This endpoint requires\nauthentication and is protected by JWT tokens with the \"StatusReport:List\" permission.",
 				"tags": [
 					"Status Report"
 				],
@@ -6680,6 +6782,293 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/status-reports/{id}": {
+			"get": {
+				"operationId": "GetStatusReport",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_StatusReport_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves the details of a specific status report by its unique identifier. This endpoint\nrequires JWT authentication and is protected by the \"StatusReport:Get\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the status report to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateStatusReport",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_StatusReport_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the information of an existing status report, identified by their ID. Access to this\nendpoint is restricted to authenticated requests with \"StatusReport:Update\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"StatusReport:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the status report to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial status report object containing the fields to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_StatusReport_",
+								"description": "A partial status report object containing the fields to update."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/status-reports/{id}/documents": {
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified status reports by their ID.\nThis endpoint is protected by JWT authentication, requiring \"StatusReport:UpdateDocuments\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:UpdateDocuments"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the status report.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/status-reports/{id}/documents/{documentId}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a specific document from a status report by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"StatusReport:DeleteDocument\" permission,\nensuring that only authorized users can delete documents.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:DeleteDocument"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the status report from which the document will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/status-reports/{id}/documents-by-type": {
+			"delete": {
+				"operationId": "RemoveDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes all documents of a specific type associated with a status report by its ID.\nThis endpoint is protected by JWT authentication, requiring \"StatusReport:DeleteDocument\" permission.",
+				"tags": [
+					"Status Report"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"StatusReport:DeleteDocument"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the status report.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The type of documents to remove.",
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				]
 			}
 		},
 		"/statistics/overview": {

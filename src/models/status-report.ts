@@ -9,6 +9,7 @@ import { ProjectModel } from "./project";
 import { CreateStatusReportProperties, StatusReport } from "./interfaces/status-report";
 import { DocumentModel } from "./document";
 import { Document } from "./interfaces/document";
+import { UserModel } from "./user";
 
 export class StatusReportModel extends Model<StatusReport, CreateStatusReportProperties> implements StatusReport {
   public id!: number;
@@ -43,10 +44,11 @@ export class StatusReportModel extends Model<StatusReport, CreateStatusReportPro
 
   declare documentIds?: ForeignKey<Document["id"][]>;
 
-
   public static associations: {
     project: Association<StatusReportModel, ProjectModel>,
-    documents: Association<ProjectModel, DocumentModel>
+    documents: Association<ProjectModel, DocumentModel>,
+    creator: Association<StatusReportModel, UserModel>,
+    updater: Association<StatusReportModel, UserModel>,
   };
 }
 
@@ -118,6 +120,16 @@ export const StatusReportFactory = (sequelize: Sequelize): typeof StatusReportMo
         ownerType: "report"
       },
       as: "documents"
+    });
+
+    StatusReportModel.belongsTo(models.User, {
+      foreignKey: "createdBy",
+      as: "creator"
+    });
+
+    StatusReportModel.belongsTo(models.User, {
+      foreignKey: "updatedBy",
+      as: "updater"
     });
   };
 
