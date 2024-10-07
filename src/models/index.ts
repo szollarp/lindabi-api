@@ -24,6 +24,7 @@ import { ProjectContactFactory, type ProjectContactModel } from "./project-conta
 import { ProjectSupervisorFactory, ProjectSupervisorModel } from "./project-supervisor";
 import { ProjectCommentFactory, ProjectCommentModel } from "./project-comment";
 import { StatusReportFactory, StatusReportModel } from "./status-report";
+import { ExecutionModel, ExecutionFactory } from "./execution";
 import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
@@ -53,6 +54,7 @@ export interface Models {
   Milestone: typeof MilestoneModel
   ProjectComment: typeof ProjectCommentModel
   StatusReport: typeof StatusReportModel
+  Execution: typeof ExecutionModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -84,6 +86,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Milestone: MilestoneFactory(sequelize),
     ProjectComment: ProjectCommentFactory(sequelize),
     StatusReport: StatusReportFactory(sequelize),
+    Execution: ExecutionFactory(sequelize),
     sequelize
   };
 

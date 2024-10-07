@@ -19,9 +19,10 @@ import { type JourneyService } from "./services/journey";
 import { type NotificationService } from "./services/notification";
 import { type EmailService } from "./services/email";
 import { type ProjectService } from "./services/project";
-import { type Models } from "./models";
 import { type StatusReportService } from "./services/status-report";
+import { type ExecutionService } from "./services/execution";
 import { USER_TYPE } from "./constants";
+import { type Models } from "./models";
 
 export interface Services {
   version: VersionService
@@ -41,6 +42,7 @@ export interface Services {
   email: EmailService
   project: ProjectService
   statusReport: StatusReportService
+  execution: ExecutionService
 }
 
 export interface Helpers {

@@ -18,6 +18,26 @@ module.exports = {
       name: 'StatusReport:Delete',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'Execution:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Execution:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Execution:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Execution:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Execution:Approve',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

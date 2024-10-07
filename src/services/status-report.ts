@@ -1,8 +1,8 @@
 
+import { Op } from "sequelize";
 import type { Context, DecodedUser } from "../types";
 import { CreateStatusReportProperties, StatusReport } from "../models/interfaces/status-report";
 import { getRelatedProjectsByStatusReport, getRelatedStatusReports } from "../helpers/status-report";
-import { Op } from "sequelize";
 
 export interface StatusReportService {
   getStatusReports: (context: Context, user: DecodedUser) => Promise<Array<Partial<StatusReport>>>;
@@ -30,7 +30,6 @@ const getStatusReports = async (context: Context, user: DecodedUser): Promise<Ar
 };
 
 const getStatusReport = async (context: Context, id: number): Promise<Partial<StatusReport | null>> => {
-  //TODO: Implement check permission functions
   try {
     return await context.models.StatusReport.findOne({
       where: { id },

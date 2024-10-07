@@ -15,6 +15,7 @@ import { notificationService } from "./notification"
 import { emailService } from "./email"
 import { projectService } from "./project";
 import { statusReportService } from "./status-report";
+import { executionService } from "./execution";
 
 import type { Services } from "../types";
 
@@ -35,5 +36,6 @@ export default (): Services => ({
   notification: notificationService(),
   email: emailService(),
   project: projectService(),
-  statusReport: statusReportService()
+  statusReport: statusReportService(),
+  execution: executionService()
 });

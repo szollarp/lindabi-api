@@ -39,11 +39,11 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
               lineHeight: 64 / 48,
               fontSize: 32
             },
-            h3: { fontSize: 16, fontWeight: 700 },
-            h4: { fontSize: 13, fontWeight: 700 },
-            h6: { fontSize: 11, fontWeight: 500 },
-            body1: { fontSize: 10 },
-            body2: { fontSize: 9 },
+            h3: { fontSize: 14, fontWeight: 700 },
+            h4: { fontSize: 11, fontWeight: 700 },
+            h6: { fontSize: 9, fontWeight: 500 },
+            body1: { fontSize: 9 },
+            body2: { fontSize: 8 },
             subtitle1: { fontSize: 10, fontWeight: 700 },
             subtitle2: { fontSize: 9, fontWeight: 700 },
             alignRight: { textAlign: 'right' },
@@ -69,19 +69,23 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
             boxHeader: {
               backgroundColor: '#5889ad',
               color: 'white',
-              paddingLeft: 8,
-              paddingTop: 4,
-              height: 20
+              paddingLeft: 4,
+              paddingTop: 2,
+              paddingBottom: 2,
+              // height: 20
+              // alignItems: 'center',
             },
             boxContent: {
-              paddingLeft: 8,
-              paddingTop: 4,
-              minHeight: 20,
+              paddingLeft: 4,
+              paddingTop: 2,
+              paddingBottom: 2,
+              // minHeight: 20,
             },
             summaryContent: {
-              paddingLeft: 8,
-              paddingTop: 4,
-              minHeight: 15,
+              paddingLeft: 4,
+              paddingTop: 2,
+              paddingBottom: 2,
+              // minHeight: 15,
             },
             boxShadow: {
               backgroundColor: '#ecf2f4'
@@ -90,7 +94,7 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
               left: 0,
               right: 0,
               bottom: 0,
-              padding: 24,
+              padding: 12,
               margin: 'auto',
               borderTopWidth: 1,
               borderStyle: 'solid',
@@ -100,7 +104,6 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
             gridContainer: {
               flexDirection: 'row',
               justifyContent: 'space-between',
-
             },
             table: {
               display: 'flex',
@@ -110,28 +113,33 @@ const TenderPDF = ({ tender }: TenderPDFProps) => {
             tableHeader: {
               backgroundColor: '#5889ad',
               color: 'white',
-              height: 25,
+              // height: 25,
               fontSize: 8,
               flexDirection: 'row',
-              paddingLeft: 8,
-              paddingTop: 4,
+              paddingLeft: 4,
+              paddingTop: 3,
+              paddingBottom: 2,
               lineHeight: 1
             },
             tableRow: {
-              height: 25,
-              paddingLeft: 8,
-              paddingTop: 5,
+              height: 'auto',
+              // minHeight: 20,
+              paddingLeft: 4,
+              paddingTop: 2,
+              paddingBottom: 2,
               flexDirection: 'row',
               fontSize: 8,
             },
             noBorder: {
-              paddingTop: 8,
-              paddingBottom: 0,
+              paddingTop: 2,
+              paddingBottom: 2,
               borderBottomWidth: 0,
             },
             tableCell_1: {
               width: '3%',
               textAlign: 'left',
+              whiteSpace: 'normal',
+              lineBreak: 'auto'
             },
             tableCell_4: {
               width: '10%',

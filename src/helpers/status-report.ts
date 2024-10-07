@@ -58,36 +58,13 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
 };
 
 export const getRelatedStatusReports = async (context: Context, user: DecodedUser) => {
-  if (user.isSystemAdmin || (user.isManager && hasPermission(user, "StatusReport:List"))) {
-    return await context.models.StatusReport.findAll({
-      attributes: ["id", "dueDate", "status", "notes"],
-      include: [{
-        model: context.models.User,
-        as: "creator",
-        attributes: ["id", "name"]
-      }, {
-        model: context.models.Project,
-        attributes: ["id", "type", "number"],
-        as: "project",
-        where: { tenantId: user.tenant },
-        required: true,
-        include: [{
-          model: context.models.Company,
-          as: "contractor",
-          attributes: ["id", "name"]
-        }, {
-          model: context.models.Contact,
-          as: "supervisors",
-          attributes: ["id"],
-          through: {
-            attributes: ["endDate"],
-            as: "attributes",
-            where: { endDate: null },
-          }
-        }],
-      }]
-    });
-  }
+  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "StatusReport:List"))) ? {} : {
+    [Op.or]: [
+      { "$project.supervisors.user.id$": user.id },
+      { "$project.contacts.user.id$": user.id, availableToClient: true },
+      { createdBy: user.id }
+    ]
+  };
 
   return await context.models.StatusReport.findAll({
     attributes: ["id", "dueDate", "status", "notes"],
@@ -135,12 +112,6 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
         }],
       }],
     }],
-    where: {
-      [Op.or]: [
-        { "$project.supervisors.user.id$": user.id },
-        { "$project.contacts.user.id$": user.id, availableToClient: true },
-        { createdBy: user.id }
-      ]
-    },
+    where
   });
 }

@@ -300,6 +300,7 @@
 					"project",
 					"milestone",
 					"report",
+					"execution",
 					null
 				],
 				"nullable": true
@@ -4059,6 +4060,109 @@
 			"CreateLocationProperties": {
 				"$ref": "#/components/schemas/Omit_Location.id-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
+			"EXECUTION_SETTLEMENT": {
+				"enum": [
+					"itemized",
+					"hourly",
+					"daily",
+					"distance"
+				],
+				"type": "string"
+			},
+			"EXECUTION_STATUS": {
+				"enum": [
+					"pending",
+					"approved"
+				],
+				"type": "string"
+			},
+			"Partial_Execution_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"settlement": {
+						"$ref": "#/components/schemas/EXECUTION_SETTLEMENT"
+					},
+					"type": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/EXECUTION_STATUS"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"distance": {
+						"type": "number",
+						"format": "double"
+					},
+					"workdayStart": {
+						"type": "string"
+					},
+					"workdayEnd": {
+						"type": "string"
+					},
+					"breakStart": {
+						"type": "string"
+					},
+					"breakEnd": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"CONTACT_STATUS": {
 				"enum": [
 					"active",
@@ -6906,7 +7010,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:UpdateDocuments"
+							"StatusReport:Update"
 						]
 					}
 				],
@@ -6985,7 +7089,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:DeleteDocument"
+							"StatusReport:Update"
 						]
 					}
 				],
@@ -7044,7 +7148,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:DeleteDocument"
+							"StatusReport:Update"
 						]
 					}
 				],
@@ -9481,6 +9585,462 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/executions": {
+			"get": {
+				"operationId": "GetExecutions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Execution_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all executions within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Execution:List\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateExecution",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Execution_"
+										},
+										{
+											"properties": {
+												"missingStatusReport": {
+													"type": "boolean"
+												},
+												"exists": {
+													"type": "boolean"
+												},
+												"invalidEmployeeDocuments": {
+													"type": "boolean"
+												}
+											},
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new execution with the provided properties. This operation is secured and\nrequires a JWT token with \"Execution:Create\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties required to create a new execution.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Execution_",
+								"description": "The properties required to create a new execution."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/executions/related-projects": {
+			"get": {
+				"operationId": "GetRelatedProjects",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Project_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of projects related to the current user. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Execution:List\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/executions/{id}": {
+			"get": {
+				"operationId": "GetExecution",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Execution_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves the details of a specific execution by its unique identifier. This endpoint\nrequires JWT authentication and is protected by the \"Execution:Get\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateExecution",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Execution_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the information of an existing execution, identified by their ID. Access to this\nendpoint is restricted to authenticated requests with \"Execution:Update\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Execution:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "A partial execution object containing the fields to update.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Execution_",
+								"description": "A partial execution object containing the fields to update."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/executions/{id}/approve": {
+			"put": {
+				"operationId": "ApproveExecution",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Execution_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Approve of an existing execution, identified by their ID. Access to this\nendpoint is restricted to authenticated requests with \"Execution:Approve\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Execution:Approve"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/executions/{id}/documents": {
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified executions by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Execution:UpdateDocuments\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/executions/{id}/documents/{documentId}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Removes a specific document from a execution by its document ID.\nThis endpoint requires JWT authentication and is protected with the \"Execution:DeleteDocument\" permission,\nensuring that only authorized users can delete documents.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution from which the document will be removed.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The unique identifier of the document to be removed.",
+						"in": "path",
+						"name": "documentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/executions/{id}/documents-by-type": {
+			"delete": {
+				"operationId": "RemoveDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes all documents of a specific type associated with a execution by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Execution:DeleteDocument\" permission.",
+				"tags": [
+					"Execution"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Execution:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the execution.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "The type of documents to remove.",
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				]
 			}
 		},
 		"/contacts": {

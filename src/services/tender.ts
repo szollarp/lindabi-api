@@ -98,7 +98,14 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.Company,
             as: "contractor",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"]
+            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+            include: [
+              {
+                model: context.models.Document,
+                as: "documents",
+                attributes: ["id", "name", "type", "mimeType", "stored"]
+              }
+            ]
           },
           {
             model: context.models.TenderItem,

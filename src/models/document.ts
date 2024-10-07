@@ -175,6 +175,14 @@ export const DocumentFactory = (sequelize: Sequelize, storage: AzureStorageServi
         ownerType: "report"
       }
     });
+
+    DocumentModel.belongsTo(models.StatusReport, {
+      foreignKey: "owner_id",
+      as: "execution",
+      scope: {
+        ownerType: "execution"
+      }
+    });
   };
 
   return DocumentModel;

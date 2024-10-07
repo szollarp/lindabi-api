@@ -46,7 +46,7 @@ export class StatusReportModel extends Model<StatusReport, CreateStatusReportPro
 
   public static associations: {
     project: Association<StatusReportModel, ProjectModel>,
-    documents: Association<ProjectModel, DocumentModel>,
+    documents: Association<StatusReportModel, DocumentModel>,
     creator: Association<StatusReportModel, UserModel>,
     updater: Association<StatusReportModel, UserModel>,
   };

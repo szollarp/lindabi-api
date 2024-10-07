@@ -101,7 +101,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "StatusReport:UpdateDocuments"])
+  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[],): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "report", type, files, {}, false);
@@ -119,7 +119,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "StatusReport:DeleteDocument"])
+  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id, documentId, "report");
@@ -136,7 +136,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "StatusReport:DeleteDocument"])
+  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
   public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocuments(context, id, "report", type);

@@ -1,8 +1,6 @@
 import moment from "moment";
 import { Document, DocumentProperties } from "../models/interfaces/document";
 import { Company } from "../models/interfaces/company";
-import { Context } from "../types";
-import { AzureStorageService } from "./azure-storage";
 
 export const isEmployeeDocumentInvalid = (type: string, documents: Document[] | undefined, properties: DocumentProperties, company?: Partial<Company>): { document: string, company?: string | null, approved?: boolean } | null => {
   const propertyKey = `${type}-${company?.id || "null"}`;

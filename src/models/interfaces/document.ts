@@ -1,4 +1,4 @@
-export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | null;
+export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | null;
 
 export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" |
   "plan" | "pdf" | "employee" | "medical-fitness-certificate" | "work-authorization-document" |

@@ -226,7 +226,7 @@ async function update(context: Context, ownerId: number, id: number, ownerType: 
 /**
  * Checks the validity of user documents based on predefined rules.
  */
-async function checkUserDocuments(context: Context, tenantId: number, id: number) {
+export async function checkUserDocuments(context: Context, tenantId: number, id: number) {
   try {
     const user = await context.services.user.get(context, tenantId, id);
     if (!user || !user.documents || !user.properties) {

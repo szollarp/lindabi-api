@@ -97,6 +97,18 @@ export enum STATUS_REPORT_STATUS {
   ISSUE = "issue"
 };
 
+export enum EXECUTION_SETTLEMENT {
+  ITEMIZED = "itemized",
+  HOURLY = "hourly",
+  DAILY = "daily",
+  DISTANCE = "distance"
+};
+
+export enum EXECUTION_STATUS {
+  PENDING = "pending",
+  APPROVED = "approved"
+};
+
 export const PROJECT_COLORS = [
   "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080",
   "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#FFFFFF", "#000000",
