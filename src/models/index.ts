@@ -25,6 +25,8 @@ import { ProjectSupervisorFactory, ProjectSupervisorModel } from "./project-supe
 import { ProjectCommentFactory, ProjectCommentModel } from "./project-comment";
 import { StatusReportFactory, StatusReportModel } from "./status-report";
 import { ExecutionModel, ExecutionFactory } from "./execution";
+import { CompletionCertificateFactory, type CompletionCertificateModel } from "./completion-certificate";
+import { OrderFormFactory, type OrderFormModel } from "./order-form";
 import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
@@ -55,6 +57,8 @@ export interface Models {
   ProjectComment: typeof ProjectCommentModel
   StatusReport: typeof StatusReportModel
   Execution: typeof ExecutionModel
+  CompletionCertificate: typeof CompletionCertificateModel
+  OrderForm: typeof OrderFormModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -87,6 +91,8 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     ProjectComment: ProjectCommentFactory(sequelize),
     StatusReport: StatusReportFactory(sequelize),
     Execution: ExecutionFactory(sequelize),
+    CompletionCertificate: CompletionCertificateFactory(sequelize),
+    OrderForm: OrderFormFactory(sequelize),
     sequelize
   };
 

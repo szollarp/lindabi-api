@@ -264,6 +264,11 @@ export const projectService = (): ProjectService => {
                 order: [["createdOn", "ASC"]]
               }
             ]
+          },
+          {
+            model: context.models.Tender,
+            as: "tender",
+            attributes: ["id", "currency"]
           }
         ],
       });

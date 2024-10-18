@@ -6,6 +6,13 @@ import { Document, DocumentOwnerType, DocumentProperties, DocumentType } from ".
 import type { Context, DecodedUser } from "../types";
 import { AzureStorageService } from "../helpers/azure-storage";
 
+type FitEnum = "inside" | "outside" | "cover" | "contain";
+
+type ImageSizes = {
+  resized: { fit: FitEnum, width: number },
+  thumbnail: { fit: FitEnum, width: number }
+};
+
 export const MAIN_DOCUMENTS = [
   "medical-fitness-certificate",
   "work-authorization-document",
@@ -86,7 +93,7 @@ async function upload(context: Context, user: DecodedUser, ownerId: number, owne
       }, ownerId, ownerType as string);
 
       if (mimeType.startsWith('image/')) {
-        const { sizes }: any = context.config.get("upload.image");
+        const { sizes }: { sizes: ImageSizes } = context.config.get("upload.image");
 
         const resizedBuffer = await sharp(originalBuffer)
           .resize({ fit: sizes.resized.fit, width: sizes.resized.width })
