@@ -1,4 +1,4 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete, Query, UploadedFiles } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post, Delete, Query, UploadedFiles, FormField, UploadedFile } from "tsoa";
 import type { ContextualRequest } from "../types";
 import type { CreateTenderProperties, Tender } from "../models/interfaces/tender";
 import { DocumentType } from "../models/interfaces/document";
@@ -56,9 +56,10 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/{id}/send")
   @Security("jwtToken", ["Tenant", "Tender:Create"])
-  public async sendEmail(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { message: string }): Promise<{ success: boolean }> {
+  public async sendEmail(@Request() request: ContextualRequest, @Path() id: number, @FormField() message: string, @UploadedFile() content: File): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.tender.sendTenderViaEmail(context, user, id, body.message);
+    // const { message, content } = body;
+    return await context.services.tender.sendTenderViaEmail(context, user, id, message, content);
   }
 
   /**

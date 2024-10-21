@@ -47,6 +47,8 @@ export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> 
 
   public readonly createdBy!: number;
 
+  public creator?: NonAttribute<User>;
+
   public readonly updatedBy!: number | null;
 
   public static associate: (models: Models) => void;
@@ -54,7 +56,8 @@ export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> 
   public static associations: {
     project: Association<OrderFormModel, ProjectModel>,
     employee: Association<OrderFormModel, UserModel>,
-    manager: Association<OrderFormModel, UserModel>
+    manager: Association<OrderFormModel, UserModel>,
+    creator: Association<OrderFormModel, UserModel>
   };
 }
 
@@ -155,6 +158,11 @@ export const OrderFormFactory = (sequelize: Sequelize): typeof OrderFormModel =>
     OrderFormModel.belongsTo(models.User, {
       foreignKey: "managerId",
       as: "manager"
+    });
+
+    OrderFormModel.belongsTo(models.User, {
+      foreignKey: "createdBy",
+      as: "creator"
     });
 
     OrderFormModel.hasOne(models.CompletionCertificate, {

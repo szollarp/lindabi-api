@@ -5,7 +5,7 @@ import type { User } from '../models/interfaces/user';
 export interface EmailService {
   sendWelcomeNewUserEmail: (context: Context, user: User) => void;
   sendForgottenPasswordEmail: (context: Context, user: User) => void;
-  sendTenderPdfEmail: (context: Context, tender: Tender, htmlBody: string) => void;
+  sendTenderPdfEmail: (context: Context, tenderId: number, htmlBody: string, name: string) => void;
   sendTemplatedEmail: (context: Context, to: string, subject: string, htmlBody: string) => void;
 }
 
@@ -25,8 +25,8 @@ export const emailService = (): EmailService => {
     await context.helpers.serviceBus.send("email-queue", { body });
   };
 
-  const sendTenderPdfEmail = async (context: Context, tender: Tender, htmlBody: string) => {
-    const body = JSON.stringify({ template: "send-tender", tender: tender.id, htmlBody });
+  const sendTenderPdfEmail = async (context: Context, tenderId: number, htmlBody: string, name: string) => {
+    const body = JSON.stringify({ template: "send-tender", tender: tenderId, htmlBody, name });
     await context.helpers.serviceBus.send("email-queue", { body });
   }
 

@@ -38,6 +38,26 @@ module.exports = {
       name: 'Execution:Approve',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'OrderForm:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'OrderForm:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'OrderForm:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'OrderForm:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'OrderForm:Approve',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

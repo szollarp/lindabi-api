@@ -1,4 +1,5 @@
 import { Op, Transaction } from "sequelize";
+import { v4 as uuidv4 } from 'uuid';
 import type { Context, DecodedUser } from "../types";
 import type { CreateTenderProperties, Tender } from "../models/interfaces/tender";
 import { CreateDocumentProperties, Document } from "../models/interfaces/document";
@@ -6,12 +7,13 @@ import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 import { TENDER_STATUS } from "../constants";
 import { calculateTenderItemAmounts } from "../helpers/tender";
+import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
   getTender: (context: Context, tenantId: number, id: number) => Promise<Partial<Tender> | null>
   getTenderDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
-  sendTenderViaEmail: (context: Context, user: DecodedUser, id: number, message: string) => Promise<{ success: boolean }>
+  sendTenderViaEmail: (context: Context, user: DecodedUser, id: number, message: string, content: Blob) => Promise<{ success: boolean }>
   removeAllTenderDocuments: (context: Context, id: number, user: DecodedUser, type: string) => Promise<{ success: boolean }>
   removeTenderDocument: (context: Context, id: number, user: DecodedUser, documentId: number) => Promise<{ success: boolean }>
   getTenderDocument: (context: Context, id: number, documentId: number) => Promise<Partial<Document> | null>
@@ -169,51 +171,22 @@ export const tenderService = (): TenderService => {
     }
   };
 
-  const sendTenderViaEmail = async (context: Context, user: DecodedUser, id: number, message: string): Promise<{ success: boolean }> => {
+  const sendTenderViaEmail = async (context: Context, user: DecodedUser, id: number, message: string, content: Blob): Promise<{ success: boolean }> => {
     try {
       const tender = await context.models.Tender.findOne({
         where: { tenantId: user.tenant, id },
-        include: [
-          {
-            model: context.models.Contact,
-            as: "contact",
-            attributes: ["name", "email"]
-          },
-          {
-            model: context.models.Location,
-            as: "location",
-            attributes: ["id", "city", "country", "zipCode", "address"]
-          },
-          {
-            model: context.models.Company,
-            as: "customer",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-          },
-          {
-            model: context.models.Company,
-            as: "contractor",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-            include: [
-              {
-                model: context.models.Document,
-                as: "documents"
-              }
-            ]
-          },
-          {
-            model: context.models.TenderItem,
-            as: "items",
-            required: false,
-            order: [["num", "ASC"]]
-          }
-        ],
+        attributes: ["id"]
       });
 
-      if (!tender || !tender.items) {
+      if (!tender) {
         return { success: false };
       }
 
-      await context.services.email.sendTenderPdfEmail(context, tender, message);
+      const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
+      const name = `tmp/${uuidv4()}.pdf`;
+      await azureStorage.uploadBlob(content, name, "application/pdf");
+
+      await context.services.email.sendTenderPdfEmail(context, id, message, name);
       await tender.update({ status: TENDER_STATUS.SENT, updatedBy: user.id });
 
       await context.services.journey.addSimpleLog(context, user, {

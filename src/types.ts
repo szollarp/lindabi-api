@@ -21,6 +21,7 @@ import { type EmailService } from "./services/email";
 import { type ProjectService } from "./services/project";
 import { type StatusReportService } from "./services/status-report";
 import { type ExecutionService } from "./services/execution";
+import { type OrderFormService } from "./services/order-form";
 import { USER_TYPE } from "./constants";
 import { type Models } from "./models";
 
@@ -28,6 +29,7 @@ export interface Services {
   version: VersionService
   authentication: AuthenticationService
   document: DocumentService
+  orderForm: OrderFormService
   user: UserService
   role: RoleService
   tenant: TenantService

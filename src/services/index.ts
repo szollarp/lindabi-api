@@ -16,6 +16,7 @@ import { emailService } from "./email"
 import { projectService } from "./project";
 import { statusReportService } from "./status-report";
 import { executionService } from "./execution";
+import { orderFormService } from "./order-form";
 
 import type { Services } from "../types";
 
@@ -37,5 +38,6 @@ export default (): Services => ({
   email: emailService(),
   project: projectService(),
   statusReport: statusReportService(),
+  orderForm: orderFormService(),
   execution: executionService()
 });

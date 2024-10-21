@@ -31,7 +31,7 @@ export class AzureStorageService {
     this.accountKey = accountKey;
   }
 
-  public async uploadBlob(buffer: Buffer, blobName: string, mimeType: string): Promise<string> {
+  public async uploadBlob(buffer: Buffer | Blob, blobName: string, mimeType: string): Promise<string> {
     const blockBlobClient = this.containerClient.getBlockBlobClient(blobName);
 
     await blockBlobClient.uploadData(buffer, {

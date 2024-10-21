@@ -4,7 +4,7 @@ type InputValue = string | number | null;
 
 type DateInputValue = Date | string | number | null | undefined;
 
-export const fCurrency = (inputValue: InputValue, maximumFractionDigits: number = 2): string => {
+export const fCurrency = (inputValue: InputValue, maximumFractionDigits: number = 2, currency: string = "HUF"): string => {
   if (!inputValue) {
     inputValue = 0;
   }
@@ -13,7 +13,7 @@ export const fCurrency = (inputValue: InputValue, maximumFractionDigits: number 
 
   const fm = new Intl.NumberFormat("hu-HU", {
     style: 'currency',
-    currency: "HUF",
+    currency,
     minimumFractionDigits: 0,
     maximumFractionDigits
   }).format(number);

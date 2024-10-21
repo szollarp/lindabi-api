@@ -1,5 +1,4 @@
 import React from 'react';
-// import { renderToBuffer } from '@react-pdf/renderer';
 import type { ServiceBusReceivedMessage } from "@azure/service-bus";
 import { WEBSITE_ENDPOINTS } from "../constants";
 import getWelcomeNewUserTemplate from "../helpers/email-template/welcome";
@@ -7,13 +6,14 @@ import type { SendEmailOptions, SendTemplateEmailOptions } from "../helpers/post
 import getPasswordResetTemplate from "../helpers/email-template/password-reset";
 import type { Context } from "../types";
 import { generatePdfFilename } from "../helpers/tender";
-import TenderPDF from '../react/tender-pdf-template';
+import { AzureStorageService } from '../helpers/azure-storage';
 
 export type Message = {
   template: string;
   user?: number;
   tender?: number;
   htmlBody?: string;
+  name?: string;
 }
 
 const fetchConfigHostname = (context: Context): string => {
@@ -50,8 +50,8 @@ const handleForgottenPasswordEmail = async (context: Context, userId: number) =>
   await context.helpers.postmark.sendEmail(message);
 };
 
-const handleSendTender = async (context: Context, tenderId: number, htmlBody: string) => {
-  const { renderToBuffer } = await import('@react-pdf/renderer');
+const handleSendTender = async (context: Context, tenderId: number, htmlBody: string, name: string) => {
+  const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
 
   const tender = await context.models.Tender.findOne({
     where: { id: tenderId },
@@ -92,16 +92,21 @@ const handleSendTender = async (context: Context, tenderId: number, htmlBody: st
   });
 
   const fileName = generatePdfFilename(tender!);
-  const element = React.createElement(TenderPDF, { tender });
-  const buffer = await renderToBuffer(element);
+  const stream = await azureStorage.downloadBlob(name);
 
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream! as AsyncIterable<Buffer>) {
+    chunks.push(chunk);
+  }
+
+  const attachment = Buffer.concat(chunks);
   const message: SendEmailOptions = {
     to: tender!.contact!.email as string,
     subject: "Új ajánlata megérkezett.",
     htmlBody,
     attachments: [{
       "Name": fileName,
-      "Content": buffer.toString("base64"),
+      "Content": attachment.toString("base64"),
       "ContentType": "pdf/application"
     }]
   } as SendEmailOptions;
@@ -122,7 +127,7 @@ export const handleEmailEvent = async (context: Context, eventMessage: ServiceBu
       break;
 
     case "send-tender":
-      await handleSendTender(context, data.tender!, data.htmlBody!);
+      await handleSendTender(context, data.tender!, data.htmlBody!, data.name!);
       break;
 
     default:

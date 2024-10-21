@@ -1,4 +1,6 @@
 import { ORDER_FORM_STATUS } from "../../constants"
+import { Project } from "./project"
+import { User } from "./user"
 
 export interface OrderForm {
   id: number
@@ -7,8 +9,11 @@ export interface OrderForm {
   status: ORDER_FORM_STATUS
   //
   employeeId: number
+  employee?: User
   managerId: number
+  manager?: User
   projectId: number
+  project?: Project
   //
   issueDate: Date
   siteHandoverDate: Date
