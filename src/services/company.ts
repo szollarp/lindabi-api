@@ -4,6 +4,7 @@ import type { Company, CreateCompanyProperties } from "../models/interfaces/comp
 import type { Contact } from "../models/interfaces/contact";
 import { COMPANY_TYPE } from "../constants";
 import { Location } from "../models/interfaces/location";
+import { Document } from "../models/interfaces/document";
 
 export interface CompanyService {
   getCompanies: (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER) => Promise<Array<Partial<Company>>>
