@@ -50,7 +50,7 @@ export const projectService = (): ProjectService => {
       const tender = await context.models.Tender.findOne({
         where: { id: tenderId },
         attributes: ["id", "type", "number", "locationId", "customerId", "contractorId", "notes", "survey", "locationDescription",
-          "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount"],
+          "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount", "shortName"],
         include: [{
           model: context.models.TenderItem,
           as: "items",
@@ -74,7 +74,7 @@ export const projectService = (): ProjectService => {
 
       const netAmount = getTotalNetAmount(tender);
       const vatAmount = getTotalVatAmount(tender);
-      const { items, customer, ...attributes } = tender.toJSON();
+      const { items, customer, shortName, ...attributes } = tender.toJSON();
 
       const project = await context.models.Project.create({
         ...attributes,
@@ -82,6 +82,7 @@ export const projectService = (): ProjectService => {
         tenderId,
         netAmount,
         vatAmount,
+        name: shortName,
         createdBy: user.id,
         status: PROJECT_STATUS.ORDERED,
       } as any, { transaction: t });
@@ -181,7 +182,7 @@ export const projectService = (): ProjectService => {
           }
         ],
         where: { id: { [Op.in]: userProjectIds } },
-        order: [["createdOn", "DESC"]]
+        order: [["updatedOn", "DESC"]]
       });
     } catch (error) {
       context.logger.error(error);

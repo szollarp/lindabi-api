@@ -59,7 +59,7 @@ export const ProjectItemFactory = (sequelize: Sequelize): typeof ProjectItemMode
       allowNull: false
     },
     quantity: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     unit: {

@@ -67,7 +67,7 @@ export const TenderItemFactory = (sequelize: Sequelize): typeof TenderItemModel 
       allowNull: false
     },
     quantity: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     unit: {
