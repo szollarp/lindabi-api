@@ -60,14 +60,17 @@ const getRelatedProjects = async (context: Context, user: DecodedUser): Promise<
 const create = async (context: Context, user: DecodedUser, data: CreateOrderFormProperties): Promise<OrderForm> => {
   try {
     const number = await generateNumber(context, data.projectId, data.employeeId);
-    const approveCode = Math.floor(100000 + Math.random() * 900000);
+    const approveCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    return await context.models.OrderForm.create({
+    const orderForm = await context.models.OrderForm.create({
       ...data,
+      createdBy: user.id
+    });
+
+    return await orderForm.update({
       number,
       approveCode,
-      status: ORDER_FORM_STATUS.CREATED,
-      createdBy: user.id
+      status: ORDER_FORM_STATUS.CREATED
     });
   } catch (error) {
     throw error;

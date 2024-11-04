@@ -23,7 +23,7 @@ const create = async (context: Context, user: DecodedUser, data: CreateCompletio
       ...data,
       status: COMPLETION_CERTIFICATE_STATUS.DRAFT,
       createdBy: user.id
-    });
+    } as CompletionCertificate);
   } catch (error) {
     throw error;
   }
