@@ -5,19 +5,17 @@ import { Project } from "./interfaces/project";
 import { ProjectModel } from "./project";
 import { UserModel } from "./user";
 import { User } from "./interfaces/user";
-import { CompletionCertificate } from "./interfaces/completion-certificate";
-import { CreateCompanyContactProperties } from "./interfaces/contact";
+import { CompletionCertificate, CreateCompletionCertificateProperties } from "./interfaces/completion-certificate";
 import { OrderForm } from "./interfaces/order-form";
 import { OrderFormModel } from "./order-form";
+import { COMPLETION_CERTIFICATE_STATUS } from "../constants";
 
-export class CompletionCertificateModel extends Model<CompletionCertificate, CreateCompanyContactProperties> implements CompletionCertificate {
+export class CompletionCertificateModel extends Model<CompletionCertificate, CreateCompletionCertificateProperties> implements CompletionCertificate {
   public id!: number;
 
   public amount!: number;
 
-  public approved!: boolean;
-
-  public approvedOn?: Date | null;
+  public status!: COMPLETION_CERTIFICATE_STATUS;
 
   public deviation?: string | null;
 
@@ -37,11 +35,15 @@ export class CompletionCertificateModel extends Model<CompletionCertificate, Cre
 
   public readonly createdOn!: Date;
 
-  public readonly updatedOn!: Date | null;
-
   public readonly createdBy!: number;
 
+  public readonly updatedOn!: Date | null;
+
   public readonly updatedBy!: number | null;
+
+  public readonly approvedOn!: Date | null;
+
+  public readonly approvedBy!: number | null;
 
   public static associate: (models: Models) => void;
 
@@ -60,14 +62,6 @@ export const CompletionCertificateFactory = (sequelize: Sequelize): typeof Compl
       type: DataTypes.INTEGER,
       autoIncrement: true
     },
-    approved: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false
-    },
-    approvedOn: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
     deviation: {
       type: DataTypes.TEXT,
       allowNull: false
@@ -80,19 +74,32 @@ export const CompletionCertificateFactory = (sequelize: Sequelize): typeof Compl
       type: DataTypes.TEXT,
       allowNull: true
     },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: COMPLETION_CERTIFICATE_STATUS.DRAFT,
+      allowNull: false
+    },
     createdOn: {
       type: DataTypes.DATE,
+      allowNull: false
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     updatedOn: {
       type: DataTypes.DATE,
       allowNull: true
     },
-    createdBy: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
     updatedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    approvedOn: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    approvedBy: {
       type: DataTypes.INTEGER,
       allowNull: true
     },

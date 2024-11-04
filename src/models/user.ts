@@ -444,6 +444,16 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       foreignKey: "employee_id",
       as: "executions"
     });
+
+    UserModel.hasMany(models.OrderForm, {
+      foreignKey: "employee_id",
+      as: "orderForms"
+    });
+
+    UserModel.hasMany(models.CompletionCertificate, {
+      foreignKey: "employee_id",
+      as: "completionCertificates"
+    });
   };
 
   return UserModel;

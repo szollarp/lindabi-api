@@ -1,3 +1,4 @@
+import { USER_TYPE } from "./constants";
 import { type IConfig } from "config";
 import { type Request } from "express";
 import { type Logger } from "./helpers/logger";
@@ -22,7 +23,7 @@ import { type ProjectService } from "./services/project";
 import { type StatusReportService } from "./services/status-report";
 import { type ExecutionService } from "./services/execution";
 import { type OrderFormService } from "./services/order-form";
-import { USER_TYPE } from "./constants";
+import { type CompletionCertificateService } from "./services/completion-certificate";
 import { type Models } from "./models";
 
 export interface Services {
@@ -45,6 +46,7 @@ export interface Services {
   project: ProjectService
   statusReport: StatusReportService
   execution: ExecutionService
+  completionCertificate: CompletionCertificateService
 }
 
 export interface Helpers {

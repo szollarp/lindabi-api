@@ -66,6 +66,14 @@ module.exports = {
         type: Sequelize.DataTypes.DATE,
         allowNull: true
       },
+      approved_on: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true
+      },
+      approve_code: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false
+      },
       created_by: {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false

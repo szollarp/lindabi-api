@@ -131,6 +131,11 @@ export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
       as: "projectSupervisors"
     });
 
+    ContactModel.hasMany(models.OrderForm, {
+      foreignKey: "manager_id",
+      as: "orderForms"
+    });
+
     ContactModel.belongsTo(models.User, {
       foreignKey: "user_id", as: "user"
     });

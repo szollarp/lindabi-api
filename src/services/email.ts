@@ -1,5 +1,4 @@
 import type { Context } from "../types";
-import type { Tender } from "../models/interfaces/tender";
 import type { User } from '../models/interfaces/user';
 
 export interface EmailService {

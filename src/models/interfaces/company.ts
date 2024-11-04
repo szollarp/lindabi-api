@@ -5,6 +5,7 @@ import { type Document } from "./document";
 export interface Company {
   id: number
   name: string
+  ceo?: string | null
   email?: string | null
   country: string
   region?: string | null

@@ -7,36 +7,31 @@ const hasPermission = (user: DecodedUser, permission: string): boolean => {
 }
 
 export const getRelatedProjectsByOrderForm = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>> | []> => {
-  try {
-    return await context.models.Project.findAll({
-      attributes: ["id", "number", "name", 'type'],
-      include: [
-        {
-          model: context.models.Location,
-          as: "location",
-          attributes: ["id", "city", "country", "zipCode", "address"]
-        },
-        {
-          model: context.models.Company,
-          as: "customer",
-          attributes: ["name"],
-        },
-        {
-          model: context.models.Company,
-          as: "contractor",
-          attributes: ["name"],
-        }
-      ],
-      where: {
-        [Op.and]: [
-          { tenantId: user.tenant }
-        ]
+  return await context.models.Project.findAll({
+    attributes: ["id", "number", "name", 'type'],
+    include: [
+      {
+        model: context.models.Location,
+        as: "location",
+        attributes: ["id", "city", "country", "zipCode", "address"]
+      },
+      {
+        model: context.models.Company,
+        as: "customer",
+        attributes: ["name"],
+      },
+      {
+        model: context.models.Company,
+        as: "contractor",
+        attributes: ["name"],
       }
-    });
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-    return [];
-  }
+    ],
+    where: {
+      [Op.and]: [
+        { tenantId: user.tenant }
+      ]
+    }
+  });
 };
 
 export const getRelatedOrderForms = async (context: Context, user: DecodedUser) => {
@@ -53,15 +48,39 @@ export const getRelatedOrderForms = async (context: Context, user: DecodedUser) 
     include: [{
       model: context.models.User,
       as: "employee",
-      attributes: ["id", "name"]
+      attributes: ["id", "name", "createdOn"]
     }, {
-      model: context.models.User,
+      model: context.models.Contact,
       as: "manager",
-      attributes: ["id", "name"]
+      attributes: ["id", "name", "phoneNumber"]
     }, {
       model: context.models.Project,
       attributes: ["id", "number", "name", "type"],
-      as: "project"
+      as: "project",
+      include: [{
+        model: context.models.Location,
+        as: "location",
+        attributes: ["id", "name", "city", "zipCode", "address"]
+      }, {
+        model: context.models.Tender,
+        as: "tender",
+        attributes: ["id", "currency"]
+      }, {
+        model: context.models.Company,
+        as: "customer",
+        attributes: ["name"],
+      }, {
+        model: context.models.Company,
+        as: "contractor",
+        attributes: ["name"],
+        include: [
+          {
+            model: context.models.Document,
+            as: "documents",
+            attributes: ["id", "name", "type", "mimeType", "stored"]
+          }
+        ]
+      }]
     }, {
       model: context.models.User,
       attributes: ["id", "name"],

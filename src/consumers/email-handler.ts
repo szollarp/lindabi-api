@@ -9,8 +9,10 @@ import { generatePdfFilename } from "../helpers/tender";
 import { AzureStorageService } from '../helpers/azure-storage';
 
 export type Message = {
-  template: string;
+  template?: string;
+  subject?: string;
   user?: number;
+  to?: string;
   tender?: number;
   htmlBody?: string;
   name?: string;
@@ -116,6 +118,13 @@ const handleSendTender = async (context: Context, tenderId: number, htmlBody: st
 
 export const handleEmailEvent = async (context: Context, eventMessage: ServiceBusReceivedMessage): Promise<void> => {
   const data: Message = JSON.parse(eventMessage.body.toString() as string);
+
+  if (!data.template) {
+    const { htmlBody, subject, to } = data;
+    const message: SendEmailOptions = { to: to!, subject: subject!, htmlBody: htmlBody! };
+    await context.helpers.postmark.sendEmail(message);
+    return;
+  }
 
   switch (data.template) {
     case "welcome":

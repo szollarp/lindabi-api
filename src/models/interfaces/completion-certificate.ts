@@ -1,12 +1,13 @@
+import { COMPLETION_CERTIFICATE_STATUS } from "../../constants"
+
 export interface CompletionCertificate {
   id: number
   amount: number
-  approved: boolean
-  approvedOn?: Date | null
+  status: COMPLETION_CERTIFICATE_STATUS
   //
+  projectId: number
   employeeId: number
   orderFormId: number
-  projectId: number
   //
   description?: string | null
   deviation?: string | null
@@ -15,6 +16,8 @@ export interface CompletionCertificate {
   updatedOn?: Date | null
   createdBy?: number
   updatedBy?: number | null
+  approvedOn?: Date | null
+  approvedBy?: number | null
 };
 
-export type CreateCompletionCertificateProperties = Omit<CompletionCertificate, "id" | "createdOn" | "updatedOn">;
+export type CreateCompletionCertificateProperties = Omit<CompletionCertificate, "id" | "status" | "createdOn" | "updatedOn">;

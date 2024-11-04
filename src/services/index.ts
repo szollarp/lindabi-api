@@ -17,6 +17,7 @@ import { projectService } from "./project";
 import { statusReportService } from "./status-report";
 import { executionService } from "./execution";
 import { orderFormService } from "./order-form";
+import { completionCertificateService } from "./completion-certificate";
 
 import type { Services } from "../types";
 
@@ -39,5 +40,6 @@ export default (): Services => ({
   project: projectService(),
   statusReport: statusReportService(),
   orderForm: orderFormService(),
-  execution: executionService()
+  execution: executionService(),
+  completionCertificate: completionCertificateService(),
 });

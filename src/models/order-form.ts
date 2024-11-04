@@ -7,6 +7,8 @@ import { ProjectModel } from "./project";
 import { UserModel } from "./user";
 import { User } from "./interfaces/user";
 import { CreateOrderFormProperties, OrderForm } from "./interfaces/order-form";
+import { Contact } from "./interfaces/contact";
+import { ContactModel } from "./contact";
 
 export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> implements OrderForm {
   public id!: number;
@@ -33,9 +35,9 @@ export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> 
 
   public employee!: NonAttribute<User>;
 
-  public managerId!: ForeignKey<User["id"]>;
+  public managerId!: ForeignKey<Contact["id"]>;
 
-  public manager!: NonAttribute<User>;
+  public manager!: NonAttribute<Contact>;
 
   public projectId!: ForeignKey<Project["id"]>;
 
@@ -51,12 +53,16 @@ export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> 
 
   public readonly updatedBy!: number | null;
 
+  public approveCode!: string;
+
+  public readonly approvedOn!: Date | null;
+
   public static associate: (models: Models) => void;
 
   public static associations: {
     project: Association<OrderFormModel, ProjectModel>,
     employee: Association<OrderFormModel, UserModel>,
-    manager: Association<OrderFormModel, UserModel>,
+    manager: Association<OrderFormModel, ContactModel>,
     creator: Association<OrderFormModel, UserModel>
   };
 }
@@ -122,6 +128,14 @@ export const OrderFormFactory = (sequelize: Sequelize): typeof OrderFormModel =>
       type: DataTypes.INTEGER,
       allowNull: true
     },
+    approveCode: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    approvedOn: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
     employeeId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -146,29 +160,30 @@ export const OrderFormFactory = (sequelize: Sequelize): typeof OrderFormModel =>
 
   OrderFormModel.associate = (models) => {
     OrderFormModel.belongsTo(models.Project, {
-      foreignKey: "projectId",
+      foreignKey: "project_id",
       as: "project"
     });
 
     OrderFormModel.belongsTo(models.User, {
-      foreignKey: "employeeId",
+      foreignKey: "employee_id",
       as: "employee"
     });
 
-    OrderFormModel.belongsTo(models.User, {
-      foreignKey: "managerId",
+    OrderFormModel.belongsTo(models.Contact, {
+      foreignKey: "manager_id",
       as: "manager"
     });
 
     OrderFormModel.belongsTo(models.User, {
-      foreignKey: "createdBy",
+      foreignKey: "created_by",
       as: "creator"
     });
 
     OrderFormModel.hasOne(models.CompletionCertificate, {
-      foreignKey: "orderFormId",
+      foreignKey: "order_form_id",
       as: "completionCertificate"
     });
+
   };
 
   return OrderFormModel;

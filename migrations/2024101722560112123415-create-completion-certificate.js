@@ -9,14 +9,6 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         autoIncrement: true
       },
-      approved: {
-        type: Sequelize.DataTypes.BOOLEAN,
-        allowNull: false
-      },
-      approved_on: {
-        type: Sequelize.DataTypes.DATE,
-        allowNull: true
-      },
       deviation: {
         type: Sequelize.DataTypes.TEXT,
         allowNull: false
@@ -29,20 +21,33 @@ module.exports = {
         type: Sequelize.DataTypes.TEXT,
         allowNull: true
       },
+      status: {
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: false,
+        defaultValue: 'draft'
+      },
       created_on: {
         type: Sequelize.DataTypes.DATE,
+        allowNull: false
+      },
+      created_by: {
+        type: Sequelize.DataTypes.INTEGER,
         allowNull: false
       },
       updated_on: {
         type: Sequelize.DataTypes.DATE,
         allowNull: true
       },
-      created_by: {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: false
-      },
       updated_by: {
         type: Sequelize.DataTypes.INTEGER,
+        allowNull: true
+      },
+      approved_by: {
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: true
+      },
+      approved_on: {
+        type: Sequelize.DataTypes.DATE,
         allowNull: true
       },
       employee_id: {

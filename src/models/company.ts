@@ -21,6 +21,8 @@ export class CompanyModel extends Model<Company, CreateCompanyProperties> implem
 
   public email?: string | null;
 
+  public ceo?: string | null;
+
   public status!: COMPANY_STATUS.ACTIVE | COMPANY_STATUS.INACTIVE;
 
   public type!: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER;
@@ -116,6 +118,11 @@ export const CompanyFactory = (sequelize: Sequelize): typeof CompanyModel => {
         allowNull: false
       },
       email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      ceo: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: null

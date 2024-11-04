@@ -58,6 +58,26 @@ module.exports = {
       name: 'OrderForm:Approve',
       created_on: new Date(),
       updated_on: new Date()
+    }, {
+      name: 'CompletionCertificate:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'CompletionCertificate:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'CompletionCertificate:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'CompletionCertificate:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'CompletionCertificate:Approve',
+      created_on: new Date(),
+      updated_on: new Date()
     }], {});
   },
 

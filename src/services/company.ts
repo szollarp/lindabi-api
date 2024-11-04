@@ -22,7 +22,7 @@ export const companyService = (): CompanyService => {
   const getCompanies = async (context: Context, tenantId: number, type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER): Promise<Array<Partial<Company>>> => {
     try {
       return await context.models.Company.findAll({
-        attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default"],
+        attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default", "ceo"],
         where: { tenantId, type },
         include: [
           {

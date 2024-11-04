@@ -114,6 +114,11 @@ export enum ORDER_FORM_STATUS {
   APPROVED = "approved"
 };
 
+export enum COMPLETION_CERTIFICATE_STATUS {
+  DRAFT = "draft",
+  SIGNED = "signed"
+};
+
 export const PROJECT_COLORS = [
   "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080",
   "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#FFFFFF", "#000000",

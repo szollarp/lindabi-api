@@ -1,8 +1,4 @@
 import { Op } from "sequelize";
-import type { Context } from "../types";
-import { TENDER_STATUS, USER_STATUS } from "../constants";
-import { Tender } from "../models/interfaces/tender";
-import { User } from "../models/interfaces/user";
 import getTenderCreateTemplate from "../helpers/notification-template/create-tender";
 import getUpdateTenderStatusTemplate from "../helpers/notification-template/update-tender-status";
 import getWaitingApprovalTenderStatusTemplate from "../helpers/notification-template/tender-waiting-approval";
@@ -17,8 +13,14 @@ import getCreteCustomerTemplate from "../helpers/notification-template/create-cu
 import getUpdateCustomerTemplate from "../helpers/notification-template/update-customer";
 import getCreteContractorTemplate from "../helpers/notification-template/create-contractor";
 import getUpdateContractorTemplate from "../helpers/notification-template/update-contractor";
-import { Company } from "../models/interfaces/company";
-import { Contact } from "../models/interfaces/contact";
+import getCreateOrderFormTemplate from "../helpers/notification-template/create-order-form";
+import { TENDER_STATUS, USER_STATUS } from "../constants";
+import type { Context } from "../types";
+import type { Tender } from "../models/interfaces/tender";
+import type { User } from "../models/interfaces/user";
+import type { Company } from "../models/interfaces/company";
+import type { Contact } from "../models/interfaces/contact";
+import type { OrderForm } from "../models/interfaces/order-form";
 
 export interface NotificationService {
   sendTenderCreatedNotification: (context: Context, tender: Partial<Tender>) => Promise<{ success: boolean }>
@@ -33,6 +35,7 @@ export interface NotificationService {
   sendCustomerUpdateNotification: (context: Context, company: Company) => Promise<{ success: boolean }>
   sendContractorCreatedNotification: (context: Context, customer: Company) => Promise<{ success: boolean }>
   sendContractorUpdateNotification: (context: Context, company: Company) => Promise<{ success: boolean }>
+  sendOrderFormCreateNotification: (context: Context, orderForm: OrderForm) => Promise<{ success: boolean }>
 }
 
 export const notificationService = (): NotificationService => {
@@ -203,6 +206,38 @@ export const notificationService = (): NotificationService => {
       getUpdateContractorTemplate(company, updateBy!));
   };
 
+  const sendOrderFormCreateNotification = async (context: Context, orderForm: OrderForm): Promise<{ success: boolean }> => {
+    const users = await context.models.User.findAll({
+      where: { id: orderForm.employeeId }, attributes: ["id", "name", "email"]
+    });
+
+    const project = await context.models.Project.findOne({
+      where: { id: orderForm.projectId },
+      attributes: ["id", "name"],
+      include: [
+        {
+          model: context.models.Location,
+          as: "location",
+          attributes: ["id", "city", "country", "zipCode", "address"]
+        },
+        {
+          model: context.models.Company,
+          as: "customer",
+          attributes: ["name"],
+        },
+        {
+          model: context.models.Company,
+          as: "contractor",
+          attributes: ["name"],
+        }
+      ]
+    })
+
+    const [employee,] = users;
+    return sendNotification(context, users, "Új megrendőlapja jött létre", () =>
+      getCreateOrderFormTemplate(orderForm, project!, employee!));
+  };
+
   return {
     sendTenderCreatedNotification,
     sendTenderStatusChangedNotification,
@@ -215,6 +250,7 @@ export const notificationService = (): NotificationService => {
     sendCustomerCreatedNotification,
     sendCustomerUpdateNotification,
     sendContractorCreatedNotification,
-    sendContractorUpdateNotification
+    sendContractorUpdateNotification,
+    sendOrderFormCreateNotification
   }
 }
