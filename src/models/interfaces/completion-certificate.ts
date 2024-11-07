@@ -1,4 +1,5 @@
 import { COMPLETION_CERTIFICATE_STATUS } from "../../constants"
+import { Tenant } from "./tenant"
 import type { User } from "./user"
 
 export interface CompletionCertificate {
@@ -16,6 +17,9 @@ export interface CompletionCertificate {
   //
   approvedOn?: Date | null
   approvedBy?: User["id"] | null
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
   //
   createdOn?: Date
   updatedOn?: Date | null

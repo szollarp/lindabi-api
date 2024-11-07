@@ -16,6 +16,8 @@ export interface Location {
   notes?: string | null
   //
   tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
+  //
   createdOn?: Date
   updatedOn?: Date | null
   createdBy?: User["id"]

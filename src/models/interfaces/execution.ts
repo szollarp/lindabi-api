@@ -1,6 +1,7 @@
 import type { EXECUTION_SETTLEMENT, EXECUTION_STATUS } from "../../constants"
 import type { Document } from "./document"
 import type { Project } from "./project"
+import { Tenant } from "./tenant"
 import type { User } from "./user"
 
 export interface Execution {
@@ -29,6 +30,9 @@ export interface Execution {
   //
   approvedBy?: User["id"] | null
   approvedOn?: Date | null
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
   //
   createdOn?: Date
   updatedOn?: Date | null

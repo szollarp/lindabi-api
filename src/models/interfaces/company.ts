@@ -1,6 +1,7 @@
 import type { COMPANY_STATUS, COMPANY_TYPE } from "../../constants";
 import type { Contact } from "./contact";
 import type { Document } from "./document";
+import { Tenant } from "./tenant";
 import type { User } from "./user";
 
 export interface Company {
@@ -22,8 +23,10 @@ export interface Company {
   bankAccount?: string | null
   prefix?: string | null
   offerNum?: string | null
-  tenantId?: number | null
   notes?: string | null
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
   //
   documentIds?: Document["id"][] | null
   documents?: Document[]

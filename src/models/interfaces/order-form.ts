@@ -1,6 +1,7 @@
 import type { ORDER_FORM_STATUS } from "../../constants"
 import type { Contact } from "./contact"
 import type { Project } from "./project"
+import { Tenant } from "./tenant"
 import type { User } from "./user"
 
 export interface OrderForm {
@@ -26,6 +27,9 @@ export interface OrderForm {
   //
   projectId: Project["id"]
   project?: Project
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
   //
   createdOn?: Date
   updatedOn?: Date | null

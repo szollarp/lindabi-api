@@ -783,6 +783,7 @@
 					"milestone",
 					"report",
 					"execution",
+					"invoice",
 					null
 				],
 				"nullable": true
@@ -826,102 +827,6 @@
 			"COMPANY_TYPE.SUPPLIER": {
 				"enum": [
 					"supplier"
-				],
-				"type": "string"
-			},
-			"Document": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string",
-						"nullable": true
-					},
-					"type": {
-						"$ref": "#/components/schemas/DocumentType"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"approved": {
-						"type": "boolean"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"ownerType": {
-						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/DocumentProperties"
-					},
-					"companyId": {
-						"anyOf": [
-							{
-								"type": "number",
-								"format": "double"
-							},
-							{
-								"type": "string"
-							}
-						],
-						"nullable": true
-					},
-					"company": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Company"
-							}
-						],
-						"nullable": true
-					},
-					"stored": {
-						"properties": {
-							"thumbnail": {
-								"type": "string"
-							},
-							"resized": {
-								"type": "string"
-							},
-							"original": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"original"
-						],
-						"type": "object"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					}
-				},
-				"required": [
-					"type",
-					"mimeType"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CONTACT_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"CONTACT_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
 				],
 				"type": "string"
 			},
@@ -1019,6 +924,102 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Document": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"$ref": "#/components/schemas/DocumentType"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"approved": {
+						"type": "boolean"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"ownerType": {
+						"$ref": "#/components/schemas/DocumentOwnerType"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "number",
+								"format": "double"
+							},
+							{
+								"type": "string"
+							}
+						],
+						"nullable": true
+					},
+					"company": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Company"
+							}
+						],
+						"nullable": true
+					},
+					"stored": {
+						"properties": {
+							"thumbnail": {
+								"type": "string"
+							},
+							"resized": {
+								"type": "string"
+							},
+							"original": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"original"
+						],
+						"type": "object"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					}
+				},
+				"required": [
+					"type",
+					"mimeType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CONTACT_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"CONTACT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
 			},
 			"Contact": {
 				"properties": {
@@ -1184,13 +1185,21 @@
 						"type": "string",
 						"nullable": true
 					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double",
 						"nullable": true
 					},
-					"notes": {
-						"type": "string",
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
 						"nullable": true
 					},
 					"documentIds": {
@@ -2178,6 +2187,14 @@
 					"tenantId": {
 						"type": "number",
 						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
 						"nullable": true
 					},
 					"createdOn": {
@@ -4542,6 +4559,19 @@
 					"project": {
 						"$ref": "#/components/schemas/Project"
 					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4578,6 +4608,13 @@
 			},
 			"Pick_OrderForm.Exclude_keyofOrderForm.id-or-number-or-status-or-createdOn-or-updatedOn-or-approvedOn-or-approveCode__": {
 				"properties": {
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"createdBy": {
 						"type": "number",
 						"format": "double"
@@ -4717,6 +4754,13 @@
 					"project": {
 						"$ref": "#/components/schemas/Project"
 					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4792,6 +4836,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4841,6 +4888,9 @@
 					"tenantId": {
 						"type": "number",
 						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -4956,6 +5006,13 @@
 					"approvedOn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdOn": {
 						"type": "string",
@@ -5158,12 +5215,15 @@
 					"offerNum": {
 						"type": "string"
 					},
+					"notes": {
+						"type": "string"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
 					},
-					"notes": {
-						"type": "string"
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"documentIds": {
 						"items": {
@@ -5256,6 +5316,9 @@
 					"tenantId": {
 						"type": "number",
 						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -5519,6 +5582,19 @@
 						"format": "double",
 						"nullable": true
 					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -5551,6 +5627,13 @@
 			},
 			"Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"createdBy": {
 						"type": "number",
 						"format": "double"
@@ -5644,6 +5727,13 @@
 					"approvedBy": {
 						"type": "number",
 						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdOn": {
 						"type": "string",

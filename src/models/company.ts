@@ -251,6 +251,16 @@ export const CompanyFactory = (sequelize: Sequelize): typeof CompanyModel => {
       foreignKey: "customerId",
       as: "tendersAsCustomer"
     });
+
+    CompanyModel.hasMany(models.Invoice, {
+      foreignKey: "contractor_id",
+      as: "contractorInvoices"
+    });
+
+    CompanyModel.hasMany(models.Invoice, {
+      foreignKey: "supplier_id",
+      as: "supplierInvoices"
+    });
   };
 
   return CompanyModel;

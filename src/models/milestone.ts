@@ -142,6 +142,11 @@ export const MilestoneFactory = (sequelize: Sequelize): typeof MilestoneModel =>
       },
       as: "documents"
     });
+
+    MilestoneModel.hasMany(models.Invoice, {
+      foreignKey: "milestone_id",
+      as: "invoices"
+    });
   };
 
   return MilestoneModel;

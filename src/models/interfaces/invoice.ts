@@ -3,6 +3,7 @@ import { Company } from "./company";
 import { Document } from "./document";
 import { Milestone } from "./milestone";
 import { Project } from "./project";
+import { Tenant } from "./tenant";
 import { User } from "./user";
 
 export interface Invoice {
@@ -48,5 +49,10 @@ export interface Invoice {
   approvedBy?: number | null
   approvedOn?: Date | null
   //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant | null
+  //
   payedOn?: Date | null
 }
+
+export type CreateInvoiceProperties = Omit<Invoice, "id" | "createdOn" | "updatedOn" | "approvedBy" | "approvedOn" | "payedOn">;

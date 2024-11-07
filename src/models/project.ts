@@ -414,6 +414,11 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       foreignKey: "projectId",
       as: "orderForms"
     });
+
+    ProjectModel.hasMany(models.Invoice, {
+      foreignKey: "project_id",
+      as: "invoices"
+    });
   };
 
   return ProjectModel;
