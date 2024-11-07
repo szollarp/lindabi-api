@@ -1,7 +1,10 @@
 import type { LOCATION_STATUS } from "../../constants";
+import type { Tenant } from "./tenant";
+import type { User } from "./user";
 
 export interface Location {
   id: number
+  //
   taxNumber?: string | null
   name: string
   country: string
@@ -11,11 +14,12 @@ export interface Location {
   zipCode: string
   status: LOCATION_STATUS.ACTIVE | LOCATION_STATUS.INACTIVE
   notes?: string | null
-  tenantId?: number | null
+  //
+  tenantId?: Tenant["id"] | null
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateLocationProperties = Omit<Location, "id" | "createdOn" | "updatedBy" | "updatedOn">;

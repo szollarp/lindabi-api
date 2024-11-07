@@ -1,7 +1,13 @@
+import type { User } from "./user"
+
 export interface AccountVerifyToken {
   id: number
-  userId?: number | null
+  //
+  userId?: User["id"] | null
+  user?: User | null
+  //
   token: string
+  //
   createdOn?: Date
   updatedOn?: Date | null
   deletedOn?: Date | null

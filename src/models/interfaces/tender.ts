@@ -1,13 +1,15 @@
-import { TENDER_CURRENCY, TENDER_STATUS } from "../../constants"
+import type { TENDER_CURRENCY, TENDER_STATUS } from "../../constants"
 import type { Company } from "./company"
 import type { Contact } from "./contact"
 import type { Location } from "./location"
 import type { Tenant } from "./tenant"
 import type { TenderItem } from "./tender-item"
 import type { Document } from "./document";
+import type { User } from "./user"
 
 export interface Tender {
   id: number
+  //
   type: string
   shortName?: string | null
   number?: string | null
@@ -28,22 +30,32 @@ export interface Tender {
   locationDescription?: string | null
   toolRequirements?: string | null
   otherComment?: string | null
-  customerId?: number | null
+  //
+  customerId?: Company["id"] | null
   customer?: Company
-  contractorId?: number | null
+  //
+  contractorId?: Company["id"] | null
   contractor?: Company
-  locationId?: number | null
+  //
+  locationId?: Location["id"] | null
   location?: Location
-  contactId?: number | null
+  //
+  contactId?: Contact["id"] | null
   contact?: Contact
+  //
+  tenantId?: Tenant["id"] | null
   tenant?: Tenant
-  tenantId?: number | null
+  //
+  itemIds?: TenderItem["id"][] | null
   items?: TenderItem[]
+  //
+  documentIds?: Document["id"][] | null
   documents?: Document[]
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateTenderProperties = Omit<Tender, "id" | "createdOn" | "updatedBy" | "updatedOn">;

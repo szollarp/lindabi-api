@@ -1,9 +1,15 @@
+import type { Contact } from "./contact";
+import type { Project } from "./project";
+
 export interface ProjectSupervisor {
-  contactId: number;
-  projectId: number;
-  //
   startDate?: Date | null;
   endDate?: Date | null;
+  //
+  contactId: Contact["id"];
+  contact?: Contact;
+  //
+  projectId: Project["id"];
+  project?: Project;
   //
   createdOn: Date;
   updatedOn: Date;

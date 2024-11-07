@@ -1,7 +1,9 @@
 import { COMPLETION_CERTIFICATE_STATUS } from "../../constants"
+import type { User } from "./user"
 
 export interface CompletionCertificate {
   id: number
+  //
   amount: number
   status: COMPLETION_CERTIFICATE_STATUS
   //
@@ -12,12 +14,13 @@ export interface CompletionCertificate {
   description?: string | null
   deviation?: string | null
   //
+  approvedOn?: Date | null
+  approvedBy?: User["id"] | null
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
-  approvedOn?: Date | null
-  approvedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateCompletionCertificateProperties = Omit<CompletionCertificate, "id" | "status" | "createdOn" | "updatedOn">;

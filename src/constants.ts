@@ -119,6 +119,16 @@ export enum COMPLETION_CERTIFICATE_STATUS {
   SIGNED = "signed"
 };
 
+export enum INVOICE_PAYMENT_TYPE {
+  cash = "cash",
+  bank = "bank"
+};
+
+export enum INVOICE_STATUS {
+  DRAFT = "draft",
+  PAID = "paid"
+};
+
 export const PROJECT_COLORS = [
   "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080",
   "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#FFFFFF", "#000000",

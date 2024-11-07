@@ -6,8 +6,8 @@ import type { TwoFactorSession } from "./two-factor-session";
 import type { TwoFactorAuthentication } from "./two-factor-authentication";
 import type { Tenant } from "./tenant";
 import type { Document } from "./document";
-import { Salary } from "./salary";
-import { Contact } from "./contact";
+import type { Salary } from "./salary";
+import type { Contact } from "./contact";
 
 export interface Notifications {
   userNew: boolean
@@ -42,6 +42,7 @@ export interface UserBilling {
 
 export interface User {
   id: number
+  //
   email: string
   name: string
   password?: string
@@ -54,26 +55,7 @@ export interface User {
   city?: string | null
   address?: string | null
   zipCode?: string | null
-  createdOn?: Date
-  updatedOn?: Date | null
-  deletedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
-  deletedBy?: number | null
-  accountVerifyToken?: AccountVerifyToken
-  accountVerifyTokenId?: number | null
-  forgottenPasswordToken?: ForgottenPasswordToken
-  forgottenPasswordTokenId?: number | null
-  twoFactorSession?: TwoFactorSession
-  twoFactorSessionId?: number | null
-  twoFactorAuthentication?: TwoFactorAuthentication
-  twoFactorAuthenticationId?: number | null
-  role?: Role
-  roleId?: number | null
-  tenant?: Tenant
-  tenantId?: number | null
   lastLoggedIn?: Date | null
-  documents?: Document[]
   notifications?: Notifications
   entity?: string;
   enableLogin?: boolean;
@@ -88,11 +70,42 @@ export interface User {
   taxIdentificationNumber?: string | null;
   personalIdentificationNumber?: string | null;
   licensePlateNumber?: string | null;
-  salaries?: Salary[];
-  contact?: Contact;
-  contactId?: number | null;
   properties?: Record<string, unknown>;
   billing?: UserBilling | {};
+  //
+  salaryIds?: Salary["id"][] | null
+  salaries?: Salary[];
+  //
+  accountVerifyTokenId?: AccountVerifyToken["id"] | null
+  accountVerifyToken?: AccountVerifyToken
+  //
+  forgottenPasswordTokenId?: ForgottenPasswordToken["id"] | null
+  forgottenPasswordToken?: ForgottenPasswordToken
+  //
+  twoFactorSessionId?: TwoFactorSession["id"] | null
+  twoFactorSession?: TwoFactorSession
+  //
+  twoFactorAuthenticationId?: TwoFactorAuthentication["id"] | null
+  twoFactorAuthentication?: TwoFactorAuthentication
+  //
+  roleId?: Role["id"] | null
+  role?: Role
+  //
+  contactId?: Contact["id"] | null;
+  contact?: Contact;
+  //
+  documentIds?: Document["id"][] | null
+  documents?: Document[]
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant
+  //
+  createdOn?: Date
+  updatedOn?: Date | null
+  deletedOn?: Date | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
+  deletedBy?: User["id"] | null
 };
 
 export type CreateUserProperties = Omit<User, "id" | "createdOn" | "updatedBy" | "updatedOn" | "deletedOn" | "deletedBy" | "accountVerifyToken" | "forgottenPasswordToken">;

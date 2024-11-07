@@ -1,3 +1,5 @@
+import type { Company } from "./company";
+
 export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | null;
 
 export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" |
@@ -12,21 +14,28 @@ export interface DocumentProperties {
 
 export interface Document {
   id?: number
+  //
   name?: string | null
   type: DocumentType;
+  mimeType: string
+  approved?: boolean
+  //
   ownerId?: number | null
   ownerType?: DocumentOwnerType
-  mimeType: string
-  createdOn?: Date
-  updatedOn?: Date | null
+  //
   properties?: DocumentProperties;
-  companyId?: number | string | null
-  approved?: boolean
+  //
+  companyId?: Company["id"] | string | null
+  company?: Company | null
+  //
   stored?: {
     original: string
     resized?: string
     thumbnail?: string
   }
+  //
+  createdOn?: Date
+  updatedOn?: Date | null
 };
 
 export type CreateDocumentProperties = Omit<Document, "id" | "createdOn" | "updatedOn">;

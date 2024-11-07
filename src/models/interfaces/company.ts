@@ -1,9 +1,11 @@
 import type { COMPANY_STATUS, COMPANY_TYPE } from "../../constants";
-import { Contact } from "./contact";
-import { type Document } from "./document";
+import type { Contact } from "./contact";
+import type { Document } from "./document";
+import type { User } from "./user";
 
 export interface Company {
   id: number
+  //
   name: string
   ceo?: string | null
   email?: string | null
@@ -22,12 +24,17 @@ export interface Company {
   offerNum?: string | null
   tenantId?: number | null
   notes?: string | null
+  //
+  documentIds?: Document["id"][] | null
+  documents?: Document[]
+  //
+  contactIds?: Contact["id"][] | null
+  contacts?: Contact[]
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
-  documents?: Document[]
-  contacts?: Contact[]
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateCompanyProperties = Omit<Company, "id" | "createdOn" | "updatedBy" | "updatedOn">;

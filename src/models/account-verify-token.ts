@@ -8,15 +8,15 @@ export class AccountVerifyTokenModel extends Model<AccountVerifyToken, CreateAcc
 
   public token!: string;
 
+  declare user?: NonAttribute<User>;
+
+  declare userId?: ForeignKey<User["id"]>;
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
 
   public readonly deletedOn!: Date | null;
-
-  declare user?: NonAttribute<User>;
-
-  declare userId?: ForeignKey<User["id"]>;
 
   public static associate: (models: Models) => void;
 }

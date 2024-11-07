@@ -1,7 +1,13 @@
+import type { User } from "./user"
+
 export interface TwoFactorSession {
   id: number
-  userId: number
+  //
   token: string
+  //
+  userId: User["id"]
+  user?: User
+  //
   createdOn?: Date
   updatedOn?: Date | null
 };

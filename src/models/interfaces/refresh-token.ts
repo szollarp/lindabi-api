@@ -1,7 +1,13 @@
+import type { User } from "./user"
+
 export interface RefreshToken {
   id: number
-  userId?: number | null
+  //
   token: string
+  //
+  userId?: User["id"] | null
+  user?: User
+  //
   createdOn?: Date
   updatedOn?: Date | null
 };

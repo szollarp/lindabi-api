@@ -1,16 +1,22 @@
 import type { Permission } from "./permission";
 import type { Tenant } from "./tenant";
+import type { User } from "./user";
 
 export interface Role {
   id: number
+  //
   name: string
+  //
+  permissionIds?: Permission["id"][]
   permissions?: Permission[]
+  //
+  tenantId?: Tenant["id"] | null
   tenant?: Tenant
-  tenantId?: number | null
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateRoleProperties = Omit<Role, "id" | "createdOn" | "createdBy" | "updatedBy" | "updatedOn">;

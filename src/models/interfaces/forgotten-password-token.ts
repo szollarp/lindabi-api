@@ -1,9 +1,15 @@
+import type { User } from "./user"
+
 export interface ForgottenPasswordToken {
   id: number
-  userId?: number | null
+  //
   token: string
   createdOn?: Date
   expiredOn?: Date
+  //
+  userId?: User["id"] | null
+  user?: User | null
+  //
   updatedOn?: Date | null
   deletedOn?: Date | null
 };

@@ -1,7 +1,11 @@
-import { PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE } from "../../constants"
+import type { PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE } from "../../constants"
+import type { Project } from "./project"
+import type { User } from "./user"
 
 export interface ProjectItem {
   id: number
+  //
+  num: number
   name: string
   quantity: number
   unit: string
@@ -9,12 +13,14 @@ export interface ProjectItem {
   type: PROJECT_ITEM_TYPE
   netAmount?: number | null
   notes?: string | null
-  projectId: number
-  num: number
+  //
+  projectId: Project["id"]
+  project?: Project
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateProjectItemProperties = Omit<ProjectItem, "id" | "num" | "createdOn" | "updatedBy" | "updatedOn">;

@@ -1,8 +1,11 @@
-import { TENDER_CURRENCY } from "../../constants"
+import { Tender } from "./tender"
+import { User } from "./user"
 
 export interface TenderItem {
   id: number
+  //
   name: string
+  num: number
   quantity: number
   unit: string
   materialNetUnitAmount: number
@@ -13,12 +16,14 @@ export interface TenderItem {
   feeNetAmount: number
   feeActualNetAmount: number
   totalFeeAmount: number
-  tenderId: number
-  num: number
+  //
+  tenderId: Tender["id"]
+  tender?: Tender | null
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateTenderItemProperties = Omit<TenderItem, "id" | "num" | "createdOn" | "updatedBy" | "updatedOn">;

@@ -428,7 +428,7 @@ export const tenderService = (): TenderService => {
         }
       }
 
-      await context.services.journey.addDiffLogs(context, user, {
+      await context.services.journey.addDiffLogs<Partial<Tender>>(context, user, {
         activity: "The tender has been successfully updated.",
         existed: tender,
         updated: data

@@ -16,6 +16,466 @@
 				],
 				"type": "string"
 			},
+			"Notifications": {
+				"properties": {
+					"userNew": {
+						"type": "boolean"
+					},
+					"tenderNew": {
+						"type": "boolean"
+					},
+					"contactNew": {
+						"type": "boolean"
+					},
+					"userDelete": {
+						"type": "boolean"
+					},
+					"userUpdate": {
+						"type": "boolean"
+					},
+					"customerNew": {
+						"type": "boolean"
+					},
+					"contactUpdate": {
+						"type": "boolean"
+					},
+					"contractorNew": {
+						"type": "boolean"
+					},
+					"customerUpdate": {
+						"type": "boolean"
+					},
+					"tenderApproved": {
+						"type": "boolean"
+					},
+					"userUpdateRole": {
+						"type": "boolean"
+					},
+					"contractorUpdate": {
+						"type": "boolean"
+					},
+					"tenderStatusChange": {
+						"type": "boolean"
+					},
+					"permissionMatrixUpdate": {
+						"type": "boolean"
+					},
+					"tenderAwaitingApproval": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"userNew",
+					"tenderNew",
+					"contactNew",
+					"userDelete",
+					"userUpdate",
+					"customerNew",
+					"contactUpdate",
+					"contractorNew",
+					"customerUpdate",
+					"tenderApproved",
+					"userUpdateRole",
+					"contractorUpdate",
+					"tenderStatusChange",
+					"permissionMatrixUpdate",
+					"tenderAwaitingApproval"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Record_string.unknown_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"UserBilling": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"registrationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"USER_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.DISABLED": {
+				"enum": [
+					"disabled"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.PENDING": {
+				"enum": [
+					"pending"
+				],
+				"type": "string"
+			},
+			"Salary": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"hourlyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"dailyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"startDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/USER_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.INACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.DISABLED"
+							},
+							{
+								"$ref": "#/components/schemas/USER_STATUS.PENDING"
+							}
+						]
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string",
+						"nullable": true
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string",
+						"nullable": true
+					},
+					"address": {
+						"type": "string",
+						"nullable": true
+					},
+					"zipCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string",
+						"nullable": true
+					},
+					"employeeType": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"birthName": {
+						"type": "string",
+						"nullable": true
+					},
+					"motherName": {
+						"type": "string",
+						"nullable": true
+					},
+					"placeOfBirth": {
+						"type": "string",
+						"nullable": true
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"socialSecurityNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"taxIdentificationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"personalIdentificationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"licensePlateNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							},
+							{
+								"properties": {},
+								"type": "object"
+							}
+						]
+					},
+					"salaryIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"accountVerifyToken": {
+						"$ref": "#/components/schemas/AccountVerifyToken"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"forgottenPasswordToken": {
+						"$ref": "#/components/schemas/ForgottenPasswordToken"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"email",
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"AccountVerifyToken": {
 				"properties": {
 					"id": {
@@ -25,6 +485,14 @@
 					"userId": {
 						"type": "number",
 						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/User"
+							}
+						],
 						"nullable": true
 					},
 					"token": {
@@ -58,11 +526,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
 					"token": {
 						"type": "string"
 					},
@@ -73,6 +536,19 @@
 					"expiredOn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/User"
+							}
+						],
+						"nullable": true
 					},
 					"updatedOn": {
 						"type": "string",
@@ -98,12 +574,15 @@
 						"type": "number",
 						"format": "double"
 					},
+					"token": {
+						"type": "string"
+					},
 					"userId": {
 						"type": "number",
 						"format": "double"
 					},
-					"token": {
-						"type": "string"
+					"user": {
+						"$ref": "#/components/schemas/User"
 					},
 					"createdOn": {
 						"type": "string",
@@ -117,8 +596,8 @@
 				},
 				"required": [
 					"id",
-					"userId",
-					"token"
+					"token",
+					"userId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -185,6 +664,9 @@
 					"userId": {
 						"type": "number",
 						"format": "double"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					},
 					"secret": {
 						"anyOf": [
@@ -317,6 +799,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"COMPANY_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"COMPANY_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CONTRACTOR": {
+				"enum": [
+					"contractor"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CUSTOMER": {
+				"enum": [
+					"customer"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.SUPPLIER": {
+				"enum": [
+					"supplier"
+				],
+				"type": "string"
+			},
 			"Document": {
 				"properties": {
 					"id": {
@@ -330,6 +842,12 @@
 					"type": {
 						"$ref": "#/components/schemas/DocumentType"
 					},
+					"mimeType": {
+						"type": "string"
+					},
+					"approved": {
+						"type": "boolean"
+					},
 					"ownerId": {
 						"type": "number",
 						"format": "double",
@@ -337,18 +855,6 @@
 					},
 					"ownerType": {
 						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
 					},
 					"properties": {
 						"$ref": "#/components/schemas/DocumentProperties"
@@ -365,8 +871,13 @@
 						],
 						"nullable": true
 					},
-					"approved": {
-						"type": "boolean"
+					"company": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Company"
+							}
+						],
+						"nullable": true
 					},
 					"stored": {
 						"properties": {
@@ -384,6 +895,15 @@
 							"original"
 						],
 						"type": "object"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
 					}
 				},
 				"required": [
@@ -392,6 +912,18 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"CONTACT_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"CONTACT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
 			},
 			"Tenant": {
 				"properties": {
@@ -441,29 +973,36 @@
 						"type": "string",
 						"nullable": true
 					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"documents": {
 						"items": {
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
 					}
 				},
 				"required": [
@@ -481,467 +1020,11 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Role": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"permissions": {
-						"items": {
-							"$ref": "#/components/schemas/Permission"
-						},
-						"type": "array"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Notifications": {
-				"properties": {
-					"userNew": {
-						"type": "boolean"
-					},
-					"tenderNew": {
-						"type": "boolean"
-					},
-					"contactNew": {
-						"type": "boolean"
-					},
-					"userDelete": {
-						"type": "boolean"
-					},
-					"userUpdate": {
-						"type": "boolean"
-					},
-					"customerNew": {
-						"type": "boolean"
-					},
-					"contactUpdate": {
-						"type": "boolean"
-					},
-					"contractorNew": {
-						"type": "boolean"
-					},
-					"customerUpdate": {
-						"type": "boolean"
-					},
-					"tenderApproved": {
-						"type": "boolean"
-					},
-					"userUpdateRole": {
-						"type": "boolean"
-					},
-					"contractorUpdate": {
-						"type": "boolean"
-					},
-					"tenderStatusChange": {
-						"type": "boolean"
-					},
-					"permissionMatrixUpdate": {
-						"type": "boolean"
-					},
-					"tenderAwaitingApproval": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"userNew",
-					"tenderNew",
-					"contactNew",
-					"userDelete",
-					"userUpdate",
-					"customerNew",
-					"contactUpdate",
-					"contractorNew",
-					"customerUpdate",
-					"tenderApproved",
-					"userUpdateRole",
-					"contractorUpdate",
-					"tenderStatusChange",
-					"permissionMatrixUpdate",
-					"tenderAwaitingApproval"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"USER_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.DISABLED": {
-				"enum": [
-					"disabled"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.PENDING": {
-				"enum": [
-					"pending"
-				],
-				"type": "string"
-			},
-			"Salary": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"endDate": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"hourlyRate": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"dailyRate": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"user": {
-						"$ref": "#/components/schemas/User"
-					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"startDate"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CONTACT_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"CONTACT_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"User": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/USER_STATUS.ACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/USER_STATUS.INACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/USER_STATUS.DISABLED"
-							},
-							{
-								"$ref": "#/components/schemas/USER_STATUS.PENDING"
-							}
-						]
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
-					"country": {
-						"type": "string",
-						"nullable": true
-					},
-					"region": {
-						"type": "string",
-						"nullable": true
-					},
-					"city": {
-						"type": "string",
-						"nullable": true
-					},
-					"address": {
-						"type": "string",
-						"nullable": true
-					},
-					"zipCode": {
-						"type": "string",
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"deletedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"deletedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"accountVerifyToken": {
-						"$ref": "#/components/schemas/AccountVerifyToken"
-					},
-					"accountVerifyTokenId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"forgottenPasswordToken": {
-						"$ref": "#/components/schemas/ForgottenPasswordToken"
-					},
-					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"twoFactorSession": {
-						"$ref": "#/components/schemas/TwoFactorSession"
-					},
-					"twoFactorSessionId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"twoFactorAuthentication": {
-						"$ref": "#/components/schemas/TwoFactorAuthentication"
-					},
-					"twoFactorAuthenticationId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"role": {
-						"$ref": "#/components/schemas/Role"
-					},
-					"roleId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"lastLoggedIn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
-					},
-					"entity": {
-						"type": "string"
-					},
-					"enableLogin": {
-						"type": "boolean"
-					},
-					"identifier": {
-						"type": "string",
-						"nullable": true
-					},
-					"employeeType": {
-						"type": "string",
-						"nullable": true
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"birthName": {
-						"type": "string",
-						"nullable": true
-					},
-					"motherName": {
-						"type": "string",
-						"nullable": true
-					},
-					"placeOfBirth": {
-						"type": "string",
-						"nullable": true
-					},
-					"dateOfBirth": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"socialSecurityNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"taxIdentificationNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"personalIdentificationNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"licensePlateNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"salaries": {
-						"items": {
-							"$ref": "#/components/schemas/Salary"
-						},
-						"type": "array"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"properties": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"billing": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/UserBilling"
-							},
-							{
-								"properties": {},
-								"type": "object"
-							}
-						]
-					}
-				},
-				"required": [
-					"id",
-					"email",
-					"name",
-					"phoneNumber"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"Contact": {
 				"properties": {
 					"id": {
 						"type": "number",
 						"format": "double"
-					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
 					},
 					"name": {
 						"type": "string"
@@ -968,17 +1051,30 @@
 						"type": "string",
 						"nullable": true
 					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
 					"user": {
 						"allOf": [
 							{
 								"$ref": "#/components/schemas/User"
 							}
 						],
-						"nullable": true
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
 						"nullable": true
 					},
 					"createdOn": {
@@ -1007,845 +1103,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"Record_string.unknown_": {
-				"properties": {},
-				"additionalProperties": {},
-				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
-			},
-			"UserBilling": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string",
-						"nullable": true
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"taxNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"registrationNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"bankAccount": {
-						"type": "string",
-						"nullable": true
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"name",
-					"country",
-					"city",
-					"address",
-					"zipCode"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Partial_User_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/USER_STATUS"
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"deletedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"accountVerifyToken": {
-						"$ref": "#/components/schemas/AccountVerifyToken"
-					},
-					"accountVerifyTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"forgottenPasswordToken": {
-						"$ref": "#/components/schemas/ForgottenPasswordToken"
-					},
-					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorSession": {
-						"$ref": "#/components/schemas/TwoFactorSession"
-					},
-					"twoFactorSessionId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorAuthentication": {
-						"$ref": "#/components/schemas/TwoFactorAuthentication"
-					},
-					"twoFactorAuthenticationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"role": {
-						"$ref": "#/components/schemas/Role"
-					},
-					"roleId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"lastLoggedIn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
-					},
-					"entity": {
-						"type": "string"
-					},
-					"enableLogin": {
-						"type": "boolean"
-					},
-					"identifier": {
-						"type": "string"
-					},
-					"employeeType": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"birthName": {
-						"type": "string"
-					},
-					"motherName": {
-						"type": "string"
-					},
-					"placeOfBirth": {
-						"type": "string"
-					},
-					"dateOfBirth": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"socialSecurityNumber": {
-						"type": "string"
-					},
-					"taxIdentificationNumber": {
-						"type": "string"
-					},
-					"personalIdentificationNumber": {
-						"type": "string"
-					},
-					"licensePlateNumber": {
-						"type": "string"
-					},
-					"salaries": {
-						"items": {
-							"$ref": "#/components/schemas/Salary"
-						},
-						"type": "array"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"billing": {
-						"anyOf": [
-							{
-								"properties": {},
-								"type": "object"
-							},
-							{
-								"$ref": "#/components/schemas/UserBilling"
-							}
-						]
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken__": {
-				"properties": {
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/USER_STATUS"
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"accountVerifyTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorSession": {
-						"$ref": "#/components/schemas/TwoFactorSession"
-					},
-					"twoFactorSessionId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorAuthentication": {
-						"$ref": "#/components/schemas/TwoFactorAuthentication"
-					},
-					"twoFactorAuthenticationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"role": {
-						"$ref": "#/components/schemas/Role"
-					},
-					"roleId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"lastLoggedIn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
-					},
-					"entity": {
-						"type": "string"
-					},
-					"enableLogin": {
-						"type": "boolean"
-					},
-					"identifier": {
-						"type": "string"
-					},
-					"employeeType": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"birthName": {
-						"type": "string"
-					},
-					"motherName": {
-						"type": "string"
-					},
-					"placeOfBirth": {
-						"type": "string"
-					},
-					"dateOfBirth": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"socialSecurityNumber": {
-						"type": "string"
-					},
-					"taxIdentificationNumber": {
-						"type": "string"
-					},
-					"personalIdentificationNumber": {
-						"type": "string"
-					},
-					"licensePlateNumber": {
-						"type": "string"
-					},
-					"salaries": {
-						"items": {
-							"$ref": "#/components/schemas/Salary"
-						},
-						"type": "array"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"billing": {
-						"anyOf": [
-							{
-								"properties": {},
-								"type": "object"
-							},
-							{
-								"$ref": "#/components/schemas/UserBilling"
-							}
-						]
-					}
-				},
-				"required": [
-					"email",
-					"name",
-					"phoneNumber"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_User.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken_": {
-				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateUserProperties": {
-				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken_"
-			},
-			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn__": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/USER_STATUS"
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"accountVerifyTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorSession": {
-						"$ref": "#/components/schemas/TwoFactorSession"
-					},
-					"twoFactorSessionId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorAuthentication": {
-						"$ref": "#/components/schemas/TwoFactorAuthentication"
-					},
-					"twoFactorAuthenticationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"role": {
-						"$ref": "#/components/schemas/Role"
-					},
-					"roleId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
-					},
-					"entity": {
-						"type": "string"
-					},
-					"enableLogin": {
-						"type": "boolean"
-					},
-					"identifier": {
-						"type": "string"
-					},
-					"employeeType": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"birthName": {
-						"type": "string"
-					},
-					"motherName": {
-						"type": "string"
-					},
-					"placeOfBirth": {
-						"type": "string"
-					},
-					"dateOfBirth": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"socialSecurityNumber": {
-						"type": "string"
-					},
-					"taxIdentificationNumber": {
-						"type": "string"
-					},
-					"personalIdentificationNumber": {
-						"type": "string"
-					},
-					"licensePlateNumber": {
-						"type": "string"
-					},
-					"salaries": {
-						"items": {
-							"$ref": "#/components/schemas/Salary"
-						},
-						"type": "array"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"billing": {
-						"anyOf": [
-							{
-								"properties": {},
-								"type": "object"
-							},
-							{
-								"$ref": "#/components/schemas/UserBilling"
-							}
-						]
-					}
-				},
-				"required": [
-					"name",
-					"phoneNumber"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_": {
-				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"UpdateUserProperties": {
-				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_"
-			},
-			"Partial_User-or-null_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/USER_STATUS"
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"deletedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"deletedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"accountVerifyToken": {
-						"$ref": "#/components/schemas/AccountVerifyToken"
-					},
-					"accountVerifyTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"forgottenPasswordToken": {
-						"$ref": "#/components/schemas/ForgottenPasswordToken"
-					},
-					"forgottenPasswordTokenId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorSession": {
-						"$ref": "#/components/schemas/TwoFactorSession"
-					},
-					"twoFactorSessionId": {
-						"type": "number",
-						"format": "double"
-					},
-					"twoFactorAuthentication": {
-						"$ref": "#/components/schemas/TwoFactorAuthentication"
-					},
-					"twoFactorAuthenticationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"role": {
-						"$ref": "#/components/schemas/Role"
-					},
-					"roleId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"lastLoggedIn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
-					},
-					"entity": {
-						"type": "string"
-					},
-					"enableLogin": {
-						"type": "boolean"
-					},
-					"identifier": {
-						"type": "string"
-					},
-					"employeeType": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"birthName": {
-						"type": "string"
-					},
-					"motherName": {
-						"type": "string"
-					},
-					"placeOfBirth": {
-						"type": "string"
-					},
-					"dateOfBirth": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"socialSecurityNumber": {
-						"type": "string"
-					},
-					"taxIdentificationNumber": {
-						"type": "string"
-					},
-					"personalIdentificationNumber": {
-						"type": "string"
-					},
-					"licensePlateNumber": {
-						"type": "string"
-					},
-					"salaries": {
-						"items": {
-							"$ref": "#/components/schemas/Salary"
-						},
-						"type": "array"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"billing": {
-						"anyOf": [
-							{
-								"properties": {},
-								"type": "object"
-							},
-							{
-								"$ref": "#/components/schemas/UserBilling"
-							}
-						]
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"UpdatePasswordProperties": {
-				"properties": {
-					"password": {
-						"type": "string"
-					},
-					"newPassword": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"password",
-					"newPassword"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"TENDER_STATUS": {
-				"enum": [
-					"inquiry",
-					"pending",
-					"awaiting offer",
-					"awaiting approval",
-					"final",
-					"sent",
-					"ordered",
-					"invalid",
-					"under survey"
-				],
-				"type": "string"
-			},
-			"TENDER_CURRENCY": {
-				"enum": [
-					"huf",
-					"eur",
-					"usd"
-				],
-				"type": "string"
-			},
-			"COMPANY_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"COMPANY_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.CONTRACTOR": {
-				"enum": [
-					"contractor"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.CUSTOMER": {
-				"enum": [
-					"customer"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.SUPPLIER": {
-				"enum": [
-					"supplier"
-				],
-				"type": "string"
 			},
 			"Company": {
 				"properties": {
@@ -1936,6 +1193,34 @@
 						"type": "string",
 						"nullable": true
 					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"contactIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"contacts": {
+						"items": {
+							"$ref": "#/components/schemas/Contact"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -1953,18 +1238,6 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"contacts": {
-						"items": {
-							"$ref": "#/components/schemas/Contact"
-						},
-						"type": "array"
 					}
 				},
 				"required": [
@@ -1979,6 +1252,873 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Role": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"permissionIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"permissions": {
+						"items": {
+							"$ref": "#/components/schemas/Permission"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_User_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
+					},
+					"salaryIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"accountVerifyToken": {
+						"$ref": "#/components/schemas/AccountVerifyToken"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"forgottenPasswordToken": {
+						"$ref": "#/components/schemas/ForgottenPasswordToken"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken__": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
+					},
+					"salaryIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"email",
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_User.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken_": {
+				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateUserProperties": {
+				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken_"
+			},
+			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
+					},
+					"salaryIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					}
+				},
+				"required": [
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_": {
+				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"UpdateUserProperties": {
+				"$ref": "#/components/schemas/Omit_User.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn_"
+			},
+			"Partial_User-or-null_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"lastLoggedIn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notifications": {
+						"$ref": "#/components/schemas/Notifications"
+					},
+					"entity": {
+						"type": "string"
+					},
+					"enableLogin": {
+						"type": "boolean"
+					},
+					"identifier": {
+						"type": "string"
+					},
+					"employeeType": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"birthName": {
+						"type": "string"
+					},
+					"motherName": {
+						"type": "string"
+					},
+					"placeOfBirth": {
+						"type": "string"
+					},
+					"dateOfBirth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"socialSecurityNumber": {
+						"type": "string"
+					},
+					"taxIdentificationNumber": {
+						"type": "string"
+					},
+					"personalIdentificationNumber": {
+						"type": "string"
+					},
+					"licensePlateNumber": {
+						"type": "string"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"billing": {
+						"anyOf": [
+							{
+								"properties": {},
+								"type": "object"
+							},
+							{
+								"$ref": "#/components/schemas/UserBilling"
+							}
+						]
+					},
+					"salaryIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"salaries": {
+						"items": {
+							"$ref": "#/components/schemas/Salary"
+						},
+						"type": "array"
+					},
+					"accountVerifyTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"accountVerifyToken": {
+						"$ref": "#/components/schemas/AccountVerifyToken"
+					},
+					"forgottenPasswordTokenId": {
+						"type": "number",
+						"format": "double"
+					},
+					"forgottenPasswordToken": {
+						"$ref": "#/components/schemas/ForgottenPasswordToken"
+					},
+					"twoFactorSessionId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorSession": {
+						"$ref": "#/components/schemas/TwoFactorSession"
+					},
+					"twoFactorAuthenticationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"twoFactorAuthentication": {
+						"$ref": "#/components/schemas/TwoFactorAuthentication"
+					},
+					"roleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdatePasswordProperties": {
+				"properties": {
+					"password": {
+						"type": "string"
+					},
+					"newPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"password",
+					"newPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TENDER_STATUS": {
+				"enum": [
+					"inquiry",
+					"pending",
+					"awaiting offer",
+					"awaiting approval",
+					"final",
+					"sent",
+					"ordered",
+					"invalid",
+					"under survey"
+				],
+				"type": "string"
+			},
+			"TENDER_CURRENCY": {
+				"enum": [
+					"huf",
+					"eur",
+					"usd"
+				],
+				"type": "string"
 			},
 			"LOCATION_STATUS.ACTIVE": {
 				"enum": [
@@ -2080,6 +2220,10 @@
 					"name": {
 						"type": "string"
 					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
 					"quantity": {
 						"type": "number",
 						"format": "double"
@@ -2123,9 +2267,13 @@
 						"type": "number",
 						"format": "double"
 					},
-					"num": {
-						"type": "number",
-						"format": "double"
+					"tender": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tender"
+							}
+						],
+						"nullable": true
 					},
 					"createdOn": {
 						"type": "string",
@@ -2149,431 +2297,7 @@
 				"required": [
 					"id",
 					"name",
-					"quantity",
-					"unit",
-					"materialNetUnitAmount",
-					"materialNetAmount",
-					"materialActualNetAmount",
-					"totalMaterialAmount",
-					"feeNetUnitAmount",
-					"feeNetAmount",
-					"feeActualNetAmount",
-					"totalFeeAmount",
-					"tenderId",
-					"num"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Partial_Tender_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"type": {
-						"type": "string"
-					},
-					"shortName": {
-						"type": "string"
-					},
-					"number": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/TENDER_STATUS"
-					},
-					"fee": {
-						"type": "number",
-						"format": "double"
-					},
-					"returned": {
-						"type": "boolean"
-					},
-					"vatKey": {
-						"type": "string"
-					},
-					"currency": {
-						"$ref": "#/components/schemas/TENDER_CURRENCY"
-					},
-					"surcharge": {
-						"type": "number",
-						"format": "double"
-					},
-					"discount": {
-						"type": "number",
-						"format": "double"
-					},
-					"validTo": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"openDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"inquiry": {
-						"type": "string"
-					},
-					"survey": {
-						"type": "string"
-					},
-					"locationDescription": {
-						"type": "string"
-					},
-					"toolRequirements": {
-						"type": "string"
-					},
-					"otherComment": {
-						"type": "string"
-					},
-					"customerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"customer": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"contractorId": {
-						"type": "number",
-						"format": "double"
-					},
-					"contractor": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"locationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"location": {
-						"$ref": "#/components/schemas/Location"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"items": {
-						"items": {
-							"$ref": "#/components/schemas/TenderItem"
-						},
-						"type": "array"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__": {
-				"properties": {
-					"number": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/TENDER_STATUS"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"contactId": {
-						"type": "number",
-						"format": "double"
-					},
-					"survey": {
-						"type": "string"
-					},
-					"type": {
-						"type": "string"
-					},
-					"shortName": {
-						"type": "string"
-					},
-					"fee": {
-						"type": "number",
-						"format": "double"
-					},
-					"returned": {
-						"type": "boolean"
-					},
-					"vatKey": {
-						"type": "string"
-					},
-					"currency": {
-						"$ref": "#/components/schemas/TENDER_CURRENCY"
-					},
-					"surcharge": {
-						"type": "number",
-						"format": "double"
-					},
-					"discount": {
-						"type": "number",
-						"format": "double"
-					},
-					"validTo": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"openDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"inquiry": {
-						"type": "string"
-					},
-					"locationDescription": {
-						"type": "string"
-					},
-					"toolRequirements": {
-						"type": "string"
-					},
-					"otherComment": {
-						"type": "string"
-					},
-					"customerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"customer": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"contractorId": {
-						"type": "number",
-						"format": "double"
-					},
-					"contractor": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"locationId": {
-						"type": "number",
-						"format": "double"
-					},
-					"location": {
-						"$ref": "#/components/schemas/Location"
-					},
-					"items": {
-						"items": {
-							"$ref": "#/components/schemas/TenderItem"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"status",
-					"type",
-					"returned",
-					"vatKey",
-					"currency"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateTenderProperties": {
-				"$ref": "#/components/schemas/Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_"
-			},
-			"Partial_TenderItem_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"unit": {
-						"type": "string"
-					},
-					"materialNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
-					"num": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"unit": {
-						"type": "string"
-					},
-					"materialNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"name",
+					"num",
 					"quantity",
 					"unit",
 					"materialNetUnitAmount",
@@ -2585,441 +2309,6 @@
 					"feeActualNetAmount",
 					"totalFeeAmount",
 					"tenderId"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateTenderItemProperties": {
-				"$ref": "#/components/schemas/Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_"
-			},
-			"Partial_TenderItem-or-null_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"unit": {
-						"type": "string"
-					},
-					"materialNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetUnitAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
-					"num": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Partial_Journey_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"activity": {
-						"type": "string"
-					},
-					"property": {
-						"type": "string"
-					},
-					"existed": {
-						"type": "string"
-					},
-					"updated": {
-						"type": "string"
-					},
-					"notes": {
-						"$ref": "#/components/schemas/Record_string.unknown_"
-					},
-					"ownerType": {
-						"type": "string"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"username": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"TENANT_STATUS": {
-				"enum": [
-					"active",
-					"inactive"
-				],
-				"type": "string"
-			},
-			"Partial_Tenant_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/TENANT_STATUS"
-					},
-					"taxNumber": {
-						"type": "string"
-					},
-					"registrationNumber": {
-						"type": "string"
-					},
-					"bankAccount": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Pick_Tenant.Exclude_keyofTenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn__": {
-				"properties": {
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/TENANT_STATUS"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"taxNumber": {
-						"type": "string"
-					},
-					"registrationNumber": {
-						"type": "string"
-					},
-					"bankAccount": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"email",
-					"name",
-					"status",
-					"country",
-					"city",
-					"address",
-					"zipCode",
-					"taxNumber",
-					"registrationNumber"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Tenant.Exclude_keyofTenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateTenantProperties": {
-				"$ref": "#/components/schemas/Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_"
-			},
-			"STATUS_REPORT_STATUS": {
-				"enum": [
-					"fine",
-					"interesting",
-					"issue"
-				],
-				"type": "string"
-			},
-			"Partial_StatusReport_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"availableToClient": {
-						"type": "boolean"
-					},
-					"status": {
-						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
-				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"availableToClient": {
-						"type": "boolean"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"status",
-					"dueDate",
-					"availableToClient",
-					"projectId"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateStatusReportProperties": {
-				"$ref": "#/components/schemas/Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
-			},
-			"Partial_Role_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"permissions": {
-						"items": {
-							"$ref": "#/components/schemas/Permission"
-						},
-						"type": "array"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
-			},
-			"SetRolePermissionsProperties": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"permissions": {
-						"items": {
-							"properties": {
-								"id": {
-									"type": "number",
-									"format": "double"
-								}
-							},
-							"required": [
-								"id"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"id",
-					"permissions"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3144,12 +2433,20 @@
 					"contact": {
 						"$ref": "#/components/schemas/Contact"
 					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
 					"tenantId": {
 						"type": "number",
 						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"itemIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
 						"nullable": true
 					},
 					"items": {
@@ -3157,6 +2454,14 @@
 							"$ref": "#/components/schemas/TenderItem"
 						},
 						"type": "array"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
 					},
 					"documents": {
 						"items": {
@@ -3194,6 +2499,750 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Partial_Tender_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string"
+					},
+					"shortName": {
+						"type": "string"
+					},
+					"number": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENDER_STATUS"
+					},
+					"fee": {
+						"type": "number",
+						"format": "double"
+					},
+					"returned": {
+						"type": "boolean"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"currency": {
+						"$ref": "#/components/schemas/TENDER_CURRENCY"
+					},
+					"surcharge": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"validTo": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"openDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"inquiry": {
+						"type": "string"
+					},
+					"survey": {
+						"type": "string"
+					},
+					"locationDescription": {
+						"type": "string"
+					},
+					"toolRequirements": {
+						"type": "string"
+					},
+					"otherComment": {
+						"type": "string"
+					},
+					"customerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"locationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"location": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"itemIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/TenderItem"
+						},
+						"type": "array"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"number": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENDER_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"contactId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"survey": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"shortName": {
+						"type": "string"
+					},
+					"fee": {
+						"type": "number",
+						"format": "double"
+					},
+					"returned": {
+						"type": "boolean"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"currency": {
+						"$ref": "#/components/schemas/TENDER_CURRENCY"
+					},
+					"surcharge": {
+						"type": "number",
+						"format": "double"
+					},
+					"discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"validTo": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"openDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"inquiry": {
+						"type": "string"
+					},
+					"locationDescription": {
+						"type": "string"
+					},
+					"toolRequirements": {
+						"type": "string"
+					},
+					"otherComment": {
+						"type": "string"
+					},
+					"customerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"locationId": {
+						"type": "number",
+						"format": "double"
+					},
+					"location": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"itemIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/TenderItem"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"status",
+					"type",
+					"returned",
+					"vatKey",
+					"currency"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Tender.Exclude_keyofTender.id-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTenderProperties": {
+				"$ref": "#/components/schemas/Omit_Tender.id-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_TenderItem_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"quantity",
+					"unit",
+					"materialNetUnitAmount",
+					"materialNetAmount",
+					"materialActualNetAmount",
+					"totalMaterialAmount",
+					"feeNetUnitAmount",
+					"feeNetAmount",
+					"feeActualNetAmount",
+					"totalFeeAmount",
+					"tenderId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTenderItemProperties": {
+				"$ref": "#/components/schemas/Omit_TenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_TenderItem-or-null_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"materialNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"materialActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalMaterialAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetUnitAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeActualNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalFeeAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Partial_Journey_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"username": {
+						"type": "string"
+					},
+					"activity": {
+						"type": "string"
+					},
+					"property": {
+						"type": "string"
+					},
+					"existed": {
+						"type": "string"
+					},
+					"updated": {
+						"type": "string"
+					},
+					"notes": {
+						"$ref": "#/components/schemas/Record_string.unknown_"
+					},
+					"ownerType": {
+						"type": "string"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"TENANT_STATUS": {
+				"enum": [
+					"active",
+					"inactive"
+				],
+				"type": "string"
+			},
+			"Partial_Tenant_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENANT_STATUS"
+					},
+					"taxNumber": {
+						"type": "string"
+					},
+					"registrationNumber": {
+						"type": "string"
+					},
+					"bankAccount": {
+						"type": "string"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Tenant.Exclude_keyofTenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENANT_STATUS"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"taxNumber": {
+						"type": "string"
+					},
+					"registrationNumber": {
+						"type": "string"
+					},
+					"bankAccount": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"name",
+					"status",
+					"country",
+					"city",
+					"address",
+					"zipCode",
+					"taxNumber",
+					"registrationNumber"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Tenant.Exclude_keyofTenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTenantProperties": {
+				"$ref": "#/components/schemas/Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_"
+			},
+			"STATUS_REPORT_STATUS": {
+				"enum": [
+					"fine",
+					"interesting",
+					"issue"
+				],
+				"type": "string"
+			},
 			"PROJECT_STATUS": {
 				"enum": [
 					"ordered",
@@ -3222,9 +3271,242 @@
 				],
 				"type": "string"
 			},
+			"Project": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"number": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string",
+						"nullable": true
+					},
+					"shortName": {
+						"type": "string",
+						"nullable": true
+					},
+					"inSchedule": {
+						"type": "boolean"
+					},
+					"scheduleColor": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"type": "string"
+					},
+					"reports": {
+						"type": "boolean"
+					},
+					"supervisorBonus": {
+						"type": "boolean"
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_STATUS"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"inquiry": {
+						"type": "string",
+						"nullable": true
+					},
+					"survey": {
+						"type": "string",
+						"nullable": true
+					},
+					"locationDescription": {
+						"type": "string",
+						"nullable": true
+					},
+					"toolRequirements": {
+						"type": "string",
+						"nullable": true
+					},
+					"otherComment": {
+						"type": "string",
+						"nullable": true
+					},
+					"contractOption": {
+						"type": "string",
+						"nullable": true
+					},
+					"supervisorIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"supervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Contact"
+						},
+						"type": "array"
+					},
+					"customerId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"locationId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"location": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"contactIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"contacts": {
+						"items": {
+							"$ref": "#/components/schemas/Contact"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"itemsIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/ProjectItem"
+						},
+						"type": "array"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"milestoneIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"milestones": {
+						"items": {
+							"$ref": "#/components/schemas/Milestone"
+						},
+						"type": "array"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"number",
+					"inSchedule",
+					"type",
+					"reports",
+					"supervisorBonus",
+					"vatKey",
+					"netAmount",
+					"vatAmount",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ProjectItem": {
 				"properties": {
 					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"num": {
 						"type": "number",
 						"format": "double"
 					},
@@ -3257,9 +3539,8 @@
 						"type": "number",
 						"format": "double"
 					},
-					"num": {
-						"type": "number",
-						"format": "double"
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"createdOn": {
 						"type": "string",
@@ -3282,13 +3563,13 @@
 				},
 				"required": [
 					"id",
+					"num",
 					"name",
 					"quantity",
 					"unit",
 					"status",
 					"type",
-					"projectId",
-					"num"
+					"projectId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3345,6 +3626,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -3380,6 +3664,199 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Partial_StatusReport_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"availableToClient": {
+						"type": "boolean"
+					},
+					"status": {
+						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"availableToClient": {
+						"type": "boolean"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"status",
+					"dueDate",
+					"availableToClient",
+					"projectId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateStatusReportProperties": {
+				"$ref": "#/components/schemas/Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_Role_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"permissionIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"permissions": {
+						"items": {
+							"$ref": "#/components/schemas/Permission"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"SetRolePermissionsProperties": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"permissions": {
+						"items": {
+							"properties": {
+								"id": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"id"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"permissions"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Partial_Project_": {
 				"properties": {
 					"id": {
@@ -3410,10 +3887,59 @@
 					"supervisorBonus": {
 						"type": "boolean"
 					},
+					"notes": {
+						"type": "string"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_STATUS"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"inquiry": {
+						"type": "string"
+					},
+					"survey": {
+						"type": "string"
+					},
+					"locationDescription": {
+						"type": "string"
+					},
+					"toolRequirements": {
+						"type": "string"
+					},
+					"otherComment": {
+						"type": "string"
+					},
+					"contractOption": {
+						"type": "string"
+					},
 					"supervisorIds": {
 						"items": {
 							"type": "number",
 							"format": "double"
+						},
+						"type": "array"
+					},
+					"supervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Contact"
 						},
 						"type": "array"
 					},
@@ -3451,68 +3977,26 @@
 						},
 						"type": "array"
 					},
-					"supervisors": {
-						"items": {
-							"$ref": "#/components/schemas/Contact"
-						},
-						"type": "array"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
 					},
-					"notes": {
-						"type": "string"
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
-					"vatKey": {
-						"type": "string"
-					},
-					"netAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"vatAmount": {
+					"tenderId": {
 						"type": "number",
 						"format": "double"
 					},
 					"tender": {
 						"$ref": "#/components/schemas/Tender"
 					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"$ref": "#/components/schemas/PROJECT_STATUS"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"inquiry": {
-						"type": "string"
-					},
-					"survey": {
-						"type": "string"
-					},
-					"locationDescription": {
-						"type": "string"
-					},
-					"toolRequirements": {
-						"type": "string"
-					},
-					"otherComment": {
-						"type": "string"
-					},
-					"contractOption": {
-						"type": "string"
+					"itemsIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"items": {
 						"items": {
@@ -3520,9 +4004,23 @@
 						},
 						"type": "array"
 					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
 					"documents": {
 						"items": {
 							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"milestoneIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
 						},
 						"type": "array"
 					},
@@ -3560,9 +4058,8 @@
 					"status": {
 						"$ref": "#/components/schemas/MILESTONE_STATUS"
 					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
+					"notes": {
+						"type": "string"
 					},
 					"documents": {
 						"items": {
@@ -3570,8 +4067,12 @@
 						},
 						"type": "array"
 					},
-					"notes": {
-						"type": "string"
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"dueDate": {
 						"type": "string",
@@ -3644,6 +4145,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -3682,23 +4186,18 @@
 					"type": {
 						"$ref": "#/components/schemas/DocumentType"
 					},
+					"mimeType": {
+						"type": "string"
+					},
+					"approved": {
+						"type": "boolean"
+					},
 					"ownerId": {
 						"type": "number",
 						"format": "double"
 					},
 					"ownerType": {
 						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
 					},
 					"properties": {
 						"$ref": "#/components/schemas/DocumentProperties"
@@ -3714,8 +4213,8 @@
 							}
 						]
 					},
-					"approved": {
-						"type": "boolean"
+					"company": {
+						"$ref": "#/components/schemas/Company"
 					},
 					"stored": {
 						"properties": {
@@ -3733,6 +4232,14 @@
 							"original"
 						],
 						"type": "object"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"type": "object",
@@ -3741,6 +4248,10 @@
 			"Partial_ProjectItem_": {
 				"properties": {
 					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"num": {
 						"type": "number",
 						"format": "double"
 					},
@@ -3771,9 +4282,8 @@
 						"type": "number",
 						"format": "double"
 					},
-					"num": {
-						"type": "number",
-						"format": "double"
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"createdOn": {
 						"type": "string",
@@ -3803,12 +4313,15 @@
 					"status": {
 						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
 					},
+					"notes": {
+						"type": "string"
+					},
 					"createdBy": {
 						"type": "number",
 						"format": "double"
 					},
-					"notes": {
-						"type": "string"
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"type": {
 						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
@@ -3853,6 +4366,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"num": {
+						"type": "number",
+						"format": "double"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -3880,9 +4397,8 @@
 						"type": "number",
 						"format": "double"
 					},
-					"num": {
-						"type": "number",
-						"format": "double"
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"createdOn": {
 						"type": "string",
@@ -3913,16 +4429,22 @@
 					"notes": {
 						"type": "string"
 					},
+					"checked": {
+						"type": "boolean"
+					},
 					"contactId": {
 						"type": "number",
 						"format": "double"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
 					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
 					},
-					"checked": {
-						"type": "boolean"
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"createdOn": {
 						"type": "string",
@@ -3951,210 +4473,6 @@
 				],
 				"type": "string"
 			},
-			"Project": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"number": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string",
-						"nullable": true
-					},
-					"shortName": {
-						"type": "string",
-						"nullable": true
-					},
-					"inSchedule": {
-						"type": "boolean"
-					},
-					"scheduleColor": {
-						"type": "string",
-						"nullable": true
-					},
-					"type": {
-						"type": "string"
-					},
-					"reports": {
-						"type": "boolean"
-					},
-					"supervisorBonus": {
-						"type": "boolean"
-					},
-					"supervisorIds": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array",
-						"nullable": true
-					},
-					"customerId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"customer": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"contractorId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"contractor": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"locationId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"location": {
-						"$ref": "#/components/schemas/Location"
-					},
-					"contactIds": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array",
-						"nullable": true
-					},
-					"contacts": {
-						"items": {
-							"$ref": "#/components/schemas/Contact"
-						},
-						"type": "array"
-					},
-					"supervisors": {
-						"items": {
-							"$ref": "#/components/schemas/Contact"
-						},
-						"type": "array"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"vatKey": {
-						"type": "string"
-					},
-					"netAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"vatAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"tender": {
-						"$ref": "#/components/schemas/Tender"
-					},
-					"tenderId": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"$ref": "#/components/schemas/PROJECT_STATUS"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"inquiry": {
-						"type": "string",
-						"nullable": true
-					},
-					"survey": {
-						"type": "string",
-						"nullable": true
-					},
-					"locationDescription": {
-						"type": "string",
-						"nullable": true
-					},
-					"toolRequirements": {
-						"type": "string",
-						"nullable": true
-					},
-					"otherComment": {
-						"type": "string",
-						"nullable": true
-					},
-					"contractOption": {
-						"type": "string",
-						"nullable": true
-					},
-					"items": {
-						"items": {
-							"$ref": "#/components/schemas/ProjectItem"
-						},
-						"type": "array"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"milestones": {
-						"items": {
-							"$ref": "#/components/schemas/Milestone"
-						},
-						"type": "array"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"number",
-					"inSchedule",
-					"type",
-					"reports",
-					"supervisorBonus",
-					"vatKey",
-					"netAmount",
-					"vatAmount",
-					"status"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"OrderForm": {
 				"properties": {
 					"id": {
@@ -4170,27 +4488,6 @@
 					},
 					"status": {
 						"$ref": "#/components/schemas/ORDER_FORM_STATUS"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"employee": {
-						"$ref": "#/components/schemas/User"
-					},
-					"managerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"manager": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"issueDate": {
 						"type": "string",
@@ -4216,6 +4513,35 @@
 						"type": "string",
 						"nullable": true
 					},
+					"approveCode": {
+						"type": "string"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
+					"managerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"manager": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4233,27 +4559,19 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true
-					},
-					"approveCode": {
-						"type": "string"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
 					}
 				},
 				"required": [
 					"id",
 					"number",
 					"amount",
-					"employeeId",
-					"managerId",
-					"projectId",
 					"issueDate",
 					"siteHandoverDate",
 					"deadlineDate",
-					"approveCode"
+					"approveCode",
+					"employeeId",
+					"managerId",
+					"projectId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -4282,17 +4600,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"managerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"manager": {
-						"$ref": "#/components/schemas/Contact"
-					},
 					"issueDate": {
 						"type": "string",
 						"format": "date-time"
@@ -4313,16 +4620,27 @@
 					},
 					"otherNotes": {
 						"type": "string"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"managerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"manager": {
+						"$ref": "#/components/schemas/Contact"
 					}
 				},
 				"required": [
 					"projectId",
 					"amount",
-					"employeeId",
-					"managerId",
 					"issueDate",
 					"siteHandoverDate",
-					"deadlineDate"
+					"deadlineDate",
+					"employeeId",
+					"managerId"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -4350,27 +4668,6 @@
 					"status": {
 						"$ref": "#/components/schemas/ORDER_FORM_STATUS"
 					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"employee": {
-						"$ref": "#/components/schemas/User"
-					},
-					"managerId": {
-						"type": "number",
-						"format": "double"
-					},
-					"manager": {
-						"$ref": "#/components/schemas/Contact"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
-					},
 					"issueDate": {
 						"type": "string",
 						"format": "date-time"
@@ -4392,6 +4689,34 @@
 					"otherNotes": {
 						"type": "string"
 					},
+					"approveCode": {
+						"type": "string"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
+					"managerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"manager": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4407,13 +4732,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"approveCode": {
-						"type": "string"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time"
 					}
 				},
 				"type": "object",
@@ -4517,16 +4835,16 @@
 					"zipCode": {
 						"type": "string"
 					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
+					"notes": {
+						"type": "string"
 					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
 					},
-					"notes": {
-						"type": "string"
+					"createdBy": {
+						"type": "number",
+						"format": "double"
 					},
 					"taxNumber": {
 						"type": "string"
@@ -4588,6 +4906,29 @@
 					"status": {
 						"$ref": "#/components/schemas/EXECUTION_STATUS"
 					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"distance": {
+						"type": "number",
+						"format": "double"
+					},
+					"workdayStart": {
+						"type": "string"
+					},
+					"workdayEnd": {
+						"type": "string"
+					},
+					"breakStart": {
+						"type": "string"
+					},
+					"breakEnd": {
+						"type": "string"
+					},
 					"documents": {
 						"items": {
 							"$ref": "#/components/schemas/Document"
@@ -4598,9 +4939,15 @@
 						"type": "number",
 						"format": "double"
 					},
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
 					},
 					"approvedBy": {
 						"type": "number",
@@ -4625,29 +4972,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"quantity": {
-						"type": "number",
-						"format": "double"
-					},
-					"unit": {
-						"type": "string"
-					},
-					"distance": {
-						"type": "number",
-						"format": "double"
-					},
-					"workdayStart": {
-						"type": "string"
-					},
-					"workdayEnd": {
-						"type": "string"
-					},
-					"breakStart": {
-						"type": "string"
-					},
-					"breakEnd": {
-						"type": "string"
 					}
 				},
 				"type": "object",
@@ -4666,10 +4990,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"userId": {
-						"type": "number",
-						"format": "double"
-					},
 					"name": {
 						"type": "string"
 					},
@@ -4685,12 +5005,19 @@
 					"notes": {
 						"type": "string"
 					},
-					"user": {
-						"$ref": "#/components/schemas/User"
-					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					},
 					"createdOn": {
 						"type": "string",
@@ -4726,16 +5053,19 @@
 					"status": {
 						"$ref": "#/components/schemas/CONTACT_STATUS"
 					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
+					"notes": {
+						"type": "string"
 					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
 					},
-					"notes": {
-						"type": "string"
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
 					},
 					"user": {
 						"$ref": "#/components/schemas/User"
@@ -4835,6 +5165,32 @@
 					"notes": {
 						"type": "string"
 					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"contactIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"contacts": {
+						"items": {
+							"$ref": "#/components/schemas/Contact"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -4850,18 +5206,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"contacts": {
-						"items": {
-							"$ref": "#/components/schemas/Contact"
-						},
-						"type": "array"
 					}
 				},
 				"type": "object",
@@ -4893,13 +5237,15 @@
 					"zipCode": {
 						"type": "string"
 					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
+					"notes": {
+						"type": "string"
 					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"documents": {
 						"items": {
@@ -4907,8 +5253,13 @@
 						},
 						"type": "array"
 					},
-					"notes": {
-						"type": "string"
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
 					},
 					"type": {
 						"$ref": "#/components/schemas/COMPANY_TYPE"
@@ -4921,6 +5272,13 @@
 					},
 					"bankAccount": {
 						"type": "string"
+					},
+					"contactIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"contacts": {
 						"items": {
@@ -5151,6 +5509,16 @@
 						"type": "string",
 						"nullable": true
 					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -5165,16 +5533,6 @@
 						"format": "double"
 					},
 					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"approvedBy": {
 						"type": "number",
 						"format": "double",
 						"nullable": true
@@ -5213,12 +5571,12 @@
 						"type": "number",
 						"format": "double"
 					},
+					"description": {
+						"type": "string"
+					},
 					"employeeId": {
 						"type": "number",
 						"format": "double"
-					},
-					"description": {
-						"type": "string"
 					},
 					"approvedBy": {
 						"type": "number",
@@ -5279,6 +5637,14 @@
 					"deviation": {
 						"type": "string"
 					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -5292,14 +5658,6 @@
 						"format": "double"
 					},
 					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"approvedBy": {
 						"type": "number",
 						"format": "double"
 					}

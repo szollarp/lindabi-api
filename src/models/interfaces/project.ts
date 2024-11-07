@@ -1,15 +1,17 @@
-import { PROJECT_STATUS } from "../../constants"
+import type { PROJECT_STATUS } from "../../constants"
 import type { Company } from "./company"
 import type { Contact } from "./contact"
 import type { Location } from "./location"
 import type { ProjectItem } from "./project-item"
 import type { Document } from "./document";
-import { Tenant } from "./tenant"
-import { Tender } from "./tender"
-import { Milestone } from "./milestone"
+import type { Tenant } from "./tenant"
+import type { Tender } from "./tender"
+import type { Milestone } from "./milestone"
+import type { User } from "./user"
 
 export interface Project {
   id: number
+  //
   number: string;
   name?: string | null;
   shortName?: string | null;
@@ -18,24 +20,10 @@ export interface Project {
   type: string
   reports: boolean
   supervisorBonus: boolean
-  supervisorIds?: number[] | null
-  customerId?: number | null
-  customer?: Company
-  contractorId?: number | null
-  contractor?: Company
-  locationId?: number | null
-  location?: Location
-  contactIds?: number[] | null
-  contacts?: Contact[]
-  supervisors?: Contact[]
-  tenant?: Tenant
-  tenantId?: number | null
   notes?: string | null
   vatKey: string;
   netAmount: number;
   vatAmount: number;
-  tender?: Tender;
-  tenderId?: number;
   status: PROJECT_STATUS
   startDate?: Date | null
   dueDate?: Date | null
@@ -45,13 +33,41 @@ export interface Project {
   toolRequirements?: string | null
   otherComment?: string | null
   contractOption?: string | null
+  //
+  supervisorIds?: Contact["id"][] | null
+  supervisors?: Contact[]
+  //
+  customerId?: Company["id"] | null
+  customer?: Company
+  //
+  contractorId?: Company["id"] | null
+  contractor?: Company
+  //
+  locationId?: Location["id"] | null
+  location?: Location
+  //
+  contactIds?: Contact["id"][] | null
+  contacts?: Contact[]
+  //
+  tenantId?: Tenant["id"] | null
+  tenant?: Tenant
+  //
+  tenderId?: Tender["id"] | null;
+  tender?: Tender;
+  //
+  itemsIds?: ProjectItem["id"][] | null
   items?: ProjectItem[]
+  //
+  documentIds?: Document["id"][] | null
   documents?: Document[]
+  //
+  milestoneIds?: Milestone["id"][] | null
   milestones?: Milestone[]
+  //
   createdOn?: Date
   updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
+  createdBy?: User["id"]
+  updatedBy?: User["id"] | null
 };
 
 export type CreateProjectProperties = Omit<Project, "id" | "createdOn" | "updatedBy" | "updatedOn">;
