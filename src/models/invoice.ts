@@ -1,6 +1,6 @@
 import { Association, DataTypes, ForeignKey, Model, NonAttribute, Sequelize } from "sequelize";
 import { CreateInvoiceProperties, Invoice } from "./interfaces/invoice";
-import { INVOICE_PAYMENT_TYPE } from "../constants";
+import { INVOICE_PAYMENT_TYPE, INVOICE_STATUS, INVOICE_TYPE } from "../constants";
 import { Project } from "./interfaces/project";
 import { Milestone } from "./interfaces/milestone";
 import { Company } from "./interfaces/company";
@@ -11,6 +11,10 @@ import { Models } from ".";
 
 export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implements Invoice {
   public id!: number;
+
+  public type!: INVOICE_TYPE;
+
+  public status!: INVOICE_STATUS;
 
   public invoiceNumber!: string;
 
@@ -76,6 +80,8 @@ export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implem
 
   public payedOn!: Date | null;
 
+
+
   public static associate: (models: Models) => void;
 
   public static associations: {
@@ -95,6 +101,16 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
       invoiceNumber: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: INVOICE_TYPE.EMPLOYEE
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: INVOICE_STATUS.CREATED
       },
       paymentType: {
         type: DataTypes.STRING,

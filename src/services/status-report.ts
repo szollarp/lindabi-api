@@ -5,22 +5,18 @@ import { CreateStatusReportProperties, StatusReport } from "../models/interfaces
 import { getRelatedProjectsByStatusReport, getRelatedStatusReports } from "../helpers/status-report";
 
 export interface StatusReportService {
-  getStatusReports: (context: Context, user: DecodedUser) => Promise<Array<Partial<StatusReport>>>;
-  getStatusReport: (context: Context, id: number) => Promise<Partial<StatusReport | null>>;
-  getRelatedProjects: (context: Context, user: DecodedUser) => Promise<Array<{ id: number, name: string, customer: string, number: string }>>;
-  createStatusReport: (context: Context, user: DecodedUser, body: CreateStatusReportProperties) => Promise<Partial<StatusReport> | { exists: boolean }>;
-  updateStatusReport: (context: Context, id: number, user: DecodedUser, data: Partial<StatusReport>) => Promise<Partial<StatusReport> | null>;
+  list: (context: Context, user: DecodedUser) => Promise<Array<Partial<StatusReport>>>;
+  get: (context: Context, user: DecodedUser, id: number) => Promise<Partial<StatusReport | null>>;
+  create: (context: Context, user: DecodedUser, body: CreateStatusReportProperties) => Promise<Partial<StatusReport> | { exists: boolean }>;
+  update: (context: Context, user: DecodedUser, id: number, data: Partial<StatusReport>) => Promise<Partial<StatusReport> | null>;
+  getProjects: (context: Context, user: DecodedUser) => Promise<Array<{ id: number, name: string, customer: string, number: string }>>;
 }
 
 export const statusReportService = (): StatusReportService => ({
-  getStatusReports,
-  getStatusReport,
-  getRelatedProjects,
-  createStatusReport,
-  updateStatusReport
+  list, get, getProjects, create, update
 });
 
-const getStatusReports = async (context: Context, user: DecodedUser): Promise<Array<Partial<StatusReport>>> => {
+const list = async (context: Context, user: DecodedUser): Promise<Array<Partial<StatusReport>>> => {
   try {
     return await getRelatedStatusReports(context, user);
   } catch (error) {
@@ -29,10 +25,10 @@ const getStatusReports = async (context: Context, user: DecodedUser): Promise<Ar
   }
 };
 
-const getStatusReport = async (context: Context, id: number): Promise<Partial<StatusReport | null>> => {
+const get = async (context: Context, user: DecodedUser, id: number): Promise<Partial<StatusReport | null>> => {
   try {
     return await context.models.StatusReport.findOne({
-      where: { id },
+      where: { id, tenant: user.tenant },
       include: [{
         model: context.models.User,
         as: "creator",
@@ -57,19 +53,19 @@ const getStatusReport = async (context: Context, id: number): Promise<Partial<St
   }
 };
 
-const getRelatedProjects = async (context: Context, user: DecodedUser): Promise<Array<{ id: number, name: string, reports: boolean, customer: string, number: string }>> => {
+const getProjects = async (context: Context, user: DecodedUser): Promise<Array<{ id: number, name: string, reports: boolean, customer: string, number: string }>> => {
   try {
     return await getRelatedProjectsByStatusReport(context, user);
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
 
-const createStatusReport = async (context: Context, user: DecodedUser, body: CreateStatusReportProperties): Promise<Partial<StatusReport> | { exists: boolean }> => {
+const create = async (context: Context, user: DecodedUser, body: CreateStatusReportProperties): Promise<Partial<StatusReport> | { exists: boolean }> => {
   try {
     const isExists = await context.models.StatusReport.findOne({
       where: {
+        tenantId: user.tenant,
         projectId: body.projectId,
         dueDate: {
           [Op.eq]: body.dueDate
@@ -83,15 +79,14 @@ const createStatusReport = async (context: Context, user: DecodedUser, body: Cre
 
     return await context.models.StatusReport.create({ ...body, createdBy: user.id });
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
 
-const updateStatusReport = async (context: Context, id: number, user: DecodedUser, data: Partial<StatusReport>): Promise<StatusReport | null> => {
+const update = async (context: Context, user: DecodedUser, id: number, data: Partial<StatusReport>): Promise<StatusReport | null> => {
   try {
     const statusReport = await context.models.StatusReport.findOne({
-      where: { id }
+      where: { id, tenantId: user.tenant }
     });
 
     if (!statusReport) {
@@ -101,7 +96,6 @@ const updateStatusReport = async (context: Context, id: number, user: DecodedUse
     await statusReport.update({ ...data, updatedBy: user.id });
     return statusReport;
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };

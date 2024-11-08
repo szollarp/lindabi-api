@@ -37,8 +37,8 @@ export class OrderFormController extends Controller {
   @Get("{id}")
   @Security("jwtToken", ["Tenant", "OrderForm:Get"])
   public async getOrderForm(@Request() request: ContextualRequest, @Path() id: number): Promise<OrderForm | null> {
-    const { context } = request;
-    return await context.services.orderForm.get(context, id);
+    const { context, user } = request;
+    return await context.services.orderForm.get(context, user, id);
   }
 
   @Tags("Order Form")
@@ -74,7 +74,7 @@ export class OrderFormController extends Controller {
   @Security("jwtToken", ["Tenant", "OrderForm:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<Array<Partial<Project>>> {
     const { context, user } = request;
-    return await context.services.orderForm.getRelatedProjects(context, user);
+    return await context.services.orderForm.getProjects(context, user);
   }
 
   @Tags("Order Form")
@@ -82,7 +82,7 @@ export class OrderFormController extends Controller {
   @Delete("{id}")
   @Security("jwtToken", ["Tenant", "OrderForm:Delete"])
   public async deleteOrderForm(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
-    const { context } = request;
-    return await context.services.orderForm.deleteOrderForm(context, id);
+    const { context, user } = request;
+    return await context.services.orderForm.remove(context, user, id);
   }
 }

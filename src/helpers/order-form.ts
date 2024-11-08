@@ -27,15 +27,14 @@ export const getRelatedProjectsByOrderForm = async (context: Context, user: Deco
       }
     ],
     where: {
-      [Op.and]: [
-        { tenantId: user.tenant }
-      ]
+      tenantId: user.tenant
     }
   });
 };
 
 export const getRelatedOrderForms = async (context: Context, user: DecodedUser) => {
-  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "OrderForm:List"))) ? {} : {
+  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "OrderForm:List"))) ? { tenantId: user.tenant } : {
+    tenantId: user.tenant,
     [Op.or]: [
       { "$employee.id$": user.id },
       { createdBy: user.id }

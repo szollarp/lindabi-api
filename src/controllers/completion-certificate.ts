@@ -9,7 +9,7 @@ import { OrderForm } from "../models/interfaces/order-form";
 
 @Route("completion-certificates")
 export class CompletionCertificateController extends Controller {
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Get("/")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:List"])
@@ -18,7 +18,7 @@ export class CompletionCertificateController extends Controller {
     return await context.services.completionCertificate.list(context, user);
   }
 
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Post("/")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:Create"])
@@ -27,7 +27,7 @@ export class CompletionCertificateController extends Controller {
     return await context.services.completionCertificate.create(context, user, body);
   }
 
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Get("{id}")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:Get"])
@@ -36,7 +36,7 @@ export class CompletionCertificateController extends Controller {
     return await context.services.completionCertificate.get(context, id);
   }
 
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Put("{id}")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:Update"])
@@ -45,7 +45,7 @@ export class CompletionCertificateController extends Controller {
     return await context.services.completionCertificate.update(context, user, id, body);
   }
 
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:Delete"])
@@ -54,7 +54,7 @@ export class CompletionCertificateController extends Controller {
     return await context.services.completionCertificate.remove(context, id);
   }
 
-  @Tags("Order Form")
+  @Tags("Completion Certificate")
   @SuccessResponse("200", "OK")
   @Get("/get/order-forms")
   @Security("jwtToken", ["Tenant", "CompletionCertificate:Get"])

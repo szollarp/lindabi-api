@@ -1,6 +1,5 @@
 import { Op } from "sequelize";
 import type { Context, DecodedUser } from "../types";
-import { Execution } from "../models/interfaces/execution";
 import { Project } from "../models/interfaces/project";
 
 const hasPermission = (user: DecodedUser, permission: string): boolean => {
@@ -24,9 +23,7 @@ export const getRelatedProjectsByExecution = async (context: Context, user: Deco
         }
       ],
       where: {
-        [Op.and]: [
-          { tenantId: user.tenant }
-        ]
+        tenantId: user.tenant
       }
     });
   } catch (error) {
@@ -36,7 +33,8 @@ export const getRelatedProjectsByExecution = async (context: Context, user: Deco
 };
 
 export const getRelatedExecutions = async (context: Context, user: DecodedUser) => {
-  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "Execution:List"))) ? {} : {
+  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "Execution:List"))) ? { tenantId: user.tenant } : {
+    tenantId: user.tenant,
     [Op.or]: [
       { employeeId: user.id },
       { createdBy: user.id }

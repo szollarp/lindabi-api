@@ -20,7 +20,7 @@ export class StatusReportController extends Controller {
   @Security("jwtToken", ["Tenant", "StatusReport:List"])
   public async getStatusReports(@Request() request: ContextualRequest): Promise<Partial<StatusReport>[]> {
     const { context, user } = request;
-    return await context.services.statusReport.getStatusReports(context, user);
+    return await context.services.statusReport.list(context, user);
   }
 
   /**
@@ -35,7 +35,7 @@ export class StatusReportController extends Controller {
   @Security("jwtToken", ["Tenant", "StatusReport:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<{ id: number, name: string }[]> {
     const { context, user } = request;
-    return await context.services.statusReport.getRelatedProjects(context, user);
+    return await context.services.statusReport.getProjects(context, user);
   }
 
   /**
@@ -51,7 +51,7 @@ export class StatusReportController extends Controller {
   @Security("jwtToken", ["Tenant", "StatusReport:Create"])
   public async createStatusReport(@Request() request: ContextualRequest, @Body() body: CreateStatusReportProperties): Promise<Partial<StatusReport> | { exists: boolean }> {
     const { context, user } = request;
-    return await context.services.statusReport.createStatusReport(context, user, body);
+    return await context.services.statusReport.create(context, user, body);
   }
 
   /**
@@ -68,8 +68,8 @@ export class StatusReportController extends Controller {
   @Get("{id}")
   @Security("jwtToken", ["Tenant", "StatusReport:Get"])
   public async getStatusReport(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<StatusReport> | null> {
-    const { context } = request;
-    return await context.services.statusReport.getStatusReport(context, id);
+    const { context, user } = request;
+    return await context.services.statusReport.get(context, user, id);
   }
 
   /**
@@ -86,7 +86,7 @@ export class StatusReportController extends Controller {
   @Security("jwtToken", ["StatusReport:Update"])
   public async updateStatusReport(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<StatusReport>): Promise<Partial<StatusReport> | null> {
     const { context, user } = request;
-    return await context.services.statusReport.updateStatusReport(context, id, user, body);
+    return await context.services.statusReport.update(context, user, id, body);
   }
 
   /**

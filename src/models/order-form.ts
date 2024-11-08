@@ -9,6 +9,7 @@ import { User } from "./interfaces/user";
 import { CreateOrderFormProperties, OrderForm } from "./interfaces/order-form";
 import { Contact } from "./interfaces/contact";
 import { ContactModel } from "./contact";
+import { Tenant } from "./interfaces/tenant";
 
 export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> implements OrderForm {
   public id!: number;
@@ -42,6 +43,10 @@ export class OrderFormModel extends Model<OrderForm, CreateOrderFormProperties> 
   public projectId!: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
+
+  public tenantId!: ForeignKey<Tenant["id"]>;
+
+  public tenant?: NonAttribute<Tenant>;
 
   public readonly createdOn!: Date;
 
@@ -145,6 +150,10 @@ export const OrderFormFactory = (sequelize: Sequelize): typeof OrderFormModel =>
       allowNull: false
     },
     projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    tenantId: {
       type: DataTypes.INTEGER,
       allowNull: false
     }

@@ -1,43 +1,39 @@
 
 import { Op } from "sequelize";
 import type { Context, DecodedUser } from "../types";
-import { CreateExecutionProperties, Execution } from "../models/interfaces/execution";
+import { Execution } from "../models/interfaces/execution";
 import { getRelatedExecutions, getRelatedProjectsByExecution } from "../helpers/execution";
 import { Project } from "../models/interfaces/project";
 import { EXECUTION_STATUS } from "../constants";
 import { checkUserDocuments } from "./document";
 
+export type CreateResponse = Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }>;
+
 export interface ExecutionService {
-  getExecutions: (context: Context, user: DecodedUser) => Promise<Array<Partial<Execution>>>;
-  getExecution: (context: Context, id: number) => Promise<Partial<Execution | null>>;
-  getRelatedProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>;
-  createExecution: (context: Context, user: DecodedUser, body: Partial<Execution>) => Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }>;
-  updateExecution: (context: Context, id: number, user: DecodedUser, data: Partial<Execution>) => Promise<Partial<Execution> | null>;
-  approveExecution: (context: Context, id: number, user: DecodedUser) => Promise<Execution | null>;
+  list: (context: Context, user: DecodedUser) => Promise<Array<Partial<Execution>>>;
+  get: (context: Context, user: DecodedUser, id: number) => Promise<Partial<Execution | null>>;
+  create: (context: Context, user: DecodedUser, body: Partial<Execution>) => CreateResponse;
+  update: (context: Context, user: DecodedUser, id: number, data: Partial<Execution>) => Promise<Partial<Execution> | null>;
+  approve: (context: Context, user: DecodedUser, id: number) => Promise<Execution | null>;
+  getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>;
 }
 
 export const executionService = (): ExecutionService => ({
-  getExecutions,
-  getExecution,
-  getRelatedProjects,
-  createExecution,
-  updateExecution,
-  approveExecution
+  list, get, create, update, approve, getProjects,
 });
 
-const getExecutions = async (context: Context, user: DecodedUser): Promise<Array<Partial<Execution>>> => {
+const list = async (context: Context, user: DecodedUser): Promise<Array<Partial<Execution>>> => {
   try {
     return await getRelatedExecutions(context, user);
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
 
-const getExecution = async (context: Context, id: number): Promise<Partial<Execution | null>> => {
+const get = async (context: Context, user: DecodedUser, id: number): Promise<Partial<Execution | null>> => {
   try {
     return await context.models.Execution.findOne({
-      where: { id },
+      where: { id, tenantId: user.tenant },
       include: [{
         model: context.models.Document,
         as: "documents"
@@ -66,7 +62,7 @@ const getExecution = async (context: Context, id: number): Promise<Partial<Execu
   }
 };
 
-const getRelatedProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
+const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
   try {
     return await getRelatedProjectsByExecution(context, user);
   } catch (error) {
@@ -75,7 +71,7 @@ const getRelatedProjects = async (context: Context, user: DecodedUser): Promise<
   }
 };
 
-const createExecution = async (context: Context, user: DecodedUser, body: Partial<Execution>): Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }> => {
+const create = async (context: Context, user: DecodedUser, body: Partial<Execution>): CreateResponse => {
   try {
     const invalidEmployeeDocuments = await checkUserDocuments(context, user.tenant, body.employeeId!);
     if (invalidEmployeeDocuments.length > 0) {
@@ -115,12 +111,11 @@ const createExecution = async (context: Context, user: DecodedUser, body: Partia
       createdBy: user.id
     } as Execution);
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
 
-const updateExecution = async (context: Context, id: number, user: DecodedUser, data: Partial<Execution>): Promise<Execution | null> => {
+const update = async (context: Context, user: DecodedUser, id: number, data: Partial<Execution>): Promise<Execution | null> => {
   try {
     const execution = await context.models.Execution.findOne({
       where: { id }
@@ -133,12 +128,11 @@ const updateExecution = async (context: Context, id: number, user: DecodedUser, 
     await execution.update({ ...data, updatedBy: user.id });
     return execution;
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
 
-const approveExecution = async (context: Context, id: number, user: DecodedUser): Promise<Execution | null> => {
+const approve = async (context: Context, user: DecodedUser, id: number): Promise<Execution | null> => {
   try {
     const execution = await context.models.Execution.findOne({
       where: { id }

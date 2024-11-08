@@ -11,6 +11,7 @@ import { Document } from "./interfaces/document";
 import { UserModel } from "./user";
 import { CreateExecutionProperties, Execution } from "./interfaces/execution";
 import { User } from "./interfaces/user";
+import { Tenant } from "./interfaces/tenant";
 
 export class ExecutionModel extends Model<Execution, CreateExecutionProperties> implements Execution {
   public id!: number;
@@ -50,6 +51,10 @@ export class ExecutionModel extends Model<Execution, CreateExecutionProperties> 
   public approvedOn?: Date | null;
 
   public approvedBy?: ForeignKey<User["id"]>;
+
+  public tenantId!: ForeignKey<Tenant["id"]>;
+
+  public tenant?: NonAttribute<Tenant>;
 
   public readonly createdOn!: Date;
 
@@ -145,6 +150,10 @@ export const ExecutionFactory = (sequelize: Sequelize): typeof ExecutionModel =>
       allowNull: false
     },
     employeeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    tenantId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

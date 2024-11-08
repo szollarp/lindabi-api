@@ -125,8 +125,15 @@ export enum INVOICE_PAYMENT_TYPE {
 };
 
 export enum INVOICE_STATUS {
-  DRAFT = "draft",
-  PAID = "paid"
+  CREATED = "created",
+  APPROVED = "approved",
+  PAYED = "payed"
+};
+
+export enum INVOICE_TYPE {
+  EMPLOYEE = "employee",
+  MATERIAL = "material",
+  OUTBOUND = "outbound"
 };
 
 export const PROJECT_COLORS = [

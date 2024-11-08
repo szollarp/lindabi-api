@@ -3,7 +3,7 @@ import {
   Body, Put, Path, Post, Delete, Query, UploadedFiles
 } from "tsoa";
 import { DocumentType } from "../models/interfaces/document";
-import { CreateExecutionProperties, Execution } from "../models/interfaces/execution";
+import { Execution } from "../models/interfaces/execution";
 import type { ContextualRequest } from "../types";
 import { Project } from "../models/interfaces/project";
 
@@ -21,7 +21,7 @@ export class ExecutionController extends Controller {
   @Security("jwtToken", ["Tenant", "Execution:List"])
   public async getExecutions(@Request() request: ContextualRequest): Promise<Partial<Execution>[]> {
     const { context, user } = request;
-    return await context.services.execution.getExecutions(context, user);
+    return await context.services.execution.list(context, user);
   }
 
   /**
@@ -36,7 +36,7 @@ export class ExecutionController extends Controller {
   @Security("jwtToken", ["Tenant", "Execution:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<Array<Partial<Project>>> {
     const { context, user } = request;
-    return await context.services.execution.getRelatedProjects(context, user);
+    return await context.services.execution.getProjects(context, user);
   }
 
   /**
@@ -52,7 +52,7 @@ export class ExecutionController extends Controller {
   @Security("jwtToken", ["Tenant", "Execution:Create"])
   public async createExecution(@Request() request: ContextualRequest, @Body() body: Partial<Execution>): Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }> {
     const { context, user } = request;
-    return await context.services.execution.createExecution(context, user, body);
+    return await context.services.execution.create(context, user, body);
   }
 
   /**
@@ -69,8 +69,8 @@ export class ExecutionController extends Controller {
   @Get("{id}")
   @Security("jwtToken", ["Tenant", "Execution:Get"])
   public async getExecution(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Execution> | null> {
-    const { context } = request;
-    return await context.services.execution.getExecution(context, id);
+    const { context, user } = request;
+    return await context.services.execution.get(context, user, id);
   }
 
   /**
@@ -87,7 +87,7 @@ export class ExecutionController extends Controller {
   @Security("jwtToken", ["Execution:Update"])
   public async updateExecution(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Execution>): Promise<Partial<Execution> | null> {
     const { context, user } = request;
-    return await context.services.execution.updateExecution(context, id, user, body);
+    return await context.services.execution.update(context, user, id, body);
   }
 
   /**
@@ -103,7 +103,7 @@ export class ExecutionController extends Controller {
   @Security("jwtToken", ["Execution:Approve"])
   public async approveExecution(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Execution> | null> {
     const { context, user } = request;
-    return await context.services.execution.approveExecution(context, id, user);
+    return await context.services.execution.approve(context, user, id);
   }
 
   /**

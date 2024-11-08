@@ -10,6 +10,7 @@ import { CreateStatusReportProperties, StatusReport } from "./interfaces/status-
 import { DocumentModel } from "./document";
 import { Document } from "./interfaces/document";
 import { UserModel } from "./user";
+import { Tenant } from "./interfaces/tenant";
 
 export class StatusReportModel extends Model<StatusReport, CreateStatusReportProperties> implements StatusReport {
   public id!: number;
@@ -25,6 +26,10 @@ export class StatusReportModel extends Model<StatusReport, CreateStatusReportPro
   public projectId!: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
+
+  public tenantId!: ForeignKey<Tenant["id"]>;
+
+  public tenant?: NonAttribute<Tenant>;
 
   public readonly createdOn!: Date;
 
@@ -97,6 +102,10 @@ export const StatusReportFactory = (sequelize: Sequelize): typeof StatusReportMo
       type: DataTypes.DATE,
       defaultValue: null,
       allowNull: true
+    },
+    tenantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     sequelize,

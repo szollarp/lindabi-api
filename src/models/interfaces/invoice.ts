@@ -1,4 +1,4 @@
-import { INVOICE_PAYMENT_TYPE } from "../../constants";
+import { INVOICE_PAYMENT_TYPE, INVOICE_STATUS, INVOICE_TYPE } from "../../constants";
 import { Company } from "./company";
 import { Document } from "./document";
 import { Milestone } from "./milestone";
@@ -8,6 +8,8 @@ import { User } from "./user";
 
 export interface Invoice {
   id: number;
+  type: INVOICE_TYPE;
+  status: INVOICE_STATUS;
   invoiceNumber: string;
   paymentType: INVOICE_PAYMENT_TYPE;
   note?: string | null

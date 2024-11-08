@@ -18,6 +18,7 @@ import { statusReportService } from "./status-report";
 import { executionService } from "./execution";
 import { orderFormService } from "./order-form";
 import { completionCertificateService } from "./completion-certificate";
+import { invoiceService } from "./invoice";
 
 import type { Services } from "../types";
 
@@ -42,4 +43,5 @@ export default (): Services => ({
   orderForm: orderFormService(),
   execution: executionService(),
   completionCertificate: completionCertificateService(),
+  invoice: invoiceService()
 });

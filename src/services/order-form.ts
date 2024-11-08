@@ -6,28 +6,19 @@ import { Project } from "../models/interfaces/project";
 import { ORDER_FORM_STATUS } from "../constants";
 
 export interface OrderFormService {
-  getRelatedProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>
+  getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>
   create: (context: Context, user: DecodedUser, data: CreateOrderFormProperties) => Promise<OrderForm>
   update: (context: Context, user: DecodedUser, id: number, data: Partial<OrderForm>) => Promise<OrderForm>
-  get: (context: Context, id: number) => Promise<OrderForm | null>
+  get: (context: Context, user: DecodedUser, id: number) => Promise<OrderForm | null>
   list: (context: Context, user: DecodedUser) => Promise<OrderForm[]>
   approve: (context: Context, user: DecodedUser, id: number, data: ApproveOrderFormProperties) => Promise<{ success: boolean }>
   resendCode: (context: Context, user: DecodedUser, id: number) => Promise<OrderForm>
-  deleteOrderForm: (context: Context, id: number) => Promise<{ success: boolean }>
+  remove: (context: Context, user: DecodedUser, id: number) => Promise<{ success: boolean }>
 }
 
-export const orderFormService = (): OrderFormService => {
-  return {
-    create,
-    update,
-    list,
-    get,
-    getRelatedProjects,
-    approve,
-    resendCode,
-    deleteOrderForm
-  };
-};
+export const orderFormService = (): OrderFormService => ({
+  create, update, list, get, getProjects, approve, resendCode, remove
+});
 
 const generateNumber = async (context: Context, projectId: number, employeeId: number): Promise<string> => {
   try {
@@ -48,11 +39,10 @@ const generateNumber = async (context: Context, projectId: number, employeeId: n
   }
 };
 
-const getRelatedProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
+const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
   try {
     return await getRelatedProjectsByOrderForm(context, user);
   } catch (error) {
-    context.logger.error(error);
     throw error;
   }
 };
@@ -70,7 +60,8 @@ const create = async (context: Context, user: DecodedUser, data: CreateOrderForm
     return await orderForm.update({
       number,
       approveCode,
-      status: ORDER_FORM_STATUS.CREATED
+      status: ORDER_FORM_STATUS.CREATED,
+      tenantId: user.tenant
     });
   } catch (error) {
     throw error;
@@ -79,7 +70,7 @@ const create = async (context: Context, user: DecodedUser, data: CreateOrderForm
 
 const update = async (context: Context, user: DecodedUser, id: number, data: Partial<OrderForm>): Promise<OrderForm> => {
   try {
-    const orderForm = await context.models.OrderForm.findByPk(id);
+    const orderForm = await context.models.OrderForm.findOne({ where: { id, tenantId: user.tenant } });
     if (!orderForm) throw new Error("Order form not found");
 
     const updatedOrderForm = await orderForm.update({
@@ -101,9 +92,10 @@ const list = async (context: Context, user: DecodedUser): Promise<OrderForm[]> =
   }
 };
 
-const get = async (context: Context, id: number): Promise<OrderForm | null> => {
+const get = async (context: Context, user: DecodedUser, id: number): Promise<OrderForm | null> => {
   try {
-    return await context.models.OrderForm.findByPk(id, {
+    return await context.models.OrderForm.findOne({
+      where: { id, tenantId: user.tenant },
       include: [
         { model: context.models.Project, as: "project", attributes: ["id", "name"] },
       ]
@@ -115,7 +107,10 @@ const get = async (context: Context, id: number): Promise<OrderForm | null> => {
 
 const approve = async (context: Context, user: DecodedUser, id: number, data: ApproveOrderFormProperties): Promise<{ success: boolean }> => {
   try {
-    const orderForm = await context.models.OrderForm.findByPk(id);
+    const orderForm = await context.models.OrderForm.findOne({
+      where: { id, tenantId: user.tenant }
+    });
+
     if (!orderForm) throw new Error("Order form not found");
     if (orderForm.employeeId !== user.id) throw new Error("Unauthorized");
 
@@ -134,7 +129,10 @@ const approve = async (context: Context, user: DecodedUser, id: number, data: Ap
 
 const resendCode = async (context: Context, user: DecodedUser, id: number): Promise<OrderForm> => {
   try {
-    const orderForm = await context.models.OrderForm.findByPk(id);
+    const orderForm = await context.models.OrderForm.findOne({
+      where: { id, tenantId: user.tenant }
+    });
+
     if (!orderForm) throw new Error("Order form not found");
     if (orderForm.employeeId !== user.id) throw new Error("Unauthorized");
 
@@ -151,15 +149,17 @@ const resendCode = async (context: Context, user: DecodedUser, id: number): Prom
   }
 }
 
-const deleteOrderForm = async (context: Context, id: number): Promise<{ success: boolean }> => {
+const remove = async (context: Context, user: DecodedUser, id: number): Promise<{ success: boolean }> => {
   try {
-    const orderForm = await context.models.OrderForm.findByPk(id);
+    const orderForm = await context.models.OrderForm.findOne({
+      where: { id, tenantId: user.tenant }
+    });
+
     if (!orderForm) throw new Error("Order form not found");
 
     await orderForm.destroy();
     return { success: true };
   } catch (error) {
     return { success: false };
-    throw error;
   }
 }
