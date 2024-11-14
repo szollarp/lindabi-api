@@ -70,7 +70,7 @@ export const getDiscountAmount = (tender: Tender) => {
 
   return tender.items?.reduce(
     (acc, item) => {
-      const { materialNetAmount, feeNetAmount, materialNetUnitAmount, feeNetUnitAmount } = getNetAmount(item, tender.surcharge || 0);
+      const { materialNetAmount, feeNetAmount, materialNetUnitAmount, feeNetUnitAmount } = getNetAmount(item);
       return {
         sumMaterialNetUnitAmount: acc.sumMaterialNetUnitAmount + materialNetUnitAmount * discount,
         sumFeeNetUnitAmount: acc.sumFeeNetUnitAmount + feeNetUnitAmount * discount,
