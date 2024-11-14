@@ -27,6 +27,10 @@ module.exports = {
       created_on: new Date(),
       updated_on: new Date()
     }, {
+      name: 'Execution:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
       name: 'Execution:Update',
       created_on: new Date(),
       updated_on: new Date()
@@ -44,6 +48,10 @@ module.exports = {
       updated_on: new Date()
     }, {
       name: 'OrderForm:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'OrderForm:Get',
       created_on: new Date(),
       updated_on: new Date()
     }, {
@@ -67,6 +75,10 @@ module.exports = {
       created_on: new Date(),
       updated_on: new Date()
     }, {
+      name: 'CompletionCertificate:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
       name: 'CompletionCertificate:Update',
       created_on: new Date(),
       updated_on: new Date()
@@ -76,6 +88,30 @@ module.exports = {
       updated_on: new Date()
     }, {
       name: 'CompletionCertificate:Approve',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:Create',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:List',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:Get',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:Update',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:Delete',
+      created_on: new Date(),
+      updated_on: new Date()
+    }, {
+      name: 'Invoice:Approve',
       created_on: new Date(),
       updated_on: new Date()
     }], {});

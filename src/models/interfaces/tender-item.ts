@@ -10,12 +10,12 @@ export interface TenderItem {
   unit: string
   materialNetUnitAmount: number
   materialNetAmount: number
-  materialActualNetAmount: number
-  totalMaterialAmount: number
+  // materialActualNetAmount: number
+  // totalMaterialAmount: number
   feeNetUnitAmount: number
   feeNetAmount: number
-  feeActualNetAmount: number
-  totalFeeAmount: number
+  // feeActualNetAmount: number
+  // totalFeeAmount: number
   //
   tenderId: Tender["id"]
   tender?: Tender | null
@@ -24,6 +24,9 @@ export interface TenderItem {
   updatedOn?: Date | null
   createdBy?: User["id"]
   updatedBy?: User["id"] | null
+  //
+  netAmount?: number | null
+  vatAmount?: number | null
 };
 
 export type CreateTenderItemProperties = Omit<TenderItem, "id" | "num" | "createdOn" | "updatedBy" | "updatedOn">;

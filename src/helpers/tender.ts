@@ -4,9 +4,23 @@ import { fDate, fString } from "../format";
 
 export const getNetUnitAmount = (amount: number, surcharge: number) => amount * (1 + (Number(surcharge) / 100));
 
-export const getNetAmount = (item: TenderItem, surcharge: number) => {
-  const materialNetUnitAmount = getNetUnitAmount(item.materialNetUnitAmount, surcharge);
-  const feeNetUnitAmount = getNetUnitAmount(item.feeNetUnitAmount, surcharge);
+export const getItemNetAmount = (item: TenderItem) => {
+  const discount = 1 - (Number(item.tender?.discount || 0) / 100);
+  const surcharge = 1 + (Number(item.tender?.surcharge || 0) / 100);
+
+  const { materialNetAmount, feeNetAmount } = getNetAmount(item);
+  return (materialNetAmount + feeNetAmount) * surcharge * discount;
+}
+
+export const getItemVatAmount = (item: TenderItem) => {
+  const vatKey = Number(item.tender?.vatKey) || 0;
+  const netAmount = getItemNetAmount(item);
+
+  return netAmount * (vatKey / 100);
+}
+
+export const getNetAmount = (item: TenderItem) => {
+  const { materialNetUnitAmount, feeNetUnitAmount } = item;
 
   return {
     materialNetUnitAmount,
@@ -18,17 +32,20 @@ export const getNetAmount = (item: TenderItem, surcharge: number) => {
 
 export const getTotalNetAmount = (tender: Tender) => {
   const discount = 1 - (Number(tender.discount) / 100);
+  const surcharge = 1 + (Number(tender.surcharge) / 100);
 
-  const netAmount = tender.items?.reduce(
+  const items = tender.items || [];
+  const netAmount = items.reduce(
     (acc, item) => {
-      const { materialNetAmount, feeNetAmount } = getNetAmount(item, tender.surcharge || 0);
-      return acc + ((materialNetAmount + feeNetAmount) * discount);
+      const { materialNetAmount, feeNetAmount } = getNetAmount(item);
+      return acc + (materialNetAmount + feeNetAmount);
     },
     0
   );
 
-  const surveyFee = tender.fee! > 0 && tender.returned ? tender.fee : 0;
-  return netAmount! - surveyFee!;
+  const fee = tender.fee || 0;
+  const surveyFee = fee > 0 && tender.returned ? fee : 0;
+  return (netAmount * surcharge * discount) - surveyFee;
 }
 
 export const getTotalVatAmount = (tender: Tender) => {

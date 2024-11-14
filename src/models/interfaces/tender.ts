@@ -56,6 +56,9 @@ export interface Tender {
   updatedOn?: Date | null
   createdBy?: User["id"]
   updatedBy?: User["id"] | null
+  //
+  netAmount?: number
+  vatAmount?: number
 };
 
 export type CreateTenderProperties = Omit<Tender, "id" | "createdOn" | "updatedBy" | "updatedOn">;

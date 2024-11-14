@@ -20,6 +20,7 @@ import { JourneyModel } from "./journey";
 import type { Models } from ".";
 import { TenderItemModel } from "./tender-item";
 import { TenderItem } from "./interfaces/tender-item";
+import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
 
 export class TenderModel extends Model<Tender, CreateTenderProperties> implements Tender {
   public id!: number;
@@ -141,6 +142,9 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
     contact: Association<TenderModel, ContactModel>
     items: Association<TenderModel, TenderItemModel>,
   };
+
+  public readonly netAmount?: number;
+  public readonly vatAmount?: number;
 };
 
 export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
@@ -281,6 +285,18 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       type: DataTypes.DATE,
       defaultValue: null,
       allowNull: true
+    },
+    netAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getTotalNetAmount(this);
+      }
+    },
+    vatAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getTotalVatAmount(this);
+      }
     }
   }, {
     sequelize,

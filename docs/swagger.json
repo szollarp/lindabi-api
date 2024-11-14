@@ -2256,27 +2256,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
 					"feeNetUnitAmount": {
 						"type": "number",
 						"format": "double"
 					},
 					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
 						"type": "number",
 						"format": "double"
 					},
@@ -2309,6 +2293,16 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
 					}
 				},
 				"required": [
@@ -2319,12 +2313,8 @@
 					"unit",
 					"materialNetUnitAmount",
 					"materialNetAmount",
-					"materialActualNetAmount",
-					"totalMaterialAmount",
 					"feeNetUnitAmount",
 					"feeNetAmount",
-					"feeActualNetAmount",
-					"totalFeeAmount",
 					"tenderId"
 				],
 				"type": "object",
@@ -2503,6 +2493,14 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -2665,6 +2663,14 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"type": "object",
@@ -2803,6 +2809,14 @@
 							"$ref": "#/components/schemas/TenderItem"
 						},
 						"type": "array"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -2850,27 +2864,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
 					"feeNetUnitAmount": {
 						"type": "number",
 						"format": "double"
 					},
 					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
 						"type": "number",
 						"format": "double"
 					},
@@ -2896,6 +2894,14 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"type": "object",
@@ -2913,6 +2919,14 @@
 					"tender": {
 						"$ref": "#/components/schemas/Tender"
 					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
 					"quantity": {
 						"type": "number",
 						"format": "double"
@@ -2928,27 +2942,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
 					"feeNetUnitAmount": {
 						"type": "number",
 						"format": "double"
 					},
 					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
 						"type": "number",
 						"format": "double"
 					},
@@ -2963,12 +2961,8 @@
 					"unit",
 					"materialNetUnitAmount",
 					"materialNetAmount",
-					"materialActualNetAmount",
-					"totalMaterialAmount",
 					"feeNetUnitAmount",
 					"feeNetAmount",
-					"feeActualNetAmount",
-					"totalFeeAmount",
 					"tenderId"
 				],
 				"type": "object",
@@ -3009,27 +3003,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"materialActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalMaterialAmount": {
-						"type": "number",
-						"format": "double"
-					},
 					"feeNetUnitAmount": {
 						"type": "number",
 						"format": "double"
 					},
 					"feeNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"feeActualNetAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"totalFeeAmount": {
 						"type": "number",
 						"format": "double"
 					},
@@ -3053,6 +3031,14 @@
 						"format": "double"
 					},
 					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
 						"type": "number",
 						"format": "double"
 					}
@@ -4357,6 +4343,10 @@
 					"type": {
 						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
 					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
 					"quantity": {
 						"type": "number",
 						"format": "double"
@@ -4365,10 +4355,6 @@
 						"type": "string"
 					},
 					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"netAmount": {
 						"type": "number",
 						"format": "double"
 					}
@@ -5169,15 +5155,15 @@
 					"contractor": {
 						"$ref": "#/components/schemas/Company"
 					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
 					"netAmount": {
 						"type": "number",
 						"format": "double"
 					},
 					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"projectId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -5395,6 +5381,99 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"COMPLETION_CERTIFICATE_STATUS": {
+				"enum": [
+					"draft",
+					"signed"
+				],
+				"type": "string"
+			},
+			"CompletionCertificate": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/COMPLETION_CERTIFICATE_STATUS"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"orderFormId": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"deviation": {
+						"type": "string",
+						"nullable": true
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"amount",
+					"status",
+					"projectId",
+					"employeeId",
+					"orderFormId"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"EXECUTION_SETTLEMENT": {
 				"enum": [
@@ -6006,99 +6085,6 @@
 				},
 				"required": [
 					"password"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"COMPLETION_CERTIFICATE_STATUS": {
-				"enum": [
-					"draft",
-					"signed"
-				],
-				"type": "string"
-			},
-			"CompletionCertificate": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"$ref": "#/components/schemas/COMPLETION_CERTIFICATE_STATUS"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"orderFormId": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
-						"type": "string",
-						"nullable": true
-					},
-					"deviation": {
-						"type": "string",
-						"nullable": true
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"approvedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"tenant": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Tenant"
-							}
-						],
-						"nullable": true
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"amount",
-					"status",
-					"projectId",
-					"employeeId",
-					"orderFormId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -11714,6 +11700,57 @@
 					{
 						"in": "path",
 						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/invoices/possible-completion-certificate/get": {
+			"get": {
+				"operationId": "GetPossibleCompletionCertificate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/CompletionCertificate"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Invoice"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Invoice:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "employeeId",
 						"required": true,
 						"schema": {
 							"format": "double",

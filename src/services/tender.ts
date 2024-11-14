@@ -211,7 +211,7 @@ export const tenderService = (): TenderService => {
           {
             model: context.models.Tender,
             as: "tender",
-            attributes: ["id"],
+            attributes: ["discount", "surcharge", "vatKey"],
             where: { tenantId },
             required: true,
           }

@@ -8,6 +8,7 @@ import { User } from "./interfaces/user";
 import { Document } from "./interfaces/document";
 import { DocumentModel } from "./document";
 import { Models } from ".";
+import { Tenant } from "./interfaces/tenant";
 
 export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implements Invoice {
   public id!: number;
@@ -66,6 +67,10 @@ export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implem
 
   public document?: NonAttribute<Document>;
 
+  public tenantId!: ForeignKey<Tenant["id"]>;
+
+  public tenant?: NonAttribute<Tenant>;
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
@@ -79,8 +84,6 @@ export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implem
   public approvedOn!: Date | null;
 
   public payedOn!: Date | null;
-
-
 
   public static associate: (models: Models) => void;
 
@@ -215,6 +218,10 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
       payedOn: {
         type: DataTypes.DATE,
         allowNull: true
+      },
+      tenantId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
       }
     }, {
     sequelize,

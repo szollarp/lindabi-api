@@ -1,9 +1,11 @@
 import {
   Controller, Route, Request, SuccessResponse, Get, Tags,
-  Security, Body, Put, Path, Post, Delete
+  Security, Body, Put, Path, Post, Delete,
+  Query
 } from "tsoa";
 import type { ContextualRequest } from "../types";
 import { CreateInvoiceProperties, Invoice } from "../models/interfaces/invoice";
+import { CompletionCertificate } from "../models/interfaces/completion-certificate";
 
 @Route("invoices")
 export class InvoiceController extends Controller {
@@ -50,5 +52,14 @@ export class InvoiceController extends Controller {
   public async deleteInvoice(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.invoice.remove(context, user, id);
+  }
+
+  @Tags("Invoice")
+  @SuccessResponse("200", "OK")
+  @Get("/possible-completion-certificate/get")
+  @Security("jwtToken", ["Tenant", "Invoice:Get"])
+  public async getPossibleCompletionCertificate(@Request() request: ContextualRequest, @Query() projectId: number, @Query() employeeId: number): Promise<CompletionCertificate[]> {
+    const { context, user } = request;
+    return await context.services.invoice.getPossibleCompletionCertificate(context, user, projectId, employeeId);
   }
 }
