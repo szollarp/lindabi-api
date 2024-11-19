@@ -1,7 +1,9 @@
 import {
   Controller, Route, Request, SuccessResponse, Get, Tags,
   Security, Body, Put, Path, Post, Delete,
-  Query
+  Query,
+  FormField,
+  UploadedFiles
 } from "tsoa";
 import type { ContextualRequest } from "../types";
 import { CreateInvoiceProperties, Invoice } from "../models/interfaces/invoice";
@@ -62,4 +64,27 @@ export class InvoiceController extends Controller {
     const { context, user } = request;
     return await context.services.invoice.getPossibleCompletionCertificate(context, user, projectId, employeeId);
   }
+
+  @Tags("Invoice")
+  @SuccessResponse("200", "OK")
+  @Post("{id}/documents")
+  @Security("jwtToken", ["Invoice:Update", "Tenant"])
+  public async addDocument(
+    @Request() request: ContextualRequest,
+    @Path() id: number,
+    @UploadedFiles() files: Express.Multer.File[]
+  ): Promise<{ uploaded: boolean }> {
+    const { context, user } = request;
+    return await context.services.document.upload(context, user, id, "invoice", "invoice", files, {});
+  }
+
+  @Tags("Invoice")
+  @SuccessResponse("200", "OK")
+  @Delete("{ownerId}/document/{id}")
+  @Security("jwtToken", ["Invoice:Update", "Tenant"])
+  public async removeDocument(@Request() request: ContextualRequest, @Path() ownerId: number, @Path() id: number): Promise<{ removed: boolean }> {
+    const { context } = request;
+    return await context.services.document.removeDocument(context, ownerId, id, "invoice");
+  }
+
 }

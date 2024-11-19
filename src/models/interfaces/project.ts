@@ -68,6 +68,9 @@ export interface Project {
   updatedOn?: Date | null
   createdBy?: User["id"]
   updatedBy?: User["id"] | null
+  //
+  itemsNetAmount?: number
+  itemsVatAmount?: number
 };
 
 export type CreateProjectProperties = Omit<Project, "id" | "createdOn" | "updatedBy" | "updatedOn">;

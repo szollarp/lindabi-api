@@ -21,9 +21,9 @@ export interface Invoice {
   vatKey: string
   title?: string | null
   //
-  asEmail: boolean
-  pattyCash: boolean
-  inSalary: boolean
+  asEmail?: boolean
+  pattyCash?: boolean
+  inSalary?: boolean
   //
   projectId?: Project["id"] | null
   project?: Project
@@ -41,20 +41,23 @@ export interface Invoice {
   supplier?: Company
   //
   documentId?: Document["id"] | null
-  document?: Document
+  document?: Document | null
   //
-  createdOn?: Date
-  updatedOn?: Date | null
-  createdBy?: number
-  updatedBy?: number | null
-  //
-  approvedBy?: number | null
+  approvedBy?: User["id"] | null
   approvedOn?: Date | null
+  approver?: User | null
   //
   tenantId?: Tenant["id"] | null
   tenant?: Tenant | null
   //
   payedOn?: Date | null
+  //
+  createdOn?: Date
+  updatedOn?: Date | null
+  createdBy?: User["id"]
+  creator?: User;
+
+  updatedBy?: User["id"] | null
 }
 
-export type CreateInvoiceProperties = Omit<Invoice, "id" | "createdOn" | "updatedOn" | "approvedBy" | "approvedOn" | "payedOn">;
+export type CreateInvoiceProperties = Omit<Invoice, "id" | "createdOn" | "updatedOn" | "approvedBy" | "approvedOn">;

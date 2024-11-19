@@ -27,6 +27,7 @@ import { ProjectItemModel } from "./project-item";
 import type { Models } from ".";
 import { ProjectCommentModel } from "./project-comment";
 import { ProjectComment } from "./interfaces/project-comment";
+import { getNetAmount, getVatAmount } from "../helpers/project";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -186,6 +187,10 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     milestones: Association<ProjectModel, MilestoneModel>
     comments: Association<ProjectModel, ProjectCommentModel>
   };
+
+  public readonly itemsNetAmount?: number;
+
+  public readonly itemsVatAmount?: number;
 };
 
 export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
@@ -330,6 +335,18 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       type: DataTypes.DATE,
       defaultValue: null,
       allowNull: true
+    },
+    itemsNetAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getNetAmount(this);
+      }
+    },
+    itemsVatAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getVatAmount(this);
+      }
     }
   }, {
     sequelize,

@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import { Context, DecodedUser } from "../types";
-import { INVOICE_STATUS } from "../constants";
+import { COMPLETION_CERTIFICATE_STATUS, INVOICE_STATUS } from "../constants";
 import { CreateInvoiceProperties, Invoice } from "../models/interfaces/invoice";
 import { CompletionCertificate } from "../models/interfaces/completion-certificate";
 
@@ -35,6 +35,11 @@ const update = async (context: Context, user: DecodedUser, id: number, data: Par
     const invoice = await context.models.Invoice.findByPk(id);
     if (!invoice) throw new Error("Invoice certificate not found");
 
+    if (data.status === INVOICE_STATUS.APPROVED && !invoice.approvedBy) {
+      data.approvedBy = user.id;
+      data.approvedOn = new Date();
+    }
+
     return await invoice.update({
       ...data,
       updatedBy: user.id
@@ -48,15 +53,46 @@ const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => 
   try {
     const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:List"))) ? { tenantId: user.tenant } : {
       tenantId: user.tenant,
-      // [Op.or]: [
-      //   { "$employee.id$": user.id },
-      //   { createdBy: user.id }
-      // ]
+      [Op.or]: [
+        { "$employee.id$": user.id },
+        { "$creator.id$": user.id }
+      ]
     };
 
     return await context.models.Invoice.findAll({
       where,
-      attributes: ["id", "invoiceNumber"]
+      attributes: ["id", "invoiceNumber", "type", "netAmount", "vatAmount", "status", "createdOn", "completionDate", "issueDate"],
+      include: [{
+        model: context.models.Document,
+        as: "documents"
+      }, {
+        model: context.models.Project,
+        attributes: ["id", "type", "shortName"],
+        as: "project",
+        required: true,
+        include: [{
+          model: context.models.Company,
+          as: "contractor",
+          attributes: ["id", "name"]
+        },
+        {
+          model: context.models.Location,
+          as: "location",
+          attributes: ["id", "name"]
+        }],
+      }, {
+        model: context.models.Company,
+        as: "supplier",
+        attributes: ["id", "name"]
+      }, {
+        model: context.models.User,
+        attributes: ["id", "name"],
+        as: "creator"
+      }, {
+        model: context.models.User,
+        attributes: ["id"],
+        as: "employee"
+      }],
     });
   } catch (error) {
     console.log(error);
@@ -65,10 +101,26 @@ const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => 
 };
 
 const get = async (context: Context, user: DecodedUser, id: number): Promise<Invoice | null> => {
+  const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:List"))) ? { id, tenantId: user.tenant } : {
+    id,
+    tenantId: user.tenant,
+    [Op.or]: [
+      { "$employee.id$": user.id },
+      { "$creator.id$": user.id }
+    ]
+  };
+
   try {
     return await context.models.Invoice.findOne({
-      where: { id, tenantId: user.tenant },
-      attributes: ["id", "invoiceNumber"]
+      where,
+      include: [{
+        model: context.models.Document,
+        as: "documents"
+      }, {
+        model: context.models.User,
+        attributes: ["id", "name"],
+        as: "approver"
+      }]
     });
   } catch (error) {
     throw error;
@@ -94,7 +146,7 @@ const getPossibleCompletionCertificate = async (context: Context, user: DecodedU
       where: {
         projectId,
         employeeId,
-        status: INVOICE_STATUS.APPROVED,
+        status: COMPLETION_CERTIFICATE_STATUS.SIGNED,
         tenantId: user.tenant
       }
     });

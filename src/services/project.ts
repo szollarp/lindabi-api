@@ -163,7 +163,7 @@ export const projectService = (): ProjectService => {
       const userProjectIds = await getUserProjectIds(context, user);
 
       return await context.models.Project.findAll({
-        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate"],
+        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount"],
         include: [
           {
             model: context.models.Location,
@@ -184,6 +184,11 @@ export const projectService = (): ProjectService => {
             model: context.models.Contact,
             as: "supervisors",
             attributes: ["id", "name"],
+          },
+          {
+            model: context.models.Milestone,
+            as: "milestones",
+            attributes: ["id", "name", "status"],
           }
         ],
         where: { id: { [Op.in]: userProjectIds } },

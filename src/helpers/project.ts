@@ -1,4 +1,29 @@
+import { Project } from "../models/interfaces/project";
 import type { Context, DecodedUser } from "../types";
+
+export const getNetAmount = (project: Project) => {
+  const items = project.items || [];
+
+  return items.reduce(
+    (acc, item) => {
+      return acc + (item.netAmount ?? 0);
+    },
+    0
+  );
+}
+
+export const getVatAmount = (project: Project) => {
+  const vatKey = Number(project.vatKey) || 0;
+
+  const netAmount = getNetAmount(project);
+  return netAmount * (vatKey / 100);
+}
+
+export const getTotalAmount = (project: Project) => {
+  const netAmount = getNetAmount(project);
+  const vatAmount = getVatAmount(project);
+  return netAmount + vatAmount;
+}
 
 const hasPermission = (user: DecodedUser, permission: string): boolean => {
   return user.isSystemAdmin || user.permissions!.includes(permission);

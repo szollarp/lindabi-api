@@ -9,6 +9,7 @@ import { CompletionCertificate, CreateCompletionCertificateProperties } from "./
 import { OrderForm } from "./interfaces/order-form";
 import { OrderFormModel } from "./order-form";
 import { COMPLETION_CERTIFICATE_STATUS } from "../constants";
+import { Tenant } from "./interfaces/tenant";
 
 export class CompletionCertificateModel extends Model<CompletionCertificate, CreateCompletionCertificateProperties> implements CompletionCertificate {
   public id!: number;
@@ -32,6 +33,10 @@ export class CompletionCertificateModel extends Model<CompletionCertificate, Cre
   public projectId!: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
+
+  public tenantId!: ForeignKey<Tenant["id"]>;
+
+  public tenant?: NonAttribute<Tenant>;
 
   public readonly createdOn!: Date;
 
@@ -112,6 +117,10 @@ export const CompletionCertificateFactory = (sequelize: Sequelize): typeof Compl
       allowNull: false
     },
     projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    tenantId: {
       type: DataTypes.INTEGER,
       allowNull: false
     }

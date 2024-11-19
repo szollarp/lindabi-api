@@ -63,27 +63,31 @@ export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implem
 
   public supplier?: NonAttribute<Company>;
 
-  public documentId?: ForeignKey<Document["id"]>;
+  declare documents?: NonAttribute<Document[]>;
 
-  public document?: NonAttribute<Document>;
+  declare documentIds?: ForeignKey<Document["id"][]>;
 
   public tenantId!: ForeignKey<Tenant["id"]>;
 
   public tenant?: NonAttribute<Tenant>;
 
-  public readonly createdOn!: Date;
+  public approvedBy!: User["id"] | null;
 
-  public readonly updatedOn!: Date | null;
-
-  public readonly createdBy!: number;
-
-  public readonly updatedBy!: number | null;
-
-  public approvedBy!: number | null;
+  public readonly approver!: User;
 
   public approvedOn!: Date | null;
 
   public payedOn!: Date | null;
+
+  public readonly createdOn!: Date;
+
+  public readonly updatedOn!: Date | null;
+
+  public readonly createdBy!: User["id"];
+
+  public readonly creator!: User;
+
+  public readonly updatedBy!: User["id"] | null;
 
   public static associate: (models: Models) => void;
 
@@ -192,11 +196,11 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
         allowNull: true
       },
       createdOn: {
-        type: DataTypes.DATE,
-        allowNull: false
+        type: DataTypes.DATE
       },
       updatedOn: {
         type: DataTypes.DATE,
+        defaultValue: null,
         allowNull: true
       },
       createdBy: {
@@ -258,12 +262,22 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
       as: "employee"
     });
 
-    InvoiceModel.hasOne(models.Document, {
+    InvoiceModel.belongsTo(models.User, {
+      foreignKey: "created_by",
+      as: "creator"
+    });
+
+    InvoiceModel.belongsTo(models.User, {
+      foreignKey: "approved_by",
+      as: "approver"
+    });
+
+    InvoiceModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "invoice"
       },
-      as: "document"
+      as: "documents"
     });
   }
 
