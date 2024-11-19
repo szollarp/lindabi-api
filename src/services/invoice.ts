@@ -120,6 +120,14 @@ const get = async (context: Context, user: DecodedUser, id: number): Promise<Inv
         model: context.models.User,
         attributes: ["id", "name"],
         as: "approver"
+      }, {
+        model: context.models.User,
+        attributes: ["id", "name"],
+        as: "creator"
+      }, {
+        model: context.models.User,
+        attributes: ["id"],
+        as: "employee"
       }]
     });
   } catch (error) {
