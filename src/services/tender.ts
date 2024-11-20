@@ -117,7 +117,7 @@ export const tenderService = (): TenderService => {
           }
         ],
         where: { tenantId },
-        order: [["createdOn", "DESC"]]
+        order: [["updatedOn", "DESC"]]
       });
     } catch (error) {
       context.logger.error(error);
