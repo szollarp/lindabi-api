@@ -4453,6 +4453,172 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"INVOICE_TYPE": {
+				"enum": [
+					"employee",
+					"material",
+					"outbound"
+				],
+				"type": "string"
+			},
+			"INVOICE_STATUS": {
+				"enum": [
+					"created",
+					"approved",
+					"payed"
+				],
+				"type": "string"
+			},
+			"INVOICE_PAYMENT_TYPE": {
+				"enum": [
+					"cash",
+					"bank"
+				],
+				"type": "string"
+			},
+			"Partial_Invoice_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"$ref": "#/components/schemas/INVOICE_TYPE"
+					},
+					"status": {
+						"$ref": "#/components/schemas/INVOICE_STATUS"
+					},
+					"invoiceNumber": {
+						"type": "string"
+					},
+					"paymentType": {
+						"$ref": "#/components/schemas/INVOICE_PAYMENT_TYPE"
+					},
+					"note": {
+						"type": "string"
+					},
+					"completionDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"issueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"paymentDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"asEmail": {
+						"type": "boolean"
+					},
+					"pattyCash": {
+						"type": "boolean"
+					},
+					"inSalary": {
+						"type": "boolean"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"milestoneId": {
+						"type": "number",
+						"format": "double"
+					},
+					"milestone": {
+						"$ref": "#/components/schemas/Milestone"
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
+					"supplier": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"documentId": {
+						"type": "number",
+						"format": "double"
+					},
+					"document": {
+						"$ref": "#/components/schemas/Document"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"approver": {
+						"$ref": "#/components/schemas/User"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"payedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"creator": {
+						"$ref": "#/components/schemas/User"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"Partial_ProjectComment_": {
 				"properties": {
 					"id": {
@@ -4649,13 +4815,17 @@
 						"type": "number",
 						"format": "double"
 					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
 					"issueDate": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
 					},
 					"siteHandoverDate": {
 						"type": "string",
@@ -4674,10 +4844,6 @@
 					"otherNotes": {
 						"type": "string"
 					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
 					"managerId": {
 						"type": "number",
 						"format": "double"
@@ -4688,11 +4854,11 @@
 				},
 				"required": [
 					"projectId",
-					"amount",
 					"issueDate",
+					"employeeId",
+					"amount",
 					"siteHandoverDate",
 					"deadlineDate",
-					"employeeId",
 					"managerId"
 				],
 				"type": "object",
@@ -4933,29 +5099,6 @@
 			},
 			"CreateLocationProperties": {
 				"$ref": "#/components/schemas/Omit_Location.id-or-createdOn-or-updatedBy-or-updatedOn_"
-			},
-			"INVOICE_TYPE": {
-				"enum": [
-					"employee",
-					"material",
-					"outbound"
-				],
-				"type": "string"
-			},
-			"INVOICE_STATUS": {
-				"enum": [
-					"created",
-					"approved",
-					"payed"
-				],
-				"type": "string"
-			},
-			"INVOICE_PAYMENT_TYPE": {
-				"enum": [
-					"cash",
-					"bank"
-				],
-				"type": "string"
 			},
 			"Invoice": {
 				"properties": {
@@ -5199,14 +5342,6 @@
 					"invoiceNumber": {
 						"type": "string"
 					},
-					"issueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
 					"paymentType": {
 						"$ref": "#/components/schemas/INVOICE_PAYMENT_TYPE"
 					},
@@ -5214,6 +5349,10 @@
 						"type": "string"
 					},
 					"completionDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"issueDate": {
 						"type": "string",
 						"format": "date-time"
 					},
@@ -5234,6 +5373,10 @@
 						"type": "boolean"
 					},
 					"milestoneId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -5280,149 +5423,6 @@
 			},
 			"CreateInvoiceProperties": {
 				"$ref": "#/components/schemas/Omit_Invoice.id-or-createdOn-or-updatedOn-or-approvedBy-or-approvedOn_"
-			},
-			"Partial_Invoice_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"type": {
-						"$ref": "#/components/schemas/INVOICE_TYPE"
-					},
-					"status": {
-						"$ref": "#/components/schemas/INVOICE_STATUS"
-					},
-					"invoiceNumber": {
-						"type": "string"
-					},
-					"paymentType": {
-						"$ref": "#/components/schemas/INVOICE_PAYMENT_TYPE"
-					},
-					"note": {
-						"type": "string"
-					},
-					"completionDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"issueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"paymentDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"netAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"vatAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"vatKey": {
-						"type": "string"
-					},
-					"title": {
-						"type": "string"
-					},
-					"asEmail": {
-						"type": "boolean"
-					},
-					"pattyCash": {
-						"type": "boolean"
-					},
-					"inSalary": {
-						"type": "boolean"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
-					},
-					"milestoneId": {
-						"type": "number",
-						"format": "double"
-					},
-					"milestone": {
-						"$ref": "#/components/schemas/Milestone"
-					},
-					"contractorId": {
-						"type": "number",
-						"format": "double"
-					},
-					"contractor": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"employee": {
-						"$ref": "#/components/schemas/User"
-					},
-					"supplierId": {
-						"type": "number",
-						"format": "double"
-					},
-					"supplier": {
-						"$ref": "#/components/schemas/Company"
-					},
-					"documentId": {
-						"type": "number",
-						"format": "double"
-					},
-					"document": {
-						"$ref": "#/components/schemas/Document"
-					},
-					"approvedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"approver": {
-						"$ref": "#/components/schemas/User"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"payedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"creator": {
-						"$ref": "#/components/schemas/User"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
 			},
 			"COMPLETION_CERTIFICATE_STATUS": {
 				"enum": [
@@ -6152,6 +6152,14 @@
 						"type": "number",
 						"format": "double"
 					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
 					"approvedOn": {
 						"type": "string",
 						"format": "date-time"
@@ -6163,14 +6171,6 @@
 					"description": {
 						"type": "string"
 					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"approvedBy": {
-						"type": "number",
-						"format": "double"
-					},
 					"orderFormId": {
 						"type": "number",
 						"format": "double"
@@ -6181,8 +6181,8 @@
 				},
 				"required": [
 					"projectId",
-					"amount",
 					"employeeId",
+					"amount",
 					"orderFormId"
 				],
 				"type": "object",
@@ -10533,6 +10533,50 @@
 				]
 			}
 		},
+		"/projects/{id}/invoices": {
+			"get": {
+				"operationId": "GetInvoices",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Invoice_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves invoices associated with a specific tender by its ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:Get\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/projects/{id}/documents-by-type": {
 			"delete": {
 				"operationId": "RemoveDocuments",
@@ -14391,6 +14435,50 @@
 				"parameters": [
 					{
 						"description": "The ID of the employee whose documents are being checked.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/employees/{id}/invoices": {
+			"get": {
+				"operationId": "GetInvoices",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Invoice"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of invoices of the specified employee. This method is secured with JWT and requires\n\"Employee:Get\" permission, allowing for verification of document status by authorized users.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee.",
 						"in": "path",
 						"name": "id",
 						"required": true,

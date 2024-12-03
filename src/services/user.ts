@@ -9,6 +9,7 @@ import type { Context } from "../types";
 import { createAccountVerifyToken } from "../helpers/jwt";
 import { hashPassword } from "../helpers/password";
 import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-factor";
+import { Invoice } from "../models/interfaces/invoice";
 
 export interface UserService {
   list: (context: Context, tenantId: number, entity: USER_TYPE) => Promise<Array<Partial<User>>>
@@ -23,6 +24,7 @@ export interface UserService {
   disableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean }>
   deleteUser: (context: Context, tenantId: number, id: number, type: USER_TYPE) => Promise<{ success: boolean }>
   deleteUsers: (context: Context, tenantId: number, body: { ids: number[] }, type: USER_TYPE) => Promise<{ success: boolean }>
+  getInvoices: (context: Context, tenantId: number, id: number) => Promise<Invoice[]>
 }
 
 const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "country", "region", "city", "address",
@@ -433,6 +435,49 @@ export const userService = (): UserService => {
     }
   };
 
+  const getInvoices = async (context: Context, tenantId: number, id: number): Promise<Invoice[]> => {
+    try {
+      return await context.models.Invoice.findAll({
+        where: { employeeId: id, tenantId },
+        attributes: ["id", "invoiceNumber", "type", "netAmount", "vatAmount", "status", "createdOn", "completionDate", "issueDate"],
+        include: [{
+          model: context.models.Document,
+          as: "documents"
+        }, {
+          model: context.models.Project,
+          attributes: ["id", "type", "shortName"],
+          as: "project",
+          required: true,
+          include: [{
+            model: context.models.Company,
+            as: "contractor",
+            attributes: ["id", "name"]
+          },
+          {
+            model: context.models.Location,
+            as: "location",
+            attributes: ["id", "name"]
+          }],
+        }, {
+          model: context.models.Company,
+          as: "supplier",
+          attributes: ["id", "name"]
+        }, {
+          model: context.models.User,
+          attributes: ["id", "name"],
+          as: "creator"
+        }, {
+          model: context.models.User,
+          attributes: ["id"],
+          as: "employee"
+        }],
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     list,
     create,
@@ -445,6 +490,7 @@ export const userService = (): UserService => {
     disableTwoFactorAuthentication,
     deleteUser,
     deleteUsers,
-    updateNotifications
+    updateNotifications,
+    getInvoices
   };
 };

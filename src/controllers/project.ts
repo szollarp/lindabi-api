@@ -12,6 +12,7 @@ import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/p
 import { Document, DocumentType } from "../models/interfaces/document";
 import { Journey } from "../models/interfaces/journey";
 import { ProjectComment } from "../models/interfaces/project-comment";
+import { Invoice } from "../models/interfaces/invoice";
 
 @Route("projects")
 export class ProjectController extends Controller {
@@ -409,6 +410,22 @@ export class ProjectController extends Controller {
   public async getJourneys(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Journey>[]> {
     const { context } = request;
     return await context.services.project.getJourneys(context, id);
+  }
+
+  /**
+   * Retrieves invoices associated with a specific tender by its ID.
+   * This endpoint is protected by JWT authentication, requiring "Project:Get" permission.
+   *
+   * @param id The unique identifier of the tender.
+   * @returns An array of invoice objects containing partial information.
+   */
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Get("{id}/invoices")
+  @Security("jwtToken", ["Tenant", "Project:Get"])
+  public async getInvoices(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Invoice>[]> {
+    const { context, user } = request;
+    return await context.services.project.getInvoices(context, user.tenant, id);
   }
 
   /**

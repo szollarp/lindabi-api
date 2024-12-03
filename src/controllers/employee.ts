@@ -4,6 +4,7 @@ import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties, Document, DocumentType } from "../models/interfaces/document";
 import { USER_TYPE } from "../constants";
 import app from "../app";
+import { Invoice } from "../models/interfaces/invoice";
 
 @Route("employees")
 export class EmployeeController extends Controller {
@@ -196,6 +197,22 @@ export class EmployeeController extends Controller {
   public async checkDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<any> {
     const { context, user } = request;
     return await context.services.document.checkUserDocuments(context, user.tenant, id);
+  }
+
+  /**
+   * Retrieves a list of invoices of the specified employee. This method is secured with JWT and requires
+   * "Employee:Get" permission, allowing for verification of document status by authorized users.
+   *
+   * @param id The ID of the employee.
+   * @returns A summary or detailed status of the employee's invoices.
+   */
+  @Tags("Employee")
+  @SuccessResponse("200", "OK")
+  @Get("{id}/invoices")
+  @Security("jwtToken", ["Employee:Get", "Tenant"])
+  public async getInvoices(@Request() request: ContextualRequest, @Path() id: number): Promise<Invoice[]> {
+    const { context, user } = request;
+    return await context.services.user.getInvoices(context, user.tenant, id);
   }
 
 

@@ -10,6 +10,7 @@ import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/p
 import { Journey } from "../models/interfaces/journey";
 import { getUserProjectIds } from "../helpers/project";
 import { ProjectComment } from "../models/interfaces/project-comment";
+import { Invoice } from "../models/interfaces/invoice";
 
 export interface ProjectService {
   copyFromTender: (context: Context, user: DecodedUser, tenderId: number, contractOption: string, files: Express.Multer.File[]) => Promise<{ id: number }>
@@ -40,6 +41,7 @@ export interface ProjectService {
   removeComment: (context: Context, user: DecodedUser, projectId: number, commentId: number) => Promise<{ updated: boolean }>
   removeProject: (context: Context, user: DecodedUser, projectId: number) => Promise<{ success: boolean }>
   removeProjects: (context: Context, user: DecodedUser, projectIds: number[]) => Promise<{ success: boolean }>
+  getInvoices: (context: Context, tenantId: number, id: number) => Promise<Invoice[]>
 }
 
 export const projectService = (): ProjectService => {
@@ -1017,6 +1019,49 @@ export const projectService = (): ProjectService => {
     }
   }
 
+  const getInvoices = async (context: Context, tenantId: number, id: number): Promise<Invoice[]> => {
+    try {
+      return await context.models.Invoice.findAll({
+        where: { projectId: id, tenantId },
+        attributes: ["id", "invoiceNumber", "type", "netAmount", "vatAmount", "status", "createdOn", "completionDate", "issueDate"],
+        include: [{
+          model: context.models.Document,
+          as: "documents"
+        }, {
+          model: context.models.Project,
+          attributes: ["id", "type", "shortName"],
+          as: "project",
+          required: true,
+          include: [{
+            model: context.models.Company,
+            as: "contractor",
+            attributes: ["id", "name"]
+          },
+          {
+            model: context.models.Location,
+            as: "location",
+            attributes: ["id", "name"]
+          }],
+        }, {
+          model: context.models.Company,
+          as: "supplier",
+          attributes: ["id", "name"]
+        }, {
+          model: context.models.User,
+          attributes: ["id", "name"],
+          as: "creator"
+        }, {
+          model: context.models.User,
+          attributes: ["id"],
+          as: "employee"
+        }],
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     copyFromTender,
     getProjects,
@@ -1045,6 +1090,7 @@ export const projectService = (): ProjectService => {
     updateComment,
     removeComment,
     removeProject,
-    removeProjects
+    removeProjects,
+    getInvoices
   };
 }
