@@ -95,7 +95,6 @@ const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => 
       }],
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

@@ -65,8 +65,6 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
 
     return employees.map((employee) => getEmployeePayroll(employee));
   } catch (error) {
-    console.log(error);
-    console.log(error.stack);
     throw error;
   }
 };

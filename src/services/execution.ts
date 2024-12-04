@@ -112,8 +112,6 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
       tenantId: user.tenant
     } as Execution);
   } catch (error) {
-    console.log(error);
-    console.log(error.stack);
     throw error;
   }
 };
