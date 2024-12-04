@@ -50,7 +50,6 @@ const get = async (context: Context, user: DecodedUser, id: number): Promise<Par
     });
   } catch (error) {
     context.logger.error(error);
-    context.logger.error(error.stack);
     throw error;
   }
 };

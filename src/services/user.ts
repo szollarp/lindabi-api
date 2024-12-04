@@ -101,10 +101,6 @@ export const userService = (): UserService => {
       return user;
     } catch (error: any) {
       await t.rollback();
-
-      context.logger.error(error);
-      context.logger.error(error.stack);
-      context.logger.error(error.message);
       throw error;
     }
   };
