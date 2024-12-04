@@ -28,7 +28,7 @@ const list = async (context: Context, user: DecodedUser): Promise<Array<Partial<
 const get = async (context: Context, user: DecodedUser, id: number): Promise<Partial<StatusReport | null>> => {
   try {
     return await context.models.StatusReport.findOne({
-      where: { id, tenant: user.tenant },
+      where: { id, tenantId: user.tenant },
       include: [{
         model: context.models.User,
         as: "creator",
@@ -49,6 +49,8 @@ const get = async (context: Context, user: DecodedUser, id: number): Promise<Par
       }]
     });
   } catch (error) {
+    context.logger.error(error);
+    context.logger.error(error.stack);
     throw error;
   }
 };
@@ -77,7 +79,7 @@ const create = async (context: Context, user: DecodedUser, body: CreateStatusRep
       return { exists: true };
     }
 
-    return await context.models.StatusReport.create({ ...body, createdBy: user.id });
+    return await context.models.StatusReport.create({ ...body, createdBy: user.id, tenantId: user.tenant });
   } catch (error) {
     throw error;
   }

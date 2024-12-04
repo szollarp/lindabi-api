@@ -12,11 +12,10 @@ import { UserModel } from "./user";
 import { CreateExecutionProperties, Execution } from "./interfaces/execution";
 import { User } from "./interfaces/user";
 import { Tenant } from "./interfaces/tenant";
+import { ProjectItem } from "./interfaces/project-item";
 
 export class ExecutionModel extends Model<Execution, CreateExecutionProperties> implements Execution {
   public id!: number;
-
-  public type!: string;
 
   public settlement!: EXECUTION_SETTLEMENT;
 
@@ -47,6 +46,10 @@ export class ExecutionModel extends Model<Execution, CreateExecutionProperties> 
   public projectId!: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
+
+  public projectItemId!: ForeignKey<ProjectItem["id"]>;
+
+  public projectItem?: NonAttribute<ProjectItem>;
 
   public approvedOn?: Date | null;
 
@@ -89,11 +92,6 @@ export const ExecutionFactory = (sequelize: Sequelize): typeof ExecutionModel =>
       primaryKey: true,
       type: DataTypes.INTEGER,
       autoIncrement: true
-    },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null
     },
     settlement: {
       type: DataTypes.STRING,
@@ -146,6 +144,10 @@ export const ExecutionFactory = (sequelize: Sequelize): typeof ExecutionModel =>
       defaultValue: null
     },
     projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    projectItemId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -207,6 +209,11 @@ export const ExecutionFactory = (sequelize: Sequelize): typeof ExecutionModel =>
     ExecutionModel.belongsTo(models.Project, {
       foreignKey: "projectId",
       as: "project"
+    });
+
+    ExecutionModel.belongsTo(models.ProjectItem, {
+      foreignKey: "projectItemId",
+      as: "projectItem"
     });
 
     ExecutionModel.hasMany(models.Document, {

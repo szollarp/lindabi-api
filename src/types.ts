@@ -25,6 +25,8 @@ import { type ExecutionService } from "./services/execution";
 import { type OrderFormService } from "./services/order-form";
 import { type CompletionCertificateService } from "./services/completion-certificate";
 import { type InvoiceService } from "./services/invoice";
+import { type PayrollService } from "./services/payroll";
+import { type FinancialSettingsService } from "./services/financial-settings";
 import { type Models } from "./models";
 
 export interface Services {
@@ -49,6 +51,8 @@ export interface Services {
   execution: ExecutionService
   completionCertificate: CompletionCertificateService
   invoice: InvoiceService
+  payroll: PayrollService
+  financialSettings: FinancialSettingsService
 }
 
 export interface Helpers {

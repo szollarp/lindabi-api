@@ -108,9 +108,12 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
     return await context.models.Execution.create({
       ...body,
       status: EXECUTION_STATUS.PENDING,
-      createdBy: user.id
+      createdBy: user.id,
+      tenantId: user.tenant
     } as Execution);
   } catch (error) {
+    console.log(error);
+    console.log(error.stack);
     throw error;
   }
 };

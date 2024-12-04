@@ -8,6 +8,8 @@ import type { Tenant } from "./tenant";
 import type { Document } from "./document";
 import type { Salary } from "./salary";
 import type { Contact } from "./contact";
+import { Execution } from "./execution";
+import { Invoice } from "./invoice";
 
 export interface Notifications {
   userNew: boolean
@@ -75,6 +77,12 @@ export interface User {
   //
   salaryIds?: Salary["id"][] | null
   salaries?: Salary[];
+  //
+  executionIds?: Execution["id"][] | null
+  executions?: Execution[];
+  //
+  invoiceIds?: Invoice["id"][] | null
+  invoices?: Invoice[];
   //
   accountVerifyTokenId?: AccountVerifyToken["id"] | null
   accountVerifyToken?: AccountVerifyToken

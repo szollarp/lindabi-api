@@ -1,6 +1,7 @@
 import type { EXECUTION_SETTLEMENT, EXECUTION_STATUS } from "../../constants"
 import type { Document } from "./document"
 import type { Project } from "./project"
+import { ProjectItem } from "./project-item"
 import { Tenant } from "./tenant"
 import type { User } from "./user"
 
@@ -9,7 +10,6 @@ export interface Execution {
   //
   dueDate: Date
   settlement: EXECUTION_SETTLEMENT
-  type: string
   notes?: string | null
   status?: EXECUTION_STATUS | null;
   quantity?: number
@@ -27,6 +27,9 @@ export interface Execution {
   //
   projectId: Project["id"]
   project?: Project
+  //
+  projectItemId: ProjectItem["id"]
+  projectItem?: ProjectItem
   //
   approvedBy?: User["id"] | null
   approvedOn?: Date | null

@@ -27,6 +27,10 @@ import { Contact } from "./interfaces/contact";
 import { ContactModel } from "./contact";
 import { SalaryModel } from "./salary";
 import { Salary } from "./interfaces/salary";
+import { Invoice } from "./interfaces/invoice";
+import { Execution } from "./interfaces/execution";
+import { ExecutionModel } from "./execution";
+import { InvoiceModel } from "./invoice";
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -187,6 +191,14 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare salaryIds?: ForeignKey<Salary["id"][]>;
 
+  declare executions?: NonAttribute<Execution[]>;
+
+  declare executionIds?: ForeignKey<Execution["id"][]>;
+
+  declare invoices?: NonAttribute<Invoice[]>;
+
+  declare invoiceIds?: ForeignKey<Invoice["id"][]>;
+
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
@@ -195,6 +207,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
     documents: Association<UserModel, DocumentModel>
     contact: Association<UserModel, ContactModel>
     salaries: Association<UserModel, SalaryModel>
+    executions: Association<UserModel, ExecutionModel>
+    invoices: Association<UserModel, InvoiceModel>
   };
 }
 

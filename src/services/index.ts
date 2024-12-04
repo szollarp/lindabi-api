@@ -19,7 +19,8 @@ import { executionService } from "./execution";
 import { orderFormService } from "./order-form";
 import { completionCertificateService } from "./completion-certificate";
 import { invoiceService } from "./invoice";
-
+import { payrollService } from "./payroll";
+import { financialSettingsService } from "./financial-settings"
 import type { Services } from "../types";
 
 export default (): Services => ({
@@ -43,5 +44,7 @@ export default (): Services => ({
   orderForm: orderFormService(),
   execution: executionService(),
   completionCertificate: completionCertificateService(),
-  invoice: invoiceService()
+  invoice: invoiceService(),
+  payroll: payrollService(),
+  financialSettings: financialSettingsService()
 });

@@ -11,6 +11,7 @@ import { DocumentModel } from "./document";
 import { Document } from "./interfaces/document";
 import { UserModel } from "./user";
 import { Tenant } from "./interfaces/tenant";
+import { TenantModel } from "./tenant";
 
 export class StatusReportModel extends Model<StatusReport, CreateStatusReportProperties> implements StatusReport {
   public id!: number;
@@ -50,6 +51,7 @@ export class StatusReportModel extends Model<StatusReport, CreateStatusReportPro
   declare documentIds?: ForeignKey<Document["id"][]>;
 
   public static associations: {
+    tenant: Association<StatusReportModel, TenantModel>,
     project: Association<StatusReportModel, ProjectModel>,
     documents: Association<StatusReportModel, DocumentModel>,
     creator: Association<StatusReportModel, UserModel>,
