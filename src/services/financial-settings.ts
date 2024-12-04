@@ -30,8 +30,6 @@ const add = async (context: Context, user: DecodedUser, data: { type: string, it
     const body = data.items.map((item) => ({ ...item, tenantId: user.tenant, createdBy: user.id }));
     return await context.models.FinancialSetting.bulkCreate(body);
   } catch (error) {
-    console.error(error);
-    console.error(error.stack);
     throw error;
   }
 };
