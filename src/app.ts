@@ -1,4 +1,4 @@
-import express, { type Express, type Response, type NextFunction } from "express";
+import express, { type Express, type RequestHandler, type ErrorRequestHandler } from "express";
 import bodyParser from "body-parser";
 import swaggerUi from "swagger-ui-express";
 import cors from "cors";
@@ -26,8 +26,8 @@ export default (context: Context): Express => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   RegisterRoutes(app);
-  app.use((req, res, next) => { notFoundMiddleware(req as ContextualRequest, res, next); });
-  app.use((err, req, res, next) => { errorHandlerMiddleware(err as Record<string, unknown>, req as ContextualRequest, res as Response, next as NextFunction); });
+  app.use(notFoundMiddleware as RequestHandler);
+  app.use(errorHandlerMiddleware as ErrorRequestHandler);
 
   return app;
 };

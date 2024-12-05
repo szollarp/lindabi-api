@@ -2,24 +2,22 @@ import { type Response, type NextFunction } from "express";
 import { ValidateError } from "tsoa";
 import type { ContextualRequest as Request } from "../types";
 
-export default (error: Record<string, unknown>, request: Request, response: Response, next: NextFunction): any => {
+const errorMiddleware = (error: Error, request: Request, response: Response, next: NextFunction) => {
   if (error instanceof ValidateError) {
-    console.warn(`Caught Validation Error for ${request.path}:`, error.fields);
-    return response.status(422).json({
-      message: "Validation Failed. Please review the provided data and try again.",
-      details: error?.fields
+    response.statusCode = 422;
+    response.json({
+      message: "Validation Failed. Please review the provided data and try again."
     });
   }
 
   if (error instanceof Error) {
-    return response.status(Number(error.status) ?? 500).json({
-      message: error.message ?? "Something went wrong!"
+    response.statusCode = 500;
+    response.json({
+      message: error.message ?? "Something went wrong!",
     });
   }
 
-  response.status(500).json({
-    message: "Something went wrong!"
-  });
-
   next();
 };
+
+export default errorMiddleware;

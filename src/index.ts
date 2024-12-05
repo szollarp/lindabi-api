@@ -16,12 +16,10 @@ createContext()
   });
 
 process.on("unhandledRejection", (reason: { stack?: string } | null | undefined, promise: Promise<any>) => {
-  logger.error(reason);
   logger.error("Unhandled Rejection at:", reason?.stack ?? reason, "Promise: ", promise);
 });
 
 process.on("uncaughtException", (error: Error) => {
-  logger.error(error);
   logger.error("Uncaught exception: ", error);
   logger.error("Uncaught exception stack: ", error.stack);
   process.exit(1);

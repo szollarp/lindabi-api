@@ -1,7 +1,7 @@
 import { type Response, type NextFunction } from "express";
 import type { ContextualRequest as Request } from "../types";
 
-export default (request: Request, response: Response, next: NextFunction): void => {
+const notFoundMiddleware = (request: Request, response: Response, next: NextFunction) => {
   response.statusCode = 405;
   response.json({
     message: "Method Not Allowed"
@@ -9,3 +9,5 @@ export default (request: Request, response: Response, next: NextFunction): void 
 
   next();
 };
+
+export default notFoundMiddleware;
