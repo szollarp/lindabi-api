@@ -27,6 +27,7 @@ import { type CompletionCertificateService } from "./services/completion-certifi
 import { type InvoiceService } from "./services/invoice";
 import { type PayrollService } from "./services/payroll";
 import { type FinancialSettingsService } from "./services/financial-settings";
+import { type EmployeeScheduleService } from "./services/employee-schedule";
 import { type Models } from "./models";
 
 export interface Services {
@@ -53,6 +54,7 @@ export interface Services {
   invoice: InvoiceService
   payroll: PayrollService
   financialSettings: FinancialSettingsService
+  employeeSchedule: EmployeeScheduleService
 }
 
 export interface Helpers {

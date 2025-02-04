@@ -21,6 +21,7 @@ import { completionCertificateService } from "./completion-certificate";
 import { invoiceService } from "./invoice";
 import { payrollService } from "./payroll";
 import { financialSettingsService } from "./financial-settings"
+import { employeeScheduleService } from "./employee-schedule";
 import type { Services } from "../types";
 
 export default (): Services => ({
@@ -46,5 +47,6 @@ export default (): Services => ({
   completionCertificate: completionCertificateService(),
   invoice: invoiceService(),
   payroll: payrollService(),
-  financialSettings: financialSettingsService()
+  financialSettings: financialSettingsService(),
+  employeeSchedule: employeeScheduleService()
 });

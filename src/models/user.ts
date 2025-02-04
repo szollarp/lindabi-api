@@ -26,11 +26,13 @@ import type { Models } from ".";
 import { Contact } from "./interfaces/contact";
 import { ContactModel } from "./contact";
 import { SalaryModel } from "./salary";
+import { ExecutionModel } from "./execution";
+import { InvoiceModel } from "./invoice";
+import { EmployeeScheduleModel } from "./employee-schedule";
 import { Salary } from "./interfaces/salary";
 import { Invoice } from "./interfaces/invoice";
 import { Execution } from "./interfaces/execution";
-import { ExecutionModel } from "./execution";
-import { InvoiceModel } from "./invoice";
+import { EmployeeSchedule } from "./interfaces/employee-schedule";
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -68,6 +70,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
   public identifier!: string | null;
 
   public employeeType!: string | null;
+
+  public inSchedule!: boolean;
 
   public notes!: string | null;
 
@@ -199,6 +203,14 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare invoiceIds?: ForeignKey<Invoice["id"][]>;
 
+  public createSchedules!: HasManyCreateAssociationMixin<EmployeeScheduleModel>;
+
+  public getSchedules!: HasManyGetAssociationsMixin<EmployeeScheduleModel>;
+
+  declare schedules?: NonAttribute<EmployeeSchedule[]>;
+
+  declare scheduleIds?: ForeignKey<EmployeeSchedule["id"][]>;
+
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
@@ -209,6 +221,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
     salaries: Association<UserModel, SalaryModel>
     executions: Association<UserModel, ExecutionModel>
     invoices: Association<UserModel, InvoiceModel>
+    schedules: Association<UserModel, EmployeeScheduleModel>
   };
 }
 
@@ -287,6 +300,11 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: USER_TYPE.USER
+      },
+      inSchedule: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
       },
       enableLogin: {
         type: DataTypes.BOOLEAN,
@@ -472,6 +490,11 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
     UserModel.hasMany(models.Invoice, {
       foreignKey: "employee_id",
       as: "invoices"
+    });
+
+    UserModel.hasMany(models.EmployeeSchedule, {
+      foreignKey: "employee_id",
+      as: "schedules"
     });
   };
 

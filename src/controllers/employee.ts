@@ -5,6 +5,7 @@ import { CreateDocumentProperties, Document, DocumentType } from "../models/inte
 import { USER_TYPE } from "../constants";
 import app from "../app";
 import { Invoice } from "../models/interfaces/invoice";
+import { CreateEmployeeScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
 
 @Route("employees")
 export class EmployeeController extends Controller {
@@ -214,7 +215,6 @@ export class EmployeeController extends Controller {
     const { context, user } = request;
     return await context.services.user.getInvoices(context, user.tenant, id);
   }
-
 
   /**
    * Updates the billing information for an employee by ID. This operation is secured with JWT and requires

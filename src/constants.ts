@@ -89,6 +89,7 @@ export enum MILESTONE_STATUS {
   BILLABLE = "billable",
   INVOICED = "invoiced",
   PAID = "paid",
+  WITHHELD = "withheld"
 };
 
 export enum STATUS_REPORT_STATUS {

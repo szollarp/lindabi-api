@@ -29,7 +29,9 @@ import { CompletionCertificateFactory, type CompletionCertificateModel } from ".
 import { OrderFormFactory, type OrderFormModel } from "./order-form";
 import { InvoiceFactory, type InvoiceModel } from "./invoice";
 import { FinancialSettingFactory, type FinancialSettingModel } from "./financial-setting";
+import { EmployeeScheduleFactory, type EmployeeScheduleModel } from "./employee-schedule";
 import { AzureStorageService } from "../helpers/azure-storage";
+
 
 export interface Models {
   sequelize: Sequelize
@@ -63,6 +65,7 @@ export interface Models {
   OrderForm: typeof OrderFormModel
   Invoice: typeof InvoiceModel
   FinancialSetting: typeof FinancialSettingModel
+  EmployeeSchedule: typeof EmployeeScheduleModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -99,6 +102,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     OrderForm: OrderFormFactory(sequelize),
     Invoice: InvoiceFactory(sequelize),
     FinancialSetting: FinancialSettingFactory(sequelize),
+    EmployeeSchedule: EmployeeScheduleFactory(sequelize),
     sequelize
   };
 

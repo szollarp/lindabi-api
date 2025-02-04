@@ -165,7 +165,7 @@ export const projectService = (): ProjectService => {
       const userProjectIds = await getUserProjectIds(context, user);
 
       return await context.models.Project.findAll({
-        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount"],
+        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "inSchedule", "scheduleColor"],
         include: [
           {
             model: context.models.Location,

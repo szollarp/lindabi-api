@@ -12,7 +12,7 @@ import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-facto
 import { Invoice } from "../models/interfaces/invoice";
 
 export interface UserService {
-  list: (context: Context, tenantId: number, entity: USER_TYPE) => Promise<Array<Partial<User>>>
+  list: (context: Context, tenantId: number, entity: USER_TYPE, flat?: boolean) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User> | null>
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
@@ -30,30 +30,35 @@ export interface UserService {
 const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "country", "region", "city", "address",
   "zipCode", "createdOn", "updatedOn", "lastLoggedIn", "enableTwoFactor", "roleId", "tenantId",
   "notifications", "entity", "employeeType", "notes", "identifier", "birthName", "motherName", "placeOfBirth", "dateOfBirth",
-  "socialSecurityNumber", "taxIdentificationNumber", "personalIdentificationNumber", "licensePlateNumber", "enableLogin", "properties", "billing"];
+  "socialSecurityNumber", "taxIdentificationNumber", "personalIdentificationNumber", "licensePlateNumber", "enableLogin", "properties", "billing", "inSchedule"];
+
+const USER_ATTRIBUTES_FLAT = ["id", "name", "email", "inSchedule"];
 
 export const userService = (): UserService => {
-  const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER): Promise<Array<Partial<User>>> => {
+  const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER, flat: boolean = false): Promise<Array<Partial<User>>> => {
     try {
       const where = entity === USER_TYPE.USER ? { tenantId } : { tenantId, entity };
+      const attributes = flat ? USER_ATTRIBUTES_FLAT : USER_ATTRIBUTES;
+      const include = flat ? [] : [{
+        model: context.models.Role,
+        attributes: ["id", "name"],
+        as: "role"
+      }, {
+        model: context.models.Contact,
+        attributes: ["id", "phoneNumber", "email"],
+        as: "contact",
+        required: false
+      }, {
+        model: context.models.Document,
+        as: "documents",
+        attributes: ["id", "name", "type", "mimeType", "stored"]
+      }];
+
       return await context.models.User.findAll({
         where,
-        attributes: USER_ATTRIBUTES,
-        order: [["id", "ASC"]],
-        include: [{
-          model: context.models.Role,
-          attributes: ["id", "name"],
-          as: "role"
-        }, {
-          model: context.models.Contact,
-          attributes: ["id", "phoneNumber", "email"],
-          as: "contact",
-          required: false
-        }, {
-          model: context.models.Document,
-          as: "documents",
-          attributes: ["id", "name", "type", "mimeType", "stored"]
-        }]
+        attributes,
+        include,
+        order: [["id", "ASC"]]
       });
     } catch (error) {
       context.logger.error(error);

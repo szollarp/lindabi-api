@@ -60,6 +60,7 @@ export interface User {
   lastLoggedIn?: Date | null
   notifications?: Notifications
   entity?: string;
+  inSchedule?: boolean;
   enableLogin?: boolean;
   identifier?: string | null;
   employeeType?: string | null;

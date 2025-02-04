@@ -2,10 +2,10 @@ import { Association, DataTypes, ForeignKey, HasManyCreateAssociationMixin, HasM
 import { CreateMilestoneProperties, Milestone } from "./interfaces/milestone";
 import { Project } from "./interfaces/project";
 import { ProjectModel } from "./project";
-import type { Models } from ".";
 import { MILESTONE_STATUS } from "../constants";
 import { DocumentModel } from "./document";
 import { Document } from "./interfaces/document";
+import type { Models } from ".";
 
 export class MilestoneModel extends Model<Milestone, CreateMilestoneProperties> implements Milestone {
   public id!: number;
