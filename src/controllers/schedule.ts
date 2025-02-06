@@ -2,7 +2,7 @@ import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Query
 import type { User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { USER_TYPE } from "../constants";
-import { CreateEmployeeScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
+import { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
 
 @Route("schedules")
 export class ScheduleController extends Controller {
@@ -37,6 +37,22 @@ export class ScheduleController extends Controller {
   public async createSchedule(@Request() request: ContextualRequest, @Body() body: CreateEmployeeScheduleProperties): Promise<Partial<EmployeeSchedule>> {
     const { context, user } = request;
     return await context.services.employeeSchedule.create(context, user, body);
+  }
+
+  /**
+   * Creates a new holiday schedule with the provided details.This endpoint requires authentication and specific permissions.
+   * It utilizes the user's tenant and ID from the JWT token for creating the schedule in the correct context.
+  *
+   * @param body The properties required to create a new holiday schedule.
+   * @returns The created holiday schedule's details, with sensitive information omitted, or null if creation failed.
+  */
+  @Tags("Schedule")
+  @SuccessResponse("200", "OK")
+  @Post("/holiday/add")
+  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  public async addHoliday(@Request() request: ContextualRequest, @Body() body: CreateHolidayScheduleProperties): Promise<Partial<EmployeeSchedule>> {
+    const { context, user } = request;
+    return await context.services.employeeSchedule.createHoliday(context, user, body);
   }
 
   /**

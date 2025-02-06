@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import type { CreateEmployeeScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
+import type { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
 import type { Context, DecodedUser } from "../types";
 
 type ScheduleQueryParams = {
@@ -11,13 +11,14 @@ type ScheduleQueryParams = {
 export interface EmployeeScheduleService {
   list: (context: Context, user: DecodedUser, query: ScheduleQueryParams) => Promise<Array<Partial<EmployeeSchedule>>>
   create: (context: Context, user: DecodedUser, data: CreateEmployeeScheduleProperties) => Promise<EmployeeSchedule>
+  createHoliday: (context: Context, user: DecodedUser, data: CreateHolidayScheduleProperties) => Promise<EmployeeSchedule>
   update: (context: Context, user: DecodedUser, id: number, employeeId: number, data: Partial<EmployeeSchedule>) => Promise<EmployeeSchedule>
   remove: (context: Context, id: number) => Promise<{ removed: boolean }>
   removeByEmployee: (context: Context, employeeId: number) => Promise<{ removed: boolean }>
 }
 
 export const employeeScheduleService = (): EmployeeScheduleService => {
-  return { create, update, remove, removeByEmployee, list };
+  return { create, createHoliday, update, remove, removeByEmployee, list };
 };
 
 const list = async (context: Context, user: DecodedUser, query: ScheduleQueryParams): Promise<Array<Partial<EmployeeSchedule>>> => {
@@ -62,7 +63,20 @@ const create = async (context: Context, user: DecodedUser, data: CreateEmployeeS
       ...data,
       createdBy: user.id,
       tenantId: user.tenant
-    } as EmployeeSchedule);
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createHoliday = async (context: Context, user: DecodedUser, data: CreateHolidayScheduleProperties): Promise<EmployeeSchedule> => {
+  try {
+    return await context.models.EmployeeSchedule.create({
+      ...data,
+      type: "not working",
+      createdBy: user.id,
+      tenantId: user.tenant
+    });
   } catch (error) {
     throw error;
   }

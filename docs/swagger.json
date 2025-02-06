@@ -4565,6 +4565,38 @@
 			"CreateEmployeeScheduleProperties": {
 				"$ref": "#/components/schemas/Omit_EmployeeSchedule.id-or-createdOn-or-updatedOn_"
 			},
+			"Pick_EmployeeSchedule.startDate-or-endDate-or-employeeId_": {
+				"properties": {
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"employeeId": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "number",
+								"format": "double"
+							}
+						]
+					}
+				},
+				"required": [
+					"startDate",
+					"endDate"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"CreateHolidayScheduleProperties": {
+				"$ref": "#/components/schemas/Pick_EmployeeSchedule.startDate-or-endDate-or-employeeId_"
+			},
 			"Partial_Role_": {
 				"properties": {
 					"id": {
@@ -9659,6 +9691,48 @@
 							"schema": {
 								"$ref": "#/components/schemas/CreateEmployeeScheduleProperties",
 								"description": "The properties required to create a new schedule."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/schedules/holiday/add": {
+			"post": {
+				"operationId": "AddHoliday",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_EmployeeSchedule_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new holiday schedule with the provided details.This endpoint requires authentication and specific permissions.\nIt utilizes the user's tenant and ID from the JWT token for creating the schedule in the correct context.",
+				"tags": [
+					"Schedule"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Schedule:Create",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties required to create a new holiday schedule.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateHolidayScheduleProperties",
+								"description": "The properties required to create a new holiday schedule."
 							}
 						}
 					}

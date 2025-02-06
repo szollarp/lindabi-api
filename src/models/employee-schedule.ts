@@ -20,7 +20,7 @@ export class EmployeeScheduleModel extends Model<EmployeeSchedule, CreateEmploye
 
   public employee!: NonAttribute<User>;
 
-  public projectId!: ForeignKey<Project["id"]>;
+  public projectId?: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
 
@@ -72,7 +72,7 @@ export const EmployeeScheduleFactory = (sequelize: Sequelize): typeof EmployeeSc
     },
     projectId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     tenantId: {
       type: DataTypes.INTEGER,

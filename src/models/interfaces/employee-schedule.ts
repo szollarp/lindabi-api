@@ -27,3 +27,5 @@ export interface EmployeeSchedule {
 }
 
 export type CreateEmployeeScheduleProperties = Omit<EmployeeSchedule, "id" | "createdOn" | "updatedOn">;
+
+export type CreateHolidayScheduleProperties = Pick<EmployeeSchedule, "startDate" | "endDate" | "employeeId">;
