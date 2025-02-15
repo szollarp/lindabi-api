@@ -279,6 +279,11 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
       },
       as: "documents"
     });
+
+    InvoiceModel.hasOne(models.FinancialTransaction, {
+      foreignKey: "invoice_id",
+      as: "invoice"
+    });
   }
 
   return InvoiceModel;

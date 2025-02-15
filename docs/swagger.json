@@ -6102,6 +6102,202 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"FinancialTransaction": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"recipientId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"recipient": {
+						"$ref": "#/components/schemas/User"
+					},
+					"recipientType": {
+						"type": "string",
+						"enum": [
+							"employee",
+							"cash desk"
+						]
+					},
+					"payerId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"payer": {
+						"$ref": "#/components/schemas/User"
+					},
+					"payerType": {
+						"type": "string",
+						"enum": [
+							"employee",
+							"cash desk"
+						]
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"invoiceId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"invoice": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Invoice"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"date",
+					"amount",
+					"description",
+					"recipientType",
+					"payerType",
+					"contractorId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_FinancialTransaction_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"recipientId": {
+						"type": "number",
+						"format": "double"
+					},
+					"recipient": {
+						"$ref": "#/components/schemas/User"
+					},
+					"recipientType": {
+						"type": "string",
+						"enum": [
+							"employee",
+							"cash desk"
+						]
+					},
+					"payerId": {
+						"type": "number",
+						"format": "double"
+					},
+					"payer": {
+						"$ref": "#/components/schemas/User"
+					},
+					"payerType": {
+						"type": "string",
+						"enum": [
+							"employee",
+							"cash desk"
+						]
+					},
+					"contractorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"contractor": {
+						"$ref": "#/components/schemas/Company"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"invoiceId": {
+						"type": "number",
+						"format": "double"
+					},
+					"invoice": {
+						"$ref": "#/components/schemas/Invoice"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"Partial_Execution_": {
 				"properties": {
 					"id": {
@@ -13052,6 +13248,83 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/financial-transactions": {
+			"get": {
+				"operationId": "GetTransactions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/FinancialTransaction"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of financial transaction.\nSecured with JWT token and requires \"FinancialTransaction:List\" permission.",
+				"tags": [
+					"Financial Transaction"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"FinancialTransaction:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateTransaction",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_FinancialTransaction_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new financial transaction.\nSecured with JWT token and requires \"FinancialTransaction:Create\" permission.",
+				"tags": [
+					"Financial Transaction"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"FinancialTransaction:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "Properties required to create an financial transaction.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"description": "Properties required to create an financial transaction."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/executions": {

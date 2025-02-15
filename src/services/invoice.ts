@@ -3,6 +3,7 @@ import { Context, DecodedUser } from "../types";
 import { COMPLETION_CERTIFICATE_STATUS, INVOICE_STATUS } from "../constants";
 import { CreateInvoiceProperties, Invoice } from "../models/interfaces/invoice";
 import { CompletionCertificate } from "../models/interfaces/completion-certificate";
+import { CreateFinancialTransactionProperties } from "../models/interfaces/financial-transaction";
 
 export interface InvoiceService {
   create: (context: Context, user: DecodedUser, data: CreateInvoiceProperties) => Promise<Invoice>
@@ -31,6 +32,8 @@ const create = async (context: Context, user: DecodedUser, data: CreateInvoicePr
 };
 
 const update = async (context: Context, user: DecodedUser, id: number, data: Partial<Invoice>): Promise<Invoice> => {
+  const t = await context.models.sequelize.transaction();
+
   try {
     const invoice = await context.models.Invoice.findByPk(id);
     if (!invoice) throw new Error("Invoice certificate not found");
@@ -40,11 +43,44 @@ const update = async (context: Context, user: DecodedUser, id: number, data: Par
       data.approvedOn = new Date();
     }
 
-    return await invoice.update({
+    if (data.status === INVOICE_STATUS.PAYED && invoice.pattyCash !== data.pattyCash) {
+      const pattyCashInput = data.pattyCash == true ?
+        {
+          payerId: invoice.employeeId,
+          payerType: "employee",
+          recipientType: "cash desk",
+        } : {
+          payerType: "cash desk",
+          recipientType: "employee",
+          recipientId: invoice.employeeId
+        }
+
+      const project = await context.models.Project.findByPk(invoice.projectId);
+
+      await context.models.FinancialTransaction.create({
+        date: invoice.payedOn || new Date(),
+        amount: invoice.netAmount,
+        contractorId: project!.contractorId,
+        description: invoice.invoiceNumber,
+        createdBy: user.id,
+        tenantId: user.tenant,
+        ...pattyCashInput
+      } as CreateFinancialTransactionProperties), { transaction: t };
+    }
+
+    const updated = await invoice.update({
       ...data,
       updatedBy: user.id
-    });
+    }, { transaction: t });
+
+    await t.commit();
+
+    return updated;
   } catch (error) {
+    console.log(error.message);
+    console.log(error.stack);
+
+    await t.rollback();
     throw error;
   }
 };

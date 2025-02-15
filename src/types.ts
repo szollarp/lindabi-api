@@ -28,6 +28,7 @@ import { type InvoiceService } from "./services/invoice";
 import { type PayrollService } from "./services/payroll";
 import { type FinancialSettingsService } from "./services/financial-settings";
 import { type EmployeeScheduleService } from "./services/employee-schedule";
+import { type FinancialTransactionService } from "./services/financial-transaction";
 import { type Models } from "./models";
 
 export interface Services {
@@ -55,6 +56,7 @@ export interface Services {
   payroll: PayrollService
   financialSettings: FinancialSettingsService
   employeeSchedule: EmployeeScheduleService
+  financialTransaction: FinancialTransactionService
 }
 
 export interface Helpers {

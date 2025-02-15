@@ -192,7 +192,6 @@ export const OrderFormFactory = (sequelize: Sequelize): typeof OrderFormModel =>
       foreignKey: "order_form_id",
       as: "completionCertificate"
     });
-
   };
 
   return OrderFormModel;

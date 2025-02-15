@@ -22,6 +22,7 @@ import { invoiceService } from "./invoice";
 import { payrollService } from "./payroll";
 import { financialSettingsService } from "./financial-settings"
 import { employeeScheduleService } from "./employee-schedule";
+import { financialTransactionService } from "./financial-transaction";
 import type { Services } from "../types";
 
 export default (): Services => ({
@@ -48,5 +49,6 @@ export default (): Services => ({
   invoice: invoiceService(),
   payroll: payrollService(),
   financialSettings: financialSettingsService(),
-  employeeSchedule: employeeScheduleService()
+  employeeSchedule: employeeScheduleService(),
+  financialTransaction: financialTransactionService(),
 });
