@@ -77,9 +77,6 @@ const update = async (context: Context, user: DecodedUser, id: number, data: Par
 
     return updated;
   } catch (error) {
-    console.log(error.message);
-    console.log(error.stack);
-
     await t.rollback();
     throw error;
   }
