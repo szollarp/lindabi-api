@@ -331,7 +331,8 @@ export const tenderService = (): TenderService => {
 
   const createTender = async (context: Context, tenantId: number, user: DecodedUser, data: CreateTenderProperties): Promise<Partial<Tender> | null> => {
     try {
-      const tender = await context.models.Tender.create({ ...data, tenantId, createdBy: user.id });
+      const createdOn = data.createdOn ? new Date(data.createdOn) : new Date();
+      const tender = await context.models.Tender.create({ ...data, tenantId, createdBy: user.id, createdOn });
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender have been successfully created.",

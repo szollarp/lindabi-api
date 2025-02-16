@@ -61,4 +61,4 @@ export interface Tender {
   vatAmount?: number
 };
 
-export type CreateTenderProperties = Omit<Tender, "id" | "createdOn" | "updatedBy" | "updatedOn">;
+export type CreateTenderProperties = Omit<Tender, "id" | "updatedBy" | "updatedOn">;
