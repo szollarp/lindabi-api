@@ -48,10 +48,7 @@ const hasTenantPermission = (user: User, tenantId: number | null): boolean => {
   return hasPermission(user, "System:*") || user.tenantId === tenantId;
 };
 
-const hasMePermission = (user: User, permissions: string[], requestPath: string): boolean => {
-  const canUseMe = permissions.includes("Me:*");
-  if (!canUseMe) return false;
-
+const hasMePermission = (user: User, requestPath: string): boolean => {
   const { id } = user;
   const usersEndpointRegex = /^\/users\/(\d+)(\/.*)?$/;
   const match = requestPath.match(usersEndpointRegex);
@@ -82,6 +79,7 @@ export const expressAuthentication = async (request: Request, securityName: stri
   }
 
   const permissions = inputPermissions?.filter((permission) => permission !== "Tenant");
+
   if (permissions !== null && permissions !== undefined && permissions.length > 0) {
     const user = await context.models.User.findOne({
       attributes: ["id", "tenantId", "entity"],
@@ -106,15 +104,26 @@ export const expressAuthentication = async (request: Request, securityName: stri
     }
 
     const userJson = user.toJSON();
-    const shouldUseMePermission = hasMePermission(userJson, permissions, path);
+    const shouldUseMePermission = hasMePermission(userJson, path);
     const shouldUserRequiredPermission = hasPermission(userJson, permissions[0]);
     const shouldUserTenant = hasTenantPermission(user, tenant);
 
     isSystemAdmin = hasSystemAdmin(userJson);
     isManager = userJson.role!.name === "Manager";
 
-    if (!isSystemAdmin && !shouldUserRequiredPermission && !shouldUseMePermission && !shouldUserTenant) {
-      throw new Forbidden("You do not have permission to access this resource.");
+    if (!isSystemAdmin && !shouldUserRequiredPermission) {
+      // throw new Forbidden("You do not have permission to access this resource.");
+      return await Promise.reject(new Forbidden("You do not have permission to access this resource."));
+    }
+
+    if (!isSystemAdmin && !shouldUserTenant) {
+      return await Promise.reject(new Forbidden("You do not have permission to access this resource."));
+      // throw new Forbidden("You do not have permission to access this resource.");
+    }
+
+    if (!isSystemAdmin && permissions.includes("Me:*") && !shouldUseMePermission) {
+      return await Promise.reject(new Forbidden("You do not have permission to access this resource."));
+      // throw new Forbidden("You do not have permission to access this resource.");
     }
 
     userType = userJson.entity! as USER_TYPE;

@@ -52,11 +52,12 @@ const update = async (context: Context, user: DecodedUser, id: number, data: Par
 
 const list = async (context: Context, user: DecodedUser): Promise<CompletionCertificate[]> => {
   try {
-    const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("CompletionCertificate:List"))) ? {} : {
+    const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("CompletionCertificate:List"))) ? { tenantId: user.tenant } : {
       [Op.or]: [
         { "$employee.id$": user.id },
         { createdBy: user.id }
-      ]
+      ],
+      tenantId: user.tenant
     };
 
     return await context.models.CompletionCertificate.findAll({

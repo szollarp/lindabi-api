@@ -25,7 +25,7 @@ export class CompanyController extends Controller {
   @Tags("Company")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Company:List"])
+  @Security("jwtToken", ["Tenant"])
   public async getCompanies(@Request() request: ContextualRequest, @Query() type: COMPANY_TYPE.CONTRACTOR | COMPANY_TYPE.CUSTOMER | COMPANY_TYPE.SUPPLIER): Promise<Array<Partial<Company>>> {
     const { context, user } = request;
     return await context.services.company.getCompanies(context, user.tenant, type);

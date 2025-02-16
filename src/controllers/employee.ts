@@ -18,7 +18,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Employee:List", "Tenant"])
+  @Security("jwtToken", ["Tenant"])
   public async getEmployees(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
     return await context.services.user.list(context, user.tenant, USER_TYPE.EMPLOYEE);

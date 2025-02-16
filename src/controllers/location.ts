@@ -18,7 +18,7 @@ export class LocationController extends Controller {
   @Tags("Location")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Location:List"])
+  @Security("jwtToken", ["Tenant"])
   public async getLocations(@Request() request: ContextualRequest): Promise<Array<Partial<Location>>> {
     const { context, user } = request;
     return await context.services.location.getLocations(context, user.tenant);

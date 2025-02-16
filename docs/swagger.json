@@ -12450,8 +12450,7 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant",
-							"Location:List"
+							"Tenant"
 						]
 					}
 				],
@@ -13272,15 +13271,15 @@
 						}
 					}
 				},
-				"description": "Retrieves a list of financial transaction.\nSecured with JWT token and requires \"FinancialTransaction:List\" permission.",
+				"description": "Retrieves a list of financial transaction.\nSecured with JWT token and requires \"PettyCash:List\" permission.",
 				"tags": [
 					"Financial Transaction"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant",
-							"FinancialTransaction:List"
+							"PettyCash:List",
+							"Tenant"
 						]
 					}
 				],
@@ -13305,15 +13304,15 @@
 						}
 					}
 				},
-				"description": "Creates a new financial transaction.\nSecured with JWT token and requires \"FinancialTransaction:Create\" permission.",
+				"description": "Creates a new financial transaction.\nSecured with JWT token and requires \"PettyCash:Create\" permission.",
 				"tags": [
 					"Financial Transaction"
 				],
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant",
-							"FinancialTransaction:Create"
+							"PettyCash:Create",
+							"Tenant"
 						]
 					}
 				],
@@ -14237,8 +14236,7 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant",
-							"Company:List"
+							"Tenant"
 						]
 					}
 				],
@@ -15290,7 +15288,6 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Employee:List",
 							"Tenant"
 						]
 					}

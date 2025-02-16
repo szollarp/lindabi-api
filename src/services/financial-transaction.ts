@@ -1,5 +1,6 @@
 import { Context, DecodedUser } from "../types";
 import { CreateFinancialTransactionProperties, FinancialTransaction } from "../models/interfaces/financial-transaction";
+import { Op } from "sequelize";
 
 export interface FinancialTransactionService {
   getFinancialTransactions: (context: Context, user: DecodedUser) => Promise<FinancialTransaction[]>
@@ -12,10 +13,16 @@ export const financialTransactionService = (): FinancialTransactionService => ({
 
 const getFinancialTransactions = async (context: Context, user: DecodedUser): Promise<FinancialTransaction[]> => {
   try {
+    const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("PettyCash:List"))) ? { tenantId: user.tenant } : {
+      [Op.or]: [
+        { payerId: user.id },
+        { recipientId: user.id }
+      ],
+      tenantId: user.tenant
+    };
+
     return await context.models.FinancialTransaction.findAll({
-      where: {
-        tenantId: user.tenant
-      },
+      where,
       order: [["date", "DESC"]],
       attributes: ["id", "date", "amount", "description", "payerType", "recipientType", "createdOn"],
       include: [{
