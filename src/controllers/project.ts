@@ -458,7 +458,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Tender:DeleteDocument"])
+  @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id, documentId, "project");

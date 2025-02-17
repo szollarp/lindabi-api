@@ -8082,7 +8082,7 @@
 				"security": [
 					{
 						"jwtToken": [
-							"Tenant:Update"
+							"Tender:Update"
 						]
 					}
 				],
@@ -11664,7 +11664,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"Tender:DeleteDocument"
+							"Project:DeleteDocument"
 						]
 					}
 				],

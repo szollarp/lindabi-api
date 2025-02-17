@@ -304,7 +304,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["Tenant:Update"])
+  @Security("jwtToken", ["Tender:Update"])
   public async updateTender(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Tender>): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     const data = await context.services.tender.updateTender(context, id, user, body);
