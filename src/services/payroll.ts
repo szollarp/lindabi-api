@@ -29,6 +29,14 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
           model: context.models.Salary,
           as: "salaries",
           attributes: ["id", "hourlyRate", "dailyRate", "startDate", "endDate"],
+          where: {
+            startDate: {
+              [Op.lte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.gte]: new Date(endDate)
+            }
+          },
           required: false
         },
         {
@@ -50,6 +58,28 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
           }]
         },
         {
+          model: context.models.Contact,
+          as: "contact",
+          include: [
+            {
+              model: context.models.Project,
+              as: "projectSupervisors",
+              attributes: ["id"],
+              required: true,
+              where: {
+                supervisorBonus: true,
+                startDate: {
+                  [Op.lte]: new Date(startDate)
+                },
+                endDate: {
+                  [Op.ne]: null,
+                  [Op.gte]: new Date(endDate)
+                }
+              }
+            },
+          ]
+        },
+        {
           model: context.models.Invoice,
           attributes: ["id", "netAmount", "payedOn"],
           as: "invoices",
@@ -62,6 +92,8 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
         }
       ]
     });
+
+    console.log(employees.map((employee) => employee.toJSON()));
 
     return employees.map((employee) => getEmployeePayroll(employee));
   } catch (error) {

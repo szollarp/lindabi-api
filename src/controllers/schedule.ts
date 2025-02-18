@@ -64,7 +64,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Delete("/{id}")
-  @Security("jwtToken", ["Schedule:Remove", "Tenant"])
+  @Security("jwtToken", ["Schedule:Delete", "Tenant"])
   public async removeSchedule(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return context.services.employeeSchedule.remove(context, id);

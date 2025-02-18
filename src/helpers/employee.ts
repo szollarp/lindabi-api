@@ -52,7 +52,7 @@ const getHourlyAmount = (salaries: Salary[], execution: Execution): number => {
 
 const getItemizedAmount = (execution: Execution): number => {
   const { quantity, projectItem } = execution;
-  return (Number(projectItem!.quantity) / Number(quantity)) * Number(projectItem!.netAmount);
+  return Number(quantity) * Number(projectItem!.netAmount);
 };
 
 const getDistanceAmount = (execution: Execution): number => {
