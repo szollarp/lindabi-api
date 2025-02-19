@@ -15,7 +15,7 @@ export class RoleController extends Controller {
   @Tags("Role")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Permission:List"])
+  @Security("jwtToken", ["Tenant"])
   public async getRoles(@Request() request: ContextualRequest): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
     return await context.services.role.getRoles(context, user.tenant);
@@ -32,7 +32,7 @@ export class RoleController extends Controller {
   @Tags("Role")
   @SuccessResponse("200", "OK")
   @Get("/permissions")
-  @Security("jwtToken", ["Tenant", "Permission:List"])
+  @Security("jwtToken", ["Tenant"])
   public async getPermissions(@Request() request: ContextualRequest): Promise<Array<Partial<Role>>> {
     const { context, user } = request;
     return await context.services.role.getPermissions(context, user.tenant);
