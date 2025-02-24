@@ -1367,6 +1367,10 @@
 					"vatAmount": {
 						"type": "number",
 						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -3604,6 +3608,10 @@
 					"vatAmount": {
 						"type": "number",
 						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"type": "object",
@@ -3752,6 +3760,10 @@
 						"format": "double"
 					},
 					"vatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAmount": {
 						"type": "number",
 						"format": "double"
 					}

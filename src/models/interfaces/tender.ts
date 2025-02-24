@@ -59,6 +59,7 @@ export interface Tender {
   //
   netAmount?: number
   vatAmount?: number
+  totalAmount?: number
 };
 
 export type CreateTenderProperties = Omit<Tender, "id" | "updatedBy" | "updatedOn">;

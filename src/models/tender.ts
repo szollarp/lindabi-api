@@ -145,6 +145,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public readonly netAmount?: number;
   public readonly vatAmount?: number;
+  public readonly totalAmount?: number;
 };
 
 export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
@@ -296,6 +297,12 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       type: DataTypes.VIRTUAL,
       get() {
         return getTotalVatAmount(this);
+      }
+    },
+    totalAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getTotalNetAmount(this) + getTotalVatAmount(this);
       }
     }
   }, {
