@@ -1,4 +1,5 @@
 import type { CONTACT_STATUS } from "../../constants"
+import { Project } from "./project"
 import type { Tenant } from "./tenant"
 import type { User } from "./user"
 
@@ -16,6 +17,8 @@ export interface Contact {
   //
   userId?: User["id"] | null
   user?: User | null
+  //
+  projectSupervisors?: Project[]
   //
   createdOn?: Date
   updatedOn?: Date | null

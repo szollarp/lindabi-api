@@ -17,7 +17,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "StatusReport:List"])
+  @Security("jwtToken", ["Tenant", "Report:List"])
   public async getStatusReports(@Request() request: ContextualRequest): Promise<Partial<StatusReport>[]> {
     const { context, user } = request;
     return await context.services.statusReport.list(context, user);
@@ -32,7 +32,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Get("/related-projects")
-  @Security("jwtToken", ["Tenant", "StatusReport:List"])
+  @Security("jwtToken", ["Tenant", "Report:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<{ id: number, name: string }[]> {
     const { context, user } = request;
     return await context.services.statusReport.getProjects(context, user);
@@ -48,7 +48,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "StatusReport:Create"])
+  @Security("jwtToken", ["Tenant", "Report:Create"])
   public async createStatusReport(@Request() request: ContextualRequest, @Body() body: CreateStatusReportProperties): Promise<Partial<StatusReport> | { exists: boolean }> {
     const { context, user } = request;
     return await context.services.statusReport.create(context, user, body);
@@ -66,7 +66,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Get("{id}")
-  @Security("jwtToken", ["Tenant", "StatusReport:Get"])
+  @Security("jwtToken", ["Tenant", "Report:Get"])
   public async getStatusReport(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<StatusReport> | null> {
     const { context, user } = request;
     return await context.services.statusReport.get(context, user, id);
@@ -83,7 +83,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["StatusReport:Update"])
+  @Security("jwtToken", ["Report:Update"])
   public async updateStatusReport(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<StatusReport>): Promise<Partial<StatusReport> | null> {
     const { context, user } = request;
     return await context.services.statusReport.update(context, user, id, body);
@@ -101,7 +101,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
+  @Security("jwtToken", ["Tenant", "Report:Update"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[],): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "report", type, files, {}, false);
@@ -119,7 +119,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
+  @Security("jwtToken", ["Tenant", "Report:Update"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id, documentId, "report");
@@ -136,7 +136,7 @@ export class StatusReportController extends Controller {
   @Tags("Status Report")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "StatusReport:Update"])
+  @Security("jwtToken", ["Tenant", "Report:Update"])
   public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocuments(context, id, "report", type);

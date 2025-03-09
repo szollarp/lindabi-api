@@ -236,9 +236,12 @@ async function update(context: Context, ownerId: number, id: number, ownerType: 
 export async function checkUserDocuments(context: Context, tenantId: number, id: number) {
   try {
     const user = await context.services.user.get(context, tenantId, id);
-    if (!user || !user.documents || !user.properties) {
+
+    if (!user || !user.properties) {
       throw new Error("Documents not found");
     }
+
+    console.log("properties", user.properties);
 
     let invalidDocuments = MAIN_DOCUMENTS.map(type => isEmployeeDocumentInvalid(type, user.documents, user.properties!));
 

@@ -1,12 +1,7 @@
-import moment from "moment";
-import { ApproveOrderFormProperties, CreateOrderFormProperties, OrderForm } from "../models/interfaces/order-form";
+import { Op } from "sequelize";
 import { Context, DecodedUser } from "../types";
-import { getRelatedOrderForms, getRelatedProjectsByOrderForm } from "../helpers/order-form";
-import { Project } from "../models/interfaces/project";
-import { ORDER_FORM_STATUS } from "../constants";
 import { User } from "../models/interfaces/user";
 import { getEmployeePayroll } from "../helpers/employee";
-import { Op } from "sequelize";
 
 export interface PayrollService {
   getPayrolls: (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean) => Promise<Partial<User>[]>
@@ -18,8 +13,34 @@ export const payrollService = (): PayrollService => ({
 
 const getPayrolls = async (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean = true): Promise<Partial<User>[]> => {
   try {
+    const settings = await context.models.FinancialSetting.findAll({
+      attributes: ["id", "amount", "type"],
+      where: {
+        tenantId: user.tenant,
+        [Op.or]: [
+          {
+            startDate: {
+              [Op.lte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.is]: null,
+            },
+          },
+          {
+            startDate: {
+              [Op.lte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.gte]: new Date(endDate)
+            },
+          }
+        ]
+      }
+    });
+
     const employees = await context.models.User.findAll({
       attributes: ["id", "name", "status"],
+      order: [["name", "DESC"]],
       where: {
         entity: "employee",
         tenantId: user.tenant
@@ -30,12 +51,24 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
           as: "salaries",
           attributes: ["id", "hourlyRate", "dailyRate", "startDate", "endDate"],
           where: {
-            startDate: {
-              [Op.lte]: new Date(startDate)
-            },
-            endDate: {
-              [Op.gte]: new Date(endDate)
-            }
+            [Op.or]: [
+              {
+                startDate: {
+                  [Op.lte]: new Date(startDate)
+                },
+                endDate: {
+                  [Op.is]: null,
+                },
+              },
+              {
+                startDate: {
+                  [Op.lte]: new Date(startDate)
+                },
+                endDate: {
+                  [Op.gte]: new Date(endDate)
+                },
+              }
+            ]
           },
           required: false
         },
@@ -60,23 +93,39 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
         {
           model: context.models.Contact,
           as: "contact",
+          attributes: ["id"],
           include: [
             {
               model: context.models.Project,
               as: "projectSupervisors",
-              attributes: ["id"],
+              attributes: ["id", "supervisorBonus"],
+              where: { supervisorBonus: true },
               required: true,
-              where: {
-                supervisorBonus: true,
-                startDate: {
-                  [Op.lte]: new Date(startDate)
-                },
-                endDate: {
-                  [Op.ne]: null,
-                  [Op.gte]: new Date(endDate)
+              through: {
+                attributes: ["startDate", "endDate"],
+                as: "supervisors",
+                where: {
+                  [Op.or]: [
+                    {
+                      startDate: {
+                        [Op.lte]: new Date(startDate)
+                      },
+                      endDate: {
+                        [Op.is]: null,
+                      },
+                    },
+                    {
+                      startDate: {
+                        [Op.lte]: new Date(startDate)
+                      },
+                      endDate: {
+                        [Op.gte]: new Date(endDate)
+                      },
+                    }
+                  ]
                 }
               }
-            },
+            }
           ]
         },
         {
@@ -93,9 +142,7 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
       ]
     });
 
-    console.log(employees.map((employee) => employee.toJSON()));
-
-    return employees.map((employee) => getEmployeePayroll(employee));
+    return employees.map((employee) => getEmployeePayroll(employee, settings));
   } catch (error) {
     throw error;
   }

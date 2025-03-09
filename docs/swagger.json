@@ -812,6 +812,18 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PROJECT_STATUS": {
+				"enum": [
+					"ordered",
+					"ready to start",
+					"in progress",
+					"completed",
+					"cancelled",
+					"paid",
+					"closed"
+				],
+				"type": "string"
+			},
 			"Contact": {
 				"properties": {
 					"id": {
@@ -868,6 +880,12 @@
 							}
 						],
 						"nullable": true
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
 					},
 					"createdOn": {
 						"type": "string",
@@ -1052,18 +1070,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"PROJECT_STATUS": {
-				"enum": [
-					"ordered",
-					"ready to start",
-					"in progress",
-					"completed",
-					"cancelled",
-					"paid",
-					"closed"
-				],
-				"type": "string"
 			},
 			"LOCATION_STATUS.ACTIVE": {
 				"enum": [
@@ -6460,6 +6466,12 @@
 					"user": {
 						"$ref": "#/components/schemas/User"
 					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -6514,6 +6526,12 @@
 					"userId": {
 						"type": "number",
 						"format": "double"
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -9214,7 +9232,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:List"
+							"Report:List"
 						]
 					}
 				],
@@ -9257,7 +9275,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:Create"
+							"Report:Create"
 						]
 					}
 				],
@@ -9315,7 +9333,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:List"
+							"Report:List"
 						]
 					}
 				],
@@ -9350,7 +9368,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:Get"
+							"Report:Get"
 						]
 					}
 				],
@@ -9393,7 +9411,7 @@
 				"security": [
 					{
 						"jwtToken": [
-							"StatusReport:Update"
+							"Report:Update"
 						]
 					}
 				],
@@ -9444,7 +9462,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:Update"
+							"Report:Update"
 						]
 					}
 				],
@@ -9523,7 +9541,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:Update"
+							"Report:Update"
 						]
 					}
 				],
@@ -9582,7 +9600,7 @@
 					{
 						"jwtToken": [
 							"Tenant",
-							"StatusReport:Update"
+							"Report:Update"
 						]
 					}
 				],

@@ -1,9 +1,8 @@
-import { Op, where } from "sequelize";
-import { Context } from "../types";
 import { User } from "../models/interfaces/user";
-import { EXECUTION_SETTLEMENT } from "../constants";
+import { EXECUTION_SETTLEMENT, FINANCIAL_SETTING_TYPE } from "../constants";
 import { Execution } from "../models/interfaces/execution";
 import { Salary } from "../models/interfaces/salary";
+import { FinancialSetting } from "../models/interfaces/financial-setting";
 
 const getSalaryForDate = (salaries: Salary[], targetDate: Date): Salary | null => {
   for (const salary of salaries) {
@@ -50,30 +49,49 @@ const getHourlyAmount = (salaries: Salary[], execution: Execution): number => {
   return workHours * (salary.hourlyRate || 0);
 };
 
+const getDailyAmount = (salaries: Salary[], execution: Execution): number => {
+  const salary = getSalaryForDate(salaries, execution.dueDate!);
+  if (!salary) return 0;
+
+  return salary.dailyRate || 0;
+};
+
 const getItemizedAmount = (execution: Execution): number => {
   const { quantity, projectItem } = execution;
-  return Number(quantity) * Number(projectItem!.netAmount);
+  const qNetAmount = Number(projectItem!.netAmount) / Number(projectItem!.quantity);
+  return Number(quantity) * qNetAmount;
 };
 
-const getDistanceAmount = (execution: Execution): number => {
+const getDistanceAmount = (execution: Execution, settings: FinancialSetting[]): number => {
+  const kmRate = settings.find(setting => setting.type === FINANCIAL_SETTING_TYPE.KM_RATE)?.amount || 0;
+
   const { distance } = execution;
-  return Number(distance) ?? 0;
+  return (Number(distance) ?? 0) * kmRate;
 };
 
-export const getEmployeePayroll = (employee: User) => {
-  const { executions, invoices, salaries, id, name } = employee;
+export const getEmployeePayroll = (employee: User, settings: FinancialSetting[]) => {
+  const { executions, invoices, salaries, id, name, contact } = employee;
 
   const itemizedExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.ITEMIZED);
   const itemizedAmount = itemizedExecutions?.reduce((acc, execution) => acc + getItemizedAmount(execution), 0) || 0;
 
   const hourlyExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.HOURLY);
-  const totalHours = hourlyExecutions?.reduce((acc, execution) => acc + calculateWorkHours(execution), 0) || 0;
-  const hourlyAmount = hourlyExecutions?.reduce((acc, execution) => acc + getHourlyAmount(salaries!, execution), 0) || 0;
+  let totalHours = hourlyExecutions?.reduce((acc, execution) => acc + calculateWorkHours(execution), 0) || 0;
+  let hourlyAmount = hourlyExecutions?.reduce((acc, execution) => acc + getHourlyAmount(salaries!, execution), 0) || 0;
+
+  const dailyExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.DAILY);
+  totalHours += ((dailyExecutions?.length || 0) * 8) || 0;
+  hourlyAmount += dailyExecutions?.reduce((acc, execution) => acc + getDailyAmount(salaries!, execution), 0) || 0;
 
   const distanceExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.DISTANCE);
-  const distanceAmount = distanceExecutions?.reduce((acc, execution) => acc + getDistanceAmount(execution), 0) || 0;
+  const distanceAmount = distanceExecutions?.reduce((acc, execution) => acc + getDistanceAmount(execution, settings), 0) || 0;
 
   const invoicesAmount = invoices?.reduce((acc, invoice) => acc + invoice.netAmount, 0) || 0;
+
+  const bonusAmount = settings.find(setting => setting.type === FINANCIAL_SETTING_TYPE.SUPERVISOR_BONUS)?.amount || 0;
+  const supervisorBonus = (contact?.projectSupervisors?.length || 0) * Number(bonusAmount);
+
+  const summary = itemizedAmount + hourlyAmount + distanceAmount + supervisorBonus - invoicesAmount;
 
   return {
     id,
@@ -82,6 +100,8 @@ export const getEmployeePayroll = (employee: User) => {
     invoicesAmount,
     hourlyAmount,
     distanceAmount,
-    totalHours
+    totalHours,
+    supervisorBonus,
+    summary
   }
 };

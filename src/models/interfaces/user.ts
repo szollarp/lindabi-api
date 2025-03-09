@@ -10,6 +10,7 @@ import type { Salary } from "./salary";
 import type { Contact } from "./contact";
 import { Execution } from "./execution";
 import { Invoice } from "./invoice";
+import { Project } from "./project";
 
 export interface Notifications {
   userNew: boolean
