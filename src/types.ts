@@ -1,3 +1,4 @@
+import type { StringValue } from "ms";
 import { USER_TYPE } from "./constants";
 import { type IConfig } from "config";
 import { type Request } from "express";
@@ -91,7 +92,7 @@ export interface DecodedUser {
 
 export interface AuthConfig {
   cryptoKey: string
-  authToken: { key: string, expiresIn: string }
-  refreshToken: { key: string, expiresIn: string }
-  verifyToken: { key: string, expiresIn: string }
+  authToken: { key: string, expiresIn: StringValue }
+  refreshToken: { key: string, expiresIn: StringValue }
+  verifyToken: { key: string, expiresIn: StringValue }
 };

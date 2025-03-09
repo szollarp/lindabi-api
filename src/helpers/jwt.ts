@@ -1,4 +1,5 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
+import type { StringValue } from "ms";
 import type { User } from "../models/interfaces/user";
 import type { Context, AuthConfig } from "../types";
 
@@ -7,7 +8,7 @@ interface GetJwtTokens {
   refreshToken: string
 };
 
-export const generate = (payload: string | Record<string, unknown> | Buffer, key: string, expiresIn: string): string => {
+export const generate = (payload: string | Record<string, unknown> | Buffer, key: string, expiresIn: StringValue | number): string => {
   return jwt.sign(payload, key, { expiresIn, algorithm: "HS512" });
 };
 
