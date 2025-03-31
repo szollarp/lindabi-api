@@ -71,6 +71,7 @@ export interface Project {
   //
   itemsNetAmount?: number
   itemsVatAmount?: number
+  itemsTotalAmount?: number
 };
 
 export type CreateProjectProperties = Omit<Project, "id" | "createdOn" | "updatedBy" | "updatedOn">;

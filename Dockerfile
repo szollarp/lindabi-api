@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:23-alpine as build
 
 ARG NODE_AUTH_TOKEN 
 ARG VERSION
@@ -12,7 +12,7 @@ RUN echo "$VERSION" >> version.txt
 RUN npm i
 RUN npm run build
 
-FROM node:20-alpine
+FROM node:23-alpine
 
 WORKDIR /usr/src/app
 

@@ -1,10 +1,14 @@
 import path from "path";
+import fs from "fs";
 import sharp from 'sharp';
+import mime from 'mime-types';
 import { COMPANY_TYPE } from "../constants";
 import { isEmployeeDocumentInvalid } from "../helpers/document";
 import { Document, DocumentOwnerType, DocumentProperties, DocumentType } from "../models/interfaces/document";
-import type { Context, DecodedUser } from "../types";
+import type { Context, ContextualRequest, DecodedUser } from "../types";
 import { AzureStorageService } from "../helpers/azure-storage";
+
+const CHUNK_DIR = "tmp/chunks";
 
 type FitEnum = "inside" | "outside" | "cover" | "contain";
 
@@ -31,9 +35,10 @@ type DocumentUploadProperties = DocumentProperties & {
 
 export interface DocumentService {
   upload(context: Context, user: DecodedUser, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, files: Express.Multer.File[], properties: DocumentUploadProperties, unique?: boolean): Promise<{ uploaded: boolean }>
+  merge(context: Context, user: DecodedUser, tmpPath: string, chunkSize: number, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties, unique?: boolean): Promise<Document>
   getDocument: (context: Context, id: number, ownerId: number, ownerType: DocumentOwnerType) => Promise<any>
   getDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType) => Promise<any>
-  removeDocument: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType) => Promise<{ removed: boolean }>
+  removeDocument: (context: Context, id: number) => Promise<{ removed: boolean }>
   removeDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType) => Promise<{ removed: boolean }>
   update: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType, data: Partial<Document>) => Promise<Document>
   checkUserDocuments: (context: Context, tenantId: number, id: number) => void
@@ -42,6 +47,7 @@ export interface DocumentService {
 export const documentService = (): DocumentService => {
   return {
     upload,
+    merge,
     getDocument,
     getDocuments,
     removeDocument,
@@ -50,6 +56,118 @@ export const documentService = (): DocumentService => {
     checkUserDocuments,
   };
 };
+
+export const mergeDocumentChunks = async (fileName: string, chunkSize: number): Promise<Buffer> => {
+  try {
+    console.log("Merging document chunks", fileName, chunkSize);
+
+    const mergedFilePath = path.join(CHUNK_DIR, fileName);
+    const writeStream = fs.createWriteStream(mergedFilePath);
+
+    for (let i = 1; i <= chunkSize; i++) {
+      const chunkName = path.join(CHUNK_DIR, `${fileName}.part${i}`);
+
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(chunkName);
+
+        readStream.on("data", (chunk) => writeStream.write(chunk));
+        readStream.on("end", async () => {
+          await fs.promises.unlink(chunkName);
+          resolve();
+        });
+        readStream.on("error", reject);
+      });
+    }
+
+    await new Promise<void>((resolve) => writeStream.end(resolve));
+    return fs.promises.readFile(mergedFilePath);
+  } catch (e) {
+    console.error("Error merging document chunks:", e);
+    throw new Error("Documents not found on the request");
+  }
+};
+
+const resizeImage = async (context: Context, imageName: string, mimeType: string, imageBuffer: Buffer, storage: AzureStorageService): Promise<{ resizedKey: string, thumbnailKey: string }> => {
+  const { sizes }: { sizes: ImageSizes } = context.config.get("upload.image");
+
+  const resizedBuffer = await sharp(imageBuffer)
+    .resize({ fit: sizes.resized.fit, width: sizes.resized.width })
+    .toBuffer();
+
+  const thumbnailBuffer = await sharp(imageBuffer)
+    .resize({ fit: sizes.thumbnail.fit, width: sizes.thumbnail.width })
+    .toBuffer();
+
+  const resizedBlob = `resized/${imageName}`;
+  const thumbnailBlob = `thumbnail/${imageName}`;
+
+  await Promise.all([
+    storage.uploadBlob(resizedBuffer, resizedBlob, mimeType),
+    storage.uploadBlob(thumbnailBuffer, thumbnailBlob, mimeType),
+  ]);
+
+  const [resizedKey, thumbnailKey] = await Promise.all([
+    storage.generateSasUrl(resizedBlob),
+    storage.generateSasUrl(thumbnailBlob),
+  ]);
+
+  return { resizedKey, thumbnailKey };
+};
+
+async function merge(context: Context, user: DecodedUser, fileName: string, chunkSize: number, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties = {}, unique: boolean = false): Promise<Document> {
+  if (!fileName) {
+    throw new Error("Documents not found on the request");
+  }
+
+  const t = await context.models.sequelize.transaction();
+
+  try {
+    const buffer = await mergeDocumentChunks(fileName, chunkSize);
+    const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
+
+    const mimeType = mime.lookup(fileName);
+    const extension = path.extname(fileName);
+    const baseName = path.basename(fileName, extension);
+    const timestamp = Date.now();
+
+    if (unique) {
+      const existing = await context.models.Document.findOne({
+        where: { ownerId, ownerType, type }
+      });
+
+      await existing?.destroy();
+    }
+
+    const approved = properties?.approved ?? false;
+    const name = `${baseName}_${timestamp}${extension}`;
+
+    const document = await context.models.Document.create({
+      ownerId, ownerType, name, mimeType, type, properties, approved
+    }, { transaction: t });
+
+    await azureStorage.uploadBlob(buffer, name, mimeType);
+    await azureStorage.generateSasUrl(name);
+
+    await context.services.journey.addSimpleLog(context, user, {
+      activity: `Document have been successfully uploaded.`,
+      property: `Document`,
+      updated: document.name
+    }, ownerId, ownerType as string);
+
+    if (mimeType.startsWith('image/')) {
+      await resizeImage(context, name, mimeType, buffer, azureStorage);
+    }
+
+    await t.commit();
+    return document;
+  }
+  catch (error) {
+    await t.rollback();
+    console.log(error);
+    console.log(error.stack);
+    throw error;
+  }
+}
 
 // Function to upload a document, optionally ensuring it's unique within the specified context.
 async function upload(context: Context, user: DecodedUser, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, files: Express.Multer.File[], properties: DocumentUploadProperties = {}, unique: boolean = false): Promise<{ uploaded: boolean }> {
@@ -157,14 +275,14 @@ async function getDocuments(context: Context, ownerId: number, ownerType: Docume
 }
 
 // Function to remove a specific document by owner and document ID.
-async function removeDocument(context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType): Promise<{ removed: boolean }> {
+async function removeDocument(context: Context, id: number): Promise<{ removed: boolean }> {
   try {
     const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
 
     const document = await context.models.Document.findOne({
       attributes: ["id", "name", "mimeType", "type", "stored"],
       where: {
-        id, ownerType, ownerId
+        id
       }
     });
 

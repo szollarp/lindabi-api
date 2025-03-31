@@ -6,7 +6,7 @@ export const getNetAmount = (project: Project) => {
 
   return items.reduce(
     (acc, item) => {
-      return acc + (item.netAmount ?? 0);
+      return acc + (Number(item.netAmount) ?? 0);
     },
     0
   );

@@ -100,7 +100,8 @@ export const projectService = (): ProjectService => {
           projectId: project.id,
           createdBy: user.id,
           type: PROJECT_ITEM_TYPE.ITEMIZED,
-          status: PROJECT_ITEM_STATUS.OPEN
+          status: PROJECT_ITEM_STATUS.OPEN,
+          netAmount: item.netAmount
         } as any, { transaction: t });
       }
 
@@ -165,7 +166,7 @@ export const projectService = (): ProjectService => {
       const userProjectIds = await getUserProjectIds(context, user);
 
       return await context.models.Project.findAll({
-        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "inSchedule", "scheduleColor"],
+        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "itemsTotalAmount", "inSchedule", "scheduleColor", "vatKey"],
         include: [
           {
             model: context.models.Location,
@@ -191,6 +192,11 @@ export const projectService = (): ProjectService => {
             model: context.models.Milestone,
             as: "milestones",
             attributes: ["id", "name", "status"],
+          },
+          {
+            model: context.models.ProjectItem,
+            as: "items",
+            attributes: ["id", "netAmount"],
           }
         ],
         where: { id: { [Op.in]: userProjectIds } },
@@ -654,6 +660,8 @@ export const projectService = (): ProjectService => {
   }
 
   const updateProjectItem = async (context: Context, projectId: number, id: number, user: DecodedUser, data: Partial<ProjectItem>): Promise<Partial<ProjectItem> | null> => {
+    const t = await context.models.sequelize.transaction();
+
     try {
       const projectItem = await context.models.ProjectItem.findOne({
         where: { id, projectId }
@@ -669,10 +677,18 @@ export const projectService = (): ProjectService => {
         updated: data
       }, projectId, "project");
 
-      await projectItem.update({ ...data, updatedBy: user.id });
+      await projectItem.update({ ...data, updatedBy: user.id }, { transaction: t });
+
+      await context.models.Project.update({ updatedOn: new Date() }, {
+        where: { id: projectId },
+        transaction: t
+      });
+
+      await t.commit();
+
       return projectItem;
     } catch (error) {
-      context.logger.error(error);
+      await t.rollback();
       throw error;
     }
   }

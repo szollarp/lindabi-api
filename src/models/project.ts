@@ -191,6 +191,8 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
   public readonly itemsNetAmount?: number;
 
   public readonly itemsVatAmount?: number;
+
+  public readonly itemsTotalAmount?: number;
 };
 
 export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
@@ -346,6 +348,12 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       type: DataTypes.VIRTUAL,
       get() {
         return getVatAmount(this);
+      }
+    },
+    itemsTotalAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getNetAmount(this) + getVatAmount(this);
       }
     }
   }, {

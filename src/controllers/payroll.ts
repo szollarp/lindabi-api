@@ -1,8 +1,4 @@
-import {
-  Controller, Route, Request, SuccessResponse, Get, Tags, Security, Body, Put, Path, Post,
-  Delete,
-  Query
-} from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Path, Query } from "tsoa";
 import type { ContextualRequest } from "../types";
 import { User } from "../models/interfaces/user";
 
@@ -15,5 +11,14 @@ export class PayrollController extends Controller {
   public async getPayrolls(@Request() request: ContextualRequest, @Query() startDate: string, @Query() endDate: string, @Query() approved: boolean): Promise<Partial<User>[]> {
     const { context, user } = request;
     return await context.services.payroll.getPayrolls(context, user, startDate, endDate, approved);
+  }
+
+  @Tags("Payroll")
+  @SuccessResponse("200", "OK")
+  @Get("/{id}")
+  @Security("jwtToken", ["Tenant", "Payroll:List"])
+  public async getPayroll(@Request() request: ContextualRequest, @Query() startDate: string, @Query() endDate: string, @Query() approved: boolean, @Path() id: number): Promise<Partial<User>> {
+    const { context, user } = request;
+    return await context.services.payroll.getPayrollByEmployee(context, user, startDate, endDate, approved, id);
   }
 }

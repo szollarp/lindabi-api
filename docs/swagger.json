@@ -1718,6 +1718,10 @@
 					"itemsVatAmount": {
 						"type": "number",
 						"format": "double"
+					},
+					"itemsTotalAmount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -4891,6 +4895,10 @@
 						"format": "double"
 					},
 					"itemsVatAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"itemsTotalAmount": {
 						"type": "number",
 						"format": "double"
 					}
@@ -12120,6 +12128,69 @@
 				]
 			}
 		},
+		"/payrolls/{id}": {
+			"get": {
+				"operationId": "GetPayroll",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_User_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Payroll"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Payroll:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "startDate",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "endDate",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "approved",
+						"required": true,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/order-forms": {
 			"get": {
 				"operationId": "GetOrderForms",
@@ -15282,6 +15353,182 @@
 					{
 						"in": "query",
 						"name": "projectId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/documents/chunk": {
+			"put": {
+				"operationId": "UploadDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"chunk": {
+										"type": "string",
+										"format": "binary"
+									},
+									"chunkIndex": {
+										"type": "string"
+									},
+									"fileName": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"chunk",
+									"chunkIndex",
+									"fileName"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/documents/merge": {
+			"post": {
+				"operationId": "MergeDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Document"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"type": {
+										"$ref": "#/components/schemas/DocumentType"
+									},
+									"ownerType": {
+										"$ref": "#/components/schemas/DocumentOwnerType"
+									},
+									"ownerId": {
+										"type": "number",
+										"format": "double"
+									},
+									"numOfChunks": {
+										"type": "number",
+										"format": "double"
+									},
+									"fileName": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"type",
+									"ownerType",
+									"ownerId",
+									"numOfChunks",
+									"fileName"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/documents/{id}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
 						"required": true,
 						"schema": {
 							"format": "double",
