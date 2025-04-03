@@ -21,7 +21,7 @@ export class AzureStorageService {
     const { accountName, accountKey, containerName, connectionString } = ops;
 
     if (!connectionString || !containerName || !accountName || !accountKey) {
-      throw new Error("");
+      throw new Error("Missing required Azure Storage configuration");
     }
 
     this.blobClient = BlobServiceClient.fromConnectionString(connectionString);
