@@ -157,7 +157,7 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
 
     return {
       employee: employee?.toJSON(),
-      payroll: getEmployeePayroll(employee, settings)
+      payroll: getEmployeePayroll(employee!, settings)
     }
   }
   catch (error) {

@@ -122,7 +122,7 @@ export class StatusReportController extends Controller {
   @Security("jwtToken", ["Tenant", "Report:Update"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.removeDocument(context, id, documentId, "report");
+    return await context.services.document.removeDocument(context, documentId);
   }
 
   /**

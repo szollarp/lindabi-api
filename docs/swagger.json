@@ -13308,15 +13308,6 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "ownerId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -13802,16 +13793,6 @@
 					}
 				],
 				"parameters": [
-					{
-						"description": "The unique identifier of the execution from which the document will be removed.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
 					{
 						"description": "The unique identifier of the document to be removed.",
 						"in": "path",
@@ -15930,16 +15911,6 @@
 					}
 				],
 				"parameters": [
-					{
-						"description": "The ID of the employee from whom the document will be removed.",
-						"in": "path",
-						"name": "ownerId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
 					{
 						"description": "The unique identifier of the document to be removed.",
 						"in": "path",

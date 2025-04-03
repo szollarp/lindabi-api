@@ -62,14 +62,14 @@ const getItemizedAmount = (execution: Execution): number => {
   return Number(quantity) * qNetAmount;
 };
 
-const getDistanceAmount = (execution: Execution, settings: FinancialSetting[]): number => {
+const getDistanceAmount = (execution: Execution, settings: Partial<FinancialSetting>[]): number => {
   const kmRate = settings.find(setting => setting.type === FINANCIAL_SETTING_TYPE.KM_RATE)?.amount || 0;
 
   const { distance } = execution;
   return (Number(distance) ?? 0) * kmRate;
 };
 
-export const getEmployeePayroll = (employee: User, settings: FinancialSetting[]) => {
+export const getEmployeePayroll = (employee: User, settings: Partial<FinancialSetting>[]) => {
   const { executions, invoices, salaries, id, name, contact } = employee;
 
   const itemizedExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.ITEMIZED);

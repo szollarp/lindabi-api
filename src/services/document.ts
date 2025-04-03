@@ -163,8 +163,6 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
   }
   catch (error) {
     await t.rollback();
-    console.log(error);
-    console.log(error.stack);
     throw error;
   }
 }

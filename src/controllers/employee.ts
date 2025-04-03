@@ -161,9 +161,9 @@ export class EmployeeController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{ownerId}/document/{id}")
   @Security("jwtToken", ["Employee:Update", "Tenant"])
-  public async removeDocument(@Request() request: ContextualRequest, @Path() ownerId: number, @Path() id: number): Promise<{ removed: boolean }> {
+  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.removeDocument(context, ownerId, id, "user");
+    return await context.services.document.removeDocument(context, id);
   }
 
   /**

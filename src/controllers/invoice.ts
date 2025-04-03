@@ -82,9 +82,9 @@ export class InvoiceController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{ownerId}/document/{id}")
   @Security("jwtToken", ["Invoice:Update", "Tenant"])
-  public async removeDocument(@Request() request: ContextualRequest, @Path() ownerId: number, @Path() id: number): Promise<{ removed: boolean }> {
+  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.removeDocument(context, ownerId, id, "invoice");
+    return await context.services.document.removeDocument(context, id);
   }
 
 }

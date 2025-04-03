@@ -271,7 +271,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<{ removed: boolean }> {
     const { context, user } = request;
-    return await context.services.document.removeDocument(context, mid, did, "milestone");
+    return await context.services.document.removeDocument(context, did);
   }
 
   /**
@@ -461,7 +461,7 @@ export class ProjectController extends Controller {
   @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.removeDocument(context, id, documentId, "project");
+    return await context.services.document.removeDocument(context, documentId);
   }
 
   /**

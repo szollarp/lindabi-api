@@ -137,9 +137,9 @@ export class ExecutionController extends Controller {
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
   @Security("jwtToken", ["Tenant", "Execution:Update"])
-  public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
+  public async removeDocument(@Request() request: ContextualRequest, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return await context.services.document.removeDocument(context, id, documentId, "execution");
+    return await context.services.document.removeDocument(context, documentId);
   }
 
   /**
