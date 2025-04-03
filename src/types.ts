@@ -31,6 +31,7 @@ import { type FinancialSettingsService } from "./services/financial-settings";
 import { type EmployeeScheduleService } from "./services/employee-schedule";
 import { type FinancialTransactionService } from "./services/financial-transaction";
 import { type Models } from "./models";
+import { AzureStorageService } from "./helpers/azure-storage";
 
 export interface Services {
   version: VersionService
@@ -72,6 +73,7 @@ export interface Context {
   services: Services
   helpers: Helpers
   env: string
+  storage: AzureStorageService
 }
 
 export type ContextualRequest = Request & {

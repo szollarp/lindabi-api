@@ -34,6 +34,7 @@ export const create = async (): Promise<Context> => {
     services,
     helpers,
     models,
+    storage,
     env
   };
 

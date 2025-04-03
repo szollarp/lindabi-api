@@ -53,8 +53,6 @@ const handleForgottenPasswordEmail = async (context: Context, userId: number) =>
 };
 
 const handleSendTender = async (context: Context, tenderId: number, htmlBody: string, name: string) => {
-  const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
-
   const tender = await context.models.Tender.findOne({
     where: { id: tenderId },
     include: [
@@ -94,7 +92,7 @@ const handleSendTender = async (context: Context, tenderId: number, htmlBody: st
   });
 
   const fileName = generatePdfFilename(tender!);
-  const stream = await azureStorage.downloadBlob(name);
+  const stream = await context.storage.downloadBlob(name);
 
   const chunks: Buffer[] = [];
   for await (const chunk of stream! as AsyncIterable<Buffer>) {

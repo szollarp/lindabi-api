@@ -182,9 +182,8 @@ export const tenderService = (): TenderService => {
         return { success: false };
       }
 
-      const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
       const name = `tmp/${uuidv4()}.pdf`;
-      await azureStorage.uploadBlob(content, name, "application/pdf");
+      await context.storage.uploadBlob(content, name, "application/pdf");
 
       await context.services.email.sendTenderPdfEmail(context, id, message, name);
       await tender.update({ status: TENDER_STATUS.SENT, updatedBy: user.id });

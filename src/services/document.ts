@@ -87,7 +87,7 @@ export const mergeDocumentChunks = async (fileName: string, chunkSize: number): 
   }
 };
 
-const resizeImage = async (context: Context, imageName: string, mimeType: string, imageBuffer: Buffer, storage: AzureStorageService): Promise<{ resizedKey: string, thumbnailKey: string }> => {
+const resizeImage = async (context: Context, imageName: string, mimeType: string, imageBuffer: Buffer): Promise<{ resizedKey: string, thumbnailKey: string }> => {
   const { sizes }: { sizes: ImageSizes } = context.config.get("upload.image");
 
   const resizedBuffer = await sharp(imageBuffer)
@@ -102,13 +102,13 @@ const resizeImage = async (context: Context, imageName: string, mimeType: string
   const thumbnailBlob = `thumbnail/${imageName}`;
 
   await Promise.all([
-    storage.uploadBlob(resizedBuffer, resizedBlob, mimeType),
-    storage.uploadBlob(thumbnailBuffer, thumbnailBlob, mimeType),
+    context.storage.uploadBlob(resizedBuffer, resizedBlob, mimeType),
+    context.storage.uploadBlob(thumbnailBuffer, thumbnailBlob, mimeType),
   ]);
 
   const [resizedKey, thumbnailKey] = await Promise.all([
-    storage.generateSasUrl(resizedBlob),
-    storage.generateSasUrl(thumbnailBlob),
+    context.storage.generateSasUrl(resizedBlob),
+    context.storage.generateSasUrl(thumbnailBlob),
   ]);
 
   return { resizedKey, thumbnailKey };
@@ -123,7 +123,6 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
 
   try {
     const buffer = await mergeDocumentChunks(fileName, chunkSize);
-    const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
 
     const mimeType = mime.lookup(fileName);
     const extension = path.extname(fileName);
@@ -145,8 +144,8 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
       ownerId, ownerType, name, mimeType, type, properties, approved
     }, { transaction: t });
 
-    await azureStorage.uploadBlob(buffer, name, mimeType);
-    await azureStorage.generateSasUrl(name);
+    await context.storage.uploadBlob(buffer, name, mimeType);
+    await context.storage.generateSasUrl(name);
 
     await context.services.journey.addSimpleLog(context, user, {
       activity: `Document have been successfully uploaded.`,
@@ -155,7 +154,7 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
     }, ownerId, ownerType as string);
 
     if (mimeType.startsWith('image/')) {
-      await resizeImage(context, name, mimeType, buffer, azureStorage);
+      await resizeImage(context, name, mimeType, buffer);
     }
 
     await t.commit();
@@ -176,8 +175,6 @@ async function upload(context: Context, user: DecodedUser, ownerId: number, owne
   const t = await context.models.sequelize.transaction();
 
   try {
-    const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
-
     const uploadPromises = files.map(async (file) => {
       const originalBuffer = file.buffer;
       const mimeType = file.mimetype;
@@ -199,8 +196,8 @@ async function upload(context: Context, user: DecodedUser, ownerId: number, owne
         ownerId, ownerType, name, mimeType, type, properties, approved
       }, { transaction: t });
 
-      await azureStorage.uploadBlob(originalBuffer, name, mimeType);
-      const originalKey = await azureStorage.generateSasUrl(name);
+      await context.storage.uploadBlob(originalBuffer, name, mimeType);
+      const originalKey = await context.storage.generateSasUrl(name);
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: `Document have been successfully uploaded.`,
@@ -223,13 +220,13 @@ async function upload(context: Context, user: DecodedUser, ownerId: number, owne
         const thumbnailBlob = `thumbnail/${name}`;
 
         await Promise.all([
-          azureStorage.uploadBlob(resizedBuffer, resizedBlob, mimeType),
-          azureStorage.uploadBlob(thumbnailBuffer, thumbnailBlob, mimeType),
+          context.storage.uploadBlob(resizedBuffer, resizedBlob, mimeType),
+          context.storage.uploadBlob(thumbnailBuffer, thumbnailBlob, mimeType),
         ]);
 
         const [resizedKey, thumbnailKey] = await Promise.all([
-          azureStorage.generateSasUrl(resizedBlob),
-          azureStorage.generateSasUrl(thumbnailBlob),
+          context.storage.generateSasUrl(resizedBlob),
+          context.storage.generateSasUrl(thumbnailBlob),
         ]);
 
         return { originalKey, resizedKey, thumbnailKey };
@@ -275,8 +272,6 @@ async function getDocuments(context: Context, ownerId: number, ownerType: Docume
 // Function to remove a specific document by owner and document ID.
 async function removeDocument(context: Context, id: number): Promise<{ removed: boolean }> {
   try {
-    const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
-
     const document = await context.models.Document.findOne({
       attributes: ["id", "name", "mimeType", "type", "stored"],
       where: {
@@ -289,11 +284,11 @@ async function removeDocument(context: Context, id: number): Promise<{ removed: 
     }
 
     await document.destroy();
-    await azureStorage.removeBlob(document.name!);
+    await context.storage.removeBlob(document.name!);
 
     if (document.mimeType.startsWith('image/')) {
-      await azureStorage.removeBlob(`resized/${document.name!}`);
-      await azureStorage.removeBlob(`thumbnail/${document.name!}`);
+      await context.storage.removeBlob(`resized/${document.name!}`);
+      await context.storage.removeBlob(`thumbnail/${document.name!}`);
     }
 
     return { removed: true };
@@ -304,8 +299,6 @@ async function removeDocument(context: Context, id: number): Promise<{ removed: 
 
 async function removeDocuments(context: Context, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType): Promise<any> {
   try {
-    const azureStorage = new AzureStorageService(context.config.get("azure.storage"));
-
     const documents = await context.models.Document.findAll({
       where: { ownerId, ownerType, type },
       attributes: ["id", "name", "mimeType", "type", "stored"],
@@ -317,11 +310,11 @@ async function removeDocuments(context: Context, ownerId: number, ownerType: Doc
 
     const promises = documents.map(async (document) => {
       await document.destroy();
-      await azureStorage.removeBlob(document.name!);
+      await context.storage.removeBlob(document.name!);
 
       if (document.mimeType.startsWith('image/')) {
-        await azureStorage.removeBlob(`resized/${document.name!}`);
-        await azureStorage.removeBlob(`thumbnail/${document.name!}`);
+        await context.storage.removeBlob(`resized/${document.name!}`);
+        await context.storage.removeBlob(`thumbnail/${document.name!}`);
       }
     });
 
