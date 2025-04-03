@@ -29,7 +29,7 @@ export interface TenderService {
   removeTenderItem: (context: Context, user: DecodedUser, tenderId: number, id: number) => Promise<{ success: boolean }>
   updateTenderItemOrder: (context: Context, tenderId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
   copyTender: (context: Context, user: DecodedUser, id: number) => Promise<Partial<Tender> | null>
-  copyTenderItem: (context: Context, tenderId: number, sourceTenderId: number, user: DecodedUser) => Promise<{ success: boolean }>
+  copyTenderItem: (context: Context, sourceId: number, targetId: number, user: DecodedUser) => Promise<{ success: boolean }>
 };
 
 export const tenderService = (): TenderService => {
@@ -574,19 +574,19 @@ export const tenderService = (): TenderService => {
     }
   }
 
-  const copyTenderItem = async (context: Context, tenderId: number, targetTenderId: number, user: DecodedUser, transaction?: Transaction): Promise<{ success: boolean }> => {
+  const copyTenderItem = async (context: Context, sourceId: number, targetId: number, user: DecodedUser, transaction?: Transaction): Promise<{ success: boolean }> => {
     const t = !transaction ? await context.models.sequelize.transaction() : transaction;
 
     try {
       const tenderItems = await context.models.TenderItem.findAll({
-        where: { tenderId }
+        where: { tenderId: sourceId }
       });
 
       for (const item of tenderItems) {
         const { id, tenderId, createdBy, createdOn, updatedOn, updatedBy, ...data } = item.toJSON();
 
         await context.models.TenderItem.create({
-          ...data, tenderId: targetTenderId, createdBy: user.id,
+          ...data, tenderId: targetId, createdBy: user.id,
         }, { transaction: t });
       }
 
@@ -596,7 +596,7 @@ export const tenderService = (): TenderService => {
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender items have been successfully copied.",
-      }, targetTenderId, "tender");
+      }, targetId, "tender");
 
       return { success: true };
     } catch (error) {

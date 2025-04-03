@@ -138,11 +138,11 @@ export class TenderController extends Controller {
    */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
-  @Put("/{id}/items-copy/{targetTenderId}")
+  @Put("/{sourceId}/items-copy/{targetId}")
   @Security("jwtToken", ["Tenant", "Tender:Update"])
-  public async copyTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() targetTenderId: number): Promise<{ success: boolean }> {
+  public async copyTenderItem(@Request() request: ContextualRequest, @Path() sourceId: number, @Path() targetId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
-    return await context.services.tender.copyTenderItem(context, id, targetTenderId, user);
+    return await context.services.tender.copyTenderItem(context, sourceId, targetId, user);
   }
 
   /**

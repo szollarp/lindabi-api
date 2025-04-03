@@ -6,7 +6,7 @@ import { FinancialSetting } from "../models/interfaces/financial-setting";
 
 export interface PayrollService {
   getPayrolls: (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean) => Promise<Partial<User>[]>
-  getPayrollByEmployee: (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean, employeeId: number) => Promise<Partial<User>>
+  getPayrollByEmployee: (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean, employeeId: number) => Promise<any>
 }
 
 export const payrollService = (): PayrollService => ({
@@ -41,7 +41,7 @@ const getFinancialSettings = async (context: Context, user: DecodedUser, startDa
   });
 }
 
-const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean, employeeId: number): Promise<Partial<User>> => {
+const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean, employeeId: number): Promise<any> => {
   try {
     const settings = await getFinancialSettings(context, user, startDate, endDate);
 
@@ -95,6 +95,11 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
             model: context.models.ProjectItem,
             as: "projectItem",
             attributes: ["id", "name", "netAmount", "quantity"],
+            required: true
+          }, {
+            model: context.models.Project,
+            as: "project",
+            attributes: ["id", "name", "number"],
             required: true
           }]
         },
@@ -150,7 +155,10 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
       ]
     });
 
-    return getEmployeePayroll(employee!, settings)
+    return {
+      employee: employee?.toJSON(),
+      payroll: getEmployeePayroll(employee, settings)
+    }
   }
   catch (error) {
     throw error;
