@@ -190,23 +190,6 @@ export class TenderController extends Controller {
   }
 
   /**
-   * Retrieves detailed information about a specific tender documents by their ID.
-   * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
-   *
-   * @param id The unique identifier of the tender to retrieve.
-   * @returns A tender documents objects containing partial information, or null if no documents is found. 
-   * Sensitive information is omitted.
-   */
-  @Tags("Tender")
-  @SuccessResponse("200", "OK")
-  @Get("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
-  public async getTenderDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<any> {
-    const { context } = request;
-    return await context.services.document.getDocuments(context, id, "tender");
-  }
-
-  /**
    * Retrieves detailed information about a specific tender document by its document ID within a tender.
    * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
    *

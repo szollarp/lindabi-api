@@ -6838,11 +6838,15 @@
 					},
 					"session": {
 						"type": "string"
+					},
+					"deviceId": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"token",
-					"session"
+					"session",
+					"deviceId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -8551,112 +8555,6 @@
 				}
 			}
 		},
-		"/tenders/{id}/documents": {
-			"get": {
-				"operationId": "GetTenderDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
-				"tags": [
-					"Tender"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Tender:Get"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The unique identifier of the tender to retrieve.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UploadTenderDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
-				"tags": [
-					"Tender"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Tender:Update"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The unique identifier of the tender.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "type",
-						"required": true,
-						"schema": {
-							"$ref": "#/components/schemas/DocumentType"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"files": {
-										"items": {
-											"type": "string",
-											"format": "binary"
-										},
-										"type": "array"
-									}
-								},
-								"required": [
-									"files"
-								]
-							}
-						}
-					}
-				}
-			}
-		},
 		"/tenders/{id}/documents/{documentId}": {
 			"get": {
 				"operationId": "GetTenderDocument",
@@ -8805,6 +8703,75 @@
 						}
 					}
 				]
+			}
+		},
+		"/tenders/{id}/documents": {
+			"put": {
+				"operationId": "UploadTenderDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Update\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/tenders/{id}/documents-by-type": {
@@ -11506,117 +11473,6 @@
 				}
 			}
 		},
-		"/projects/{id}/documents": {
-			"get": {
-				"operationId": "GetDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_Document_"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Retrieves detailed information about a specific tender documents by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:GetDocuments\" permission.",
-				"tags": [
-					"Project"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Project:GetDocuments"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The unique identifier of the tender to retrieve.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UploadDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:UpdateDocuments\" permission.",
-				"tags": [
-					"Project"
-				],
-				"security": [
-					{
-						"jwtToken": [
-							"Tenant",
-							"Project:UpdateDocuments"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "The unique identifier of the tender.",
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "type",
-						"required": true,
-						"schema": {
-							"$ref": "#/components/schemas/DocumentType"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"files": {
-										"items": {
-											"type": "string",
-											"format": "binary"
-										},
-										"type": "array"
-									}
-								},
-								"required": [
-									"files"
-								]
-							}
-						}
-					}
-				}
-			}
-		},
 		"/projects/{id}/documents/{documentId}": {
 			"get": {
 				"operationId": "GetDocument",
@@ -11816,6 +11672,75 @@
 						}
 					}
 				]
+			}
+		},
+		"/projects/{id}/documents": {
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Upload documents for the specified tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Project:UpdateDocuments\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Project:UpdateDocuments"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/projects/{id}/documents-by-type": {

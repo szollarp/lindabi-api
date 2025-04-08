@@ -150,13 +150,13 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
-        where: { userId: user.id },
-        defaults: { token: jwtTokens.refreshToken },
+        where: { userId: user.id, deviceId: body.deviceId },
+        defaults: { token: jwtTokens.refreshToken, deviceId: body.deviceId },
         transaction: t
       });
 
       if (!created) {
-        await refreshToken.update({ token: jwtTokens.refreshToken }, { transaction: t });
+        await refreshToken.update({ token: jwtTokens.refreshToken, deviceId: body.deviceId }, { transaction: t });
       }
 
       await context.models.User.update({
