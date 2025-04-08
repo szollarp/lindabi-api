@@ -6818,11 +6818,15 @@
 					"password": {
 						"type": "string",
 						"minLength": 1
+					},
+					"deviceId": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"email",
-					"password"
+					"password",
+					"deviceId"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -15413,8 +15417,51 @@
 						"description": "OK",
 						"content": {
 							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		},
+		"/documents/assign": {
+			"post": {
+				"operationId": "AssignDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Document"
+									"properties": {
+										"assigned": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"assigned"
+									],
+									"type": "object"
 								}
 							}
 						}
@@ -15438,30 +15485,21 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"type": {
-										"$ref": "#/components/schemas/DocumentType"
-									},
-									"ownerType": {
-										"$ref": "#/components/schemas/DocumentOwnerType"
+									"documentIds": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
 									},
 									"ownerId": {
 										"type": "number",
 										"format": "double"
-									},
-									"numOfChunks": {
-										"type": "number",
-										"format": "double"
-									},
-									"fileName": {
-										"type": "string"
 									}
 								},
 								"required": [
-									"type",
-									"ownerType",
-									"ownerId",
-									"numOfChunks",
-									"fileName"
+									"documentIds",
+									"ownerId"
 								],
 								"type": "object"
 							}
@@ -15494,7 +15532,7 @@
 					}
 				},
 				"tags": [
-					"Tender"
+					"Document"
 				],
 				"security": [
 					{
@@ -15512,6 +15550,64 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/documents": {
+			"get": {
+				"operationId": "GetDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Document"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"Documents:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "ownerType",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentOwnerType"
+						}
+					},
+					{
+						"in": "query",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]

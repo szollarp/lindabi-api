@@ -8,9 +8,9 @@ export interface LoginRequest {
   */
   password: string
   // /**
-  // * @isString Please provide a valid token.
+  // * @isString Please provide a valid device id.
   // */
-  // token: string
+  deviceId: string
 };
 
 export interface Login2FaRequest {

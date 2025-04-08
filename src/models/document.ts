@@ -59,7 +59,7 @@ export const DocumentFactory = (sequelize: Sequelize, storage: AzureStorageServi
       },
       ownerId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
       },
       ownerType: {
         type: DataTypes.STRING,

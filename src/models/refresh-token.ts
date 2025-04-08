@@ -16,6 +16,8 @@ export class RefreshTokenModel extends Model<RefreshToken, CreateRefreshTokenPro
 
   declare userId?: ForeignKey<User["id"]>;
 
+  declare deviceId: string;
+
   public getUser!: HasOneGetAssociationMixin<User>;
 
   public static associate: (models: Models) => void;
@@ -36,6 +38,10 @@ export const RefreshTokenFactory = (sequelize: Sequelize): typeof RefreshTokenMo
       },
       userId: {
         type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      deviceId: {
+        type: DataTypes.STRING,
         allowNull: false
       },
       createdOn: {

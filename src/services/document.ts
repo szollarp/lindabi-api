@@ -1,12 +1,12 @@
 import path from "path";
+import { Op } from "sequelize";
 import fs from "fs";
 import sharp from 'sharp';
 import mime from 'mime-types';
 import { COMPANY_TYPE } from "../constants";
 import { isEmployeeDocumentInvalid } from "../helpers/document";
 import { Document, DocumentOwnerType, DocumentProperties, DocumentType } from "../models/interfaces/document";
-import type { Context, ContextualRequest, DecodedUser } from "../types";
-import { AzureStorageService } from "../helpers/azure-storage";
+import type { Context, DecodedUser } from "../types";
 
 const CHUNK_DIR = "tmp/chunks";
 
@@ -35,9 +35,10 @@ type DocumentUploadProperties = DocumentProperties & {
 
 export interface DocumentService {
   upload(context: Context, user: DecodedUser, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, files: Express.Multer.File[], properties: DocumentUploadProperties, unique?: boolean): Promise<{ uploaded: boolean }>
-  merge(context: Context, user: DecodedUser, tmpPath: string, chunkSize: number, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties, unique?: boolean): Promise<Document>
-  getDocument: (context: Context, id: number, ownerId: number, ownerType: DocumentOwnerType) => Promise<any>
-  getDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType) => Promise<any>
+  merge(context: Context, user: DecodedUser, tmpPath: string, chunkSize: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties, ownerId?: number, temporary?: boolean, unique?: boolean): Promise<Document>
+  assign(context: Context, user: DecodedUser, ownerId: number, documentIds: number[]): Promise<{ assigned: boolean }>
+  getDocument: (context: Context, id: number, ownerId: number, ownerType: DocumentOwnerType) => Promise<Document | null>
+  getDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType, type: string) => Promise<Document[]>
   removeDocument: (context: Context, id: number) => Promise<{ removed: boolean }>
   removeDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType) => Promise<{ removed: boolean }>
   update: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType, data: Partial<Document>) => Promise<Document>
@@ -48,6 +49,7 @@ export const documentService = (): DocumentService => {
   return {
     upload,
     merge,
+    assign,
     getDocument,
     getDocuments,
     removeDocument,
@@ -59,8 +61,6 @@ export const documentService = (): DocumentService => {
 
 export const mergeDocumentChunks = async (fileName: string, chunkSize: number): Promise<Buffer> => {
   try {
-    console.log("Merging document chunks", fileName, chunkSize);
-
     const mergedFilePath = path.join(CHUNK_DIR, fileName);
     const writeStream = fs.createWriteStream(mergedFilePath);
 
@@ -82,7 +82,6 @@ export const mergeDocumentChunks = async (fileName: string, chunkSize: number): 
     await new Promise<void>((resolve) => writeStream.end(resolve));
     return fs.promises.readFile(mergedFilePath);
   } catch (e) {
-    console.error("Error merging document chunks:", e);
     throw new Error("Documents not found on the request");
   }
 };
@@ -114,7 +113,19 @@ const resizeImage = async (context: Context, imageName: string, mimeType: string
   return { resizedKey, thumbnailKey };
 };
 
-async function merge(context: Context, user: DecodedUser, fileName: string, chunkSize: number, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties = {}, unique: boolean = false): Promise<Document> {
+async function assign(context: Context, user: DecodedUser, ownerId: number, documentIds: number[]): Promise<{ assigned: boolean }> {
+  try {
+    await context.models.Document.update({ ownerId }, {
+      where: { id: { [Op.in]: documentIds } },
+    });
+
+    return { assigned: true };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function merge(context: Context, user: DecodedUser, fileName: string, chunkSize: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties = {}, ownerId?: number, temporary?: boolean, unique?: boolean): Promise<Document> {
   if (!fileName) {
     throw new Error("Documents not found on the request");
   }
@@ -147,11 +158,13 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
     await context.storage.uploadBlob(buffer, name, mimeType);
     await context.storage.generateSasUrl(name);
 
-    await context.services.journey.addSimpleLog(context, user, {
-      activity: `Document have been successfully uploaded.`,
-      property: `Document`,
-      updated: document.name
-    }, ownerId, ownerType as string);
+    if (!!ownerId) {
+      await context.services.journey.addSimpleLog(context, user, {
+        activity: `Document have been successfully uploaded.`,
+        property: `Document`,
+        updated: document.name
+      }, ownerId, ownerType as string);
+    }
 
     if (mimeType.startsWith('image/')) {
       await resizeImage(context, name, mimeType, buffer);
@@ -258,10 +271,10 @@ async function getDocument(context: Context, id: number, ownerId: number, ownerT
 }
 
 // Function to retrieve a document by owner and document ID.
-async function getDocuments(context: Context, ownerId: number, ownerType: DocumentOwnerType): Promise<Document[] | null> {
+async function getDocuments(context: Context, ownerId: number, ownerType: DocumentOwnerType, type: string): Promise<Document[]> {
   try {
     return await context.models.Document.findAll({
-      where: { ownerId, ownerType },
+      where: { ownerId, ownerType, type },
       attributes: ["id", "name", "mimeType", "type", "stored"]
     });
   } catch (error) {

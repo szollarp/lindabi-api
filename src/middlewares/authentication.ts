@@ -4,21 +4,22 @@ import type { User } from "../models/interfaces/user";
 import type { Context, DecodedUser, ContextualRequest as Request } from "../types";
 import { USER_TYPE } from "../constants";
 
-const getHeaderTokens = (request: Request): { authToken: string, refreshToken: string } => {
+const getHeaderTokens = (request: Request): { authToken: string, refreshToken: string, deviceId: string } => {
   const authToken = request.headers.authorization ?? null;
   if (authToken == null) {
     throw new Unauthorized("Request is not authenticated.");
   }
 
   const refreshToken = request.cookies["X-Refresh-Token"] || request.headers["x-refresh-token"] || null;
-  return { authToken: authToken.replace("Bearer ", ""), refreshToken };
+  const deviceId = request.cookies["X-Device-Id"] || request.headers["x-device-id"] || null;
+  return { authToken: authToken.replace("Bearer ", ""), refreshToken, deviceId };
 };
 
 const getTenant = (request: Request): number => {
   return Number(request.headers["x-tenant"]);
 };
 
-const validateHeaderToken = async (context: Context, authToken: string, refreshToken: string): Promise<{ user: DecodedUser }> => {
+const validateHeaderToken = async (context: Context, authToken: string, refreshToken: string, deviceId: string): Promise<{ user: DecodedUser }> => {
   const authConfig: { refreshToken: { key: string }, authToken: { key: string } } = context.config.get("auth");
   const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
   if (decodedToken == null) {
@@ -26,7 +27,7 @@ const validateHeaderToken = async (context: Context, authToken: string, refreshT
   }
 
   const token = await context.models.RefreshToken.findOne({
-    where: { token: refreshToken, userId: decodedToken.user.id }
+    where: { token: refreshToken, userId: decodedToken.user.id, deviceId }
   });
 
   if (!token) {
@@ -70,8 +71,8 @@ export const expressAuthentication = async (request: Request, securityName: stri
     throw new Forbidden("Your login credentials have either expired or are no longer valid, please enter your credentials again.");
   }
 
-  const { authToken, refreshToken } = getHeaderTokens(request);
-  const decodedToken = await validateHeaderToken(context, authToken, refreshToken);
+  const { authToken, refreshToken, deviceId } = getHeaderTokens(request);
+  const decodedToken = await validateHeaderToken(context, authToken, refreshToken, deviceId);
 
   if (!decodedToken?.user) {
     throw new Unauthorized();

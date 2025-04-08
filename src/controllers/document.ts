@@ -10,7 +10,9 @@ import {
   Put,
   FormField,
   Delete,
-  Path
+  Path,
+  Query,
+  Get
 } from "tsoa";
 import path from "path";
 import { ContextualRequest } from "../types";
@@ -39,19 +41,41 @@ export class DocumentController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/merge")
   @Security("jwtToken", ["Tenant", "Documents:Upload"])
-  public async mergeDocument(@Request() request: ContextualRequest, @Body() body: { fileName: string, numOfChunks: number, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType }): Promise<Document> {
+  public async mergeDocument(@Request() request: ContextualRequest, @Body() body: any): Promise<any> {
+    // public async mergeDocument(@Request() request: ContextualRequest, @Body() body: { fileName: string, numOfChunks: number, ownerType: DocumentOwnerType, type: DocumentType, ownerId?: number }): Promise<any> {
     const { context, user } = request;
-    const { fileName, numOfChunks, ownerId, ownerType, type } = body;
+    const { fileName, numOfChunks, ownerId, ownerType, type, } = body;
+    const temporary = !body.ownerId;
 
-    return await context.services.document.merge(context, user, fileName, numOfChunks, ownerId, ownerType, type, { approved: false });
+    return await context.services.document.merge(context, user, fileName, numOfChunks, ownerType, type, { approved: false }, ownerId, temporary);
   }
 
-  @Tags("Tender")
+  @Tags("Document")
+  @SuccessResponse("200", "OK")
+  @Post("/assign")
+  @Security("jwtToken", ["Tenant", "Documents:Upload"])
+  public async assignDocument(@Request() request: ContextualRequest, @Body() body: { ownerId: number, documentIds: number[] }): Promise<{ assigned: boolean }> {
+    const { context, user } = request;
+    const { ownerId, documentIds } = body;
+
+    return await context.services.document.assign(context, user, ownerId, documentIds);
+  }
+
+  @Tags("Document")
   @SuccessResponse("200", "OK")
   @Delete("/{id}")
   @Security("jwtToken", ["Tenant", "Documents:Upload"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id);
+  }
+
+  @Tags("Document")
+  @SuccessResponse("200", "OK")
+  @Get("/")
+  @Security("jwtToken", ["Tenant", "Documents:List"])
+  public async getDocuments(@Request() request: ContextualRequest, @Query() ownerType: DocumentOwnerType, @Query() ownerId: number, @Query() type: string): Promise<Document[]> {
+    const { context } = request;
+    return await context.services.document.getDocuments(context, ownerId, ownerType, type);
   }
 }

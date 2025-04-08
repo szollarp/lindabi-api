@@ -8,6 +8,8 @@ export interface RefreshToken {
   userId?: User["id"] | null
   user?: User
   //
+  deviceId: string
+  //
   createdOn?: Date
   updatedOn?: Date | null
 };
