@@ -357,14 +357,19 @@ export const tenderService = (): TenderService => {
       }
 
       const { createdOn, updatedOn, createdBy, updatedBy, id, validTo, startDate, dueDate, openDate, number, ...data } = tender.toJSON();
+
       const newTender = await context.models.Tender.create({
         ...data,
         createdBy: user.id,
         status: TENDER_STATUS.INQUIRY
       }, { transaction: t });
 
-      await copyTenderItem(context, tenderId, newTender.id, user, t);
+      const tenderNumber = await generateTenderNumber(context, user, tender);
+      if (tenderNumber) {
+        await newTender.update({ number: tenderNumber }, { transaction: t });
+      }
 
+      await copyTenderItem(context, tenderId, newTender.id, user, t);
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender have been successfully copied.",
       }, tenderId, "tender", t);

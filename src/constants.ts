@@ -122,7 +122,8 @@ export enum COMPLETION_CERTIFICATE_STATUS {
 
 export enum INVOICE_PAYMENT_TYPE {
   cash = "cash",
-  bank = "bank"
+  bank = "bank",
+  card = "card"
 };
 
 export enum INVOICE_STATUS {

@@ -2055,7 +2055,8 @@
 			"INVOICE_PAYMENT_TYPE": {
 				"enum": [
 					"cash",
-					"bank"
+					"bank",
+					"card"
 				],
 				"type": "string"
 			},
