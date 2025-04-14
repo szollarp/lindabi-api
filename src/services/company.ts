@@ -24,6 +24,7 @@ export const companyService = (): CompanyService => {
       return await context.models.Company.findAll({
         attributes: ["id", "name", "status", "taxNumber", "prefix", "notes", "city", "country", "address", "zipCode", "default", "ceo"],
         where: { tenantId, type },
+        order: [["name", "ASC"]],
         include: [
           {
             model: context.models.Document,

@@ -18,7 +18,8 @@ export const locationService = (): LocationService => {
     try {
       return await context.models.Location.findAll({
         attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes", "taxNumber"],
-        where: { tenantId }
+        where: { tenantId },
+        order: [["name", "ASC"]]
       });
     } catch (error) {
       context.logger.error(error);

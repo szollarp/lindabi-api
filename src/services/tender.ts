@@ -33,8 +33,8 @@ export interface TenderService {
 };
 
 export const tenderService = (): TenderService => {
-  const generateTenderNumber = async (context: Context, user: DecodedUser, tender: Tender): Promise<string | null> => {
-    if (tender.number && tender.number.length > 0) {
+  const generateTenderNumber = async (context: Context, user: DecodedUser, tender: Tender, force: boolean = false): Promise<string | null> => {
+    if (!force && tender.number && tender.number.length > 0) {
       return tender.number;
     }
 
@@ -360,14 +360,10 @@ export const tenderService = (): TenderService => {
 
       const newTender = await context.models.Tender.create({
         ...data,
+        number: null,
         createdBy: user.id,
         status: TENDER_STATUS.INQUIRY
       }, { transaction: t });
-
-      const tenderNumber = await generateTenderNumber(context, user, tender);
-      if (tenderNumber) {
-        await newTender.update({ number: tenderNumber }, { transaction: t });
-      }
 
       await copyTenderItem(context, tenderId, newTender.id, user, t);
       await context.services.journey.addSimpleLog(context, user, {

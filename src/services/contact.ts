@@ -18,7 +18,8 @@ export const contactService = (): ContactService => {
     try {
       return await context.models.Contact.findAll({
         attributes: ["id", "name", "email", "phoneNumber", "status", "notes", "userId"],
-        where: { tenantId }
+        where: { tenantId },
+        order: [["name", "ASC"]],
       });
     } catch (error) {
       context.logger.error(error);
