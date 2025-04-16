@@ -227,7 +227,7 @@ export const authenticationService = (): AuthenticationService => {
       }
 
       const refreshToken = await context.models.RefreshToken.findOne({
-        attributes: ["token"],
+        attributes: ["token", "id"],
         where: { token: headerToken },
         include: [{
           model: context.models.User,
@@ -241,8 +241,10 @@ export const authenticationService = (): AuthenticationService => {
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
-      const { accessToken } = await jwt.getJWTTokens(context, refreshToken.user);
-      return { accessToken };
+      const { accessToken, refreshToken: newRefreshToken } = await jwt.getJWTTokens(context, refreshToken.user);
+      await refreshToken.update({ token: newRefreshToken });
+
+      return { accessToken, refreshToken: newRefreshToken };
     } catch (error: any) {
       console.error(error);
       console.error(error.stack);

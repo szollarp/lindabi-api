@@ -52,6 +52,7 @@ export interface VerifyAccountResponse {
 
 export interface RefreshTokenResponse {
   accessToken: string
+  refreshToken: string
 };
 
 export interface ForgottenPasswordRequest {
