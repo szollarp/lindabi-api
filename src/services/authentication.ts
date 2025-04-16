@@ -244,6 +244,8 @@ export const authenticationService = (): AuthenticationService => {
       const { accessToken } = await jwt.getJWTTokens(context, refreshToken.user);
       return { accessToken };
     } catch (error: any) {
+      console.error(error);
+      console.error(error.stack);
       context.logger.error("Refresh Token error", { error: error.message, type: error.name });
       throw error;
     }
