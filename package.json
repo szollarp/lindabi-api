@@ -25,7 +25,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@azure/identity": "^4.8.0",
+    "@azure/identity": "^4.9.0",
     "@azure/service-bus": "^7.9.5",
     "@azure/storage-blob": "^12.27.0",
     "@types/jsonwebtoken": "^9.0.9",
