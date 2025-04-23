@@ -20,6 +20,18 @@ export const invoiceService = (): InvoiceService => {
 
 const create = async (context: Context, user: DecodedUser, data: CreateInvoiceProperties): Promise<Invoice> => {
   try {
+    const existingInvoice = await context.models.Invoice.findOne({
+      attributes: ["id"],
+      where: {
+        invoiceNumber: data.invoiceNumber,
+        tenantId: user.tenant
+      }
+    });
+
+    if (existingInvoice) {
+      throw new Error("Invoice with this number already exists");
+    }
+
     return await context.models.Invoice.create({
       ...data,
       status: INVOICE_STATUS.CREATED,
