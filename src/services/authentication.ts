@@ -15,8 +15,8 @@ import type {
 import type { AuthConfig, Context, DecodedUser } from "../types";
 
 export interface AuthenticationService {
-  login: (context: Context, body: LoginRequest) => Promise<LoginResponse>
-  loginTwoFactor: (context: Context, body: Login2FaRequest) => Promise<LoginResponse>
+  login: (context: Context, body: LoginRequest, deviceId?: string) => Promise<LoginResponse>
+  loginTwoFactor: (context: Context, body: Login2FaRequest, deviceId?: string) => Promise<LoginResponse>
   logout: (context: Context, cookies: Record<string, string>) => Promise<LogoutResponse>
   verifyAccount: (context: Context, body: VerifyAccountRequest, v: string) => Promise<VerifyAccountResponse>
   refreshToken: (context: Context, cookies: Record<string, string>, user: DecodedUser) => Promise<RefreshTokenResponse>
@@ -25,10 +25,15 @@ export interface AuthenticationService {
 }
 
 export const authenticationService = (): AuthenticationService => {
-  const login = async (context: Context, body: LoginRequest): Promise<LoginResponse> => {
+  const login = async (context: Context, body: LoginRequest, deviceId?: string): Promise<LoginResponse> => {
     const t = await context.models.sequelize.transaction();
 
     try {
+      console.log("Login request body", { body, deviceId });
+      if (!deviceId) {
+        throw Unauthorized("Authentication failed. Please check your email and password.");
+      }
+
       const user = await context.models.User.findOne({
         attributes: ["id", "password", "salt", "enableTwoFactor", "name"],
         where: {
@@ -63,8 +68,8 @@ export const authenticationService = (): AuthenticationService => {
         });
 
         const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
-          where: { userId: user.id, deviceId: body.deviceId },
-          defaults: { token: jwtTokens.refreshToken, deviceId: body.deviceId },
+          where: { userId: user.id, deviceId },
+          defaults: { token: jwtTokens.refreshToken, deviceId },
           transaction: t
         });
 
@@ -98,10 +103,14 @@ export const authenticationService = (): AuthenticationService => {
     }
   };
 
-  const loginTwoFactor = async (context: Context, body: Login2FaRequest): Promise<LoginResponse> => {
+  const loginTwoFactor = async (context: Context, body: Login2FaRequest, deviceId?: string): Promise<LoginResponse> => {
     const t = await context.models.sequelize.transaction();
 
     try {
+      if (!deviceId) {
+        throw Unauthorized("Authentication failed. Please check your email and password.");
+      }
+
       const twoFactorSession = await context.models.TwoFactorSession.findOne({
         where: {
           token: body.session
@@ -150,13 +159,13 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
-        where: { userId: user.id, deviceId: body.deviceId },
-        defaults: { token: jwtTokens.refreshToken, deviceId: body.deviceId },
+        where: { userId: user.id, deviceId },
+        defaults: { token: jwtTokens.refreshToken, deviceId },
         transaction: t
       });
 
       if (!created) {
-        await refreshToken.update({ token: jwtTokens.refreshToken, deviceId: body.deviceId }, { transaction: t });
+        await refreshToken.update({ token: jwtTokens.refreshToken, deviceId }, { transaction: t });
       }
 
       await context.models.User.update({

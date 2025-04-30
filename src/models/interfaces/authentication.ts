@@ -7,10 +7,6 @@ export interface LoginRequest {
   * @minLength 1 Please provide a password.
   */
   password: string
-  /**
- * @isString Please provide a valid device id.
- */
-  deviceId: string
 };
 
 export interface Login2FaRequest {
@@ -22,10 +18,6 @@ export interface Login2FaRequest {
   * @isString Please provide a valid token.
   */
   session: string
-  /**
-  * @isString Please provide a valid device id.
-  */
-  deviceId: string
 };
 
 export interface LoginResponse {

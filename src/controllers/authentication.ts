@@ -32,8 +32,9 @@ export class AuthenticationController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("login")
   public async logIn(@Request() request: ContextualRequest, @Body() body: LoginRequest): Promise<LoginResponse> {
-    const { context } = request;
-    return await context.services.authentication.login(context, body);
+    const { context, headers } = request;
+    const deviceId = headers["x-device-id"] as string | undefined;
+    return await context.services.authentication.login(context, body, deviceId);
   }
 
   /**
@@ -55,8 +56,9 @@ export class AuthenticationController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("login/2fa")
   public async logIn2Fa(@Request() request: ContextualRequest, @Body() body: Login2FaRequest): Promise<LoginResponse> {
-    const { context } = request;
-    return await context.services.authentication.loginTwoFactor(context, body);
+    const { context, headers } = request;
+    const deviceId = headers["x-device-id"] as string | undefined;
+    return await context.services.authentication.loginTwoFactor(context, body, deviceId);
   }
 
   /**

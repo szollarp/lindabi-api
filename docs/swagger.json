@@ -6819,15 +6819,11 @@
 					"password": {
 						"type": "string",
 						"minLength": 1
-					},
-					"deviceId": {
-						"type": "string"
 					}
 				},
 				"required": [
 					"email",
-					"password",
-					"deviceId"
+					"password"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -6839,15 +6835,11 @@
 					},
 					"session": {
 						"type": "string"
-					},
-					"deviceId": {
-						"type": "string"
 					}
 				},
 				"required": [
 					"token",
-					"session",
-					"deviceId"
+					"session"
 				],
 				"type": "object",
 				"additionalProperties": false
