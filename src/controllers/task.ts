@@ -34,7 +34,7 @@ export class TaskController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("/my")
   @Security("jwtToken", ["Task:List"])
-  public async getMyTasks(@Request() request: ContextualRequest): Promise<Task[]> {
+  public async getMyTasks(@Request() request: ContextualRequest): Promise<{ tasks: Task[], columns: TaskColumn[] }> {
     const { context, user } = request;
     return await context.services.task.getMyTasks(context, user);
   }

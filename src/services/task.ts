@@ -12,7 +12,7 @@ export interface TaskService {
   create: (context: Context, user: DecodedUser, data: CreateTaskProperties) => Promise<Task>;
   update: (context: Context, user: DecodedUser, id: number, data: Partial<CreateTaskProperties>) => Promise<Task>;
   deleteTask: (context: Context, user: DecodedUser, id: number) => Promise<{ success: boolean }>;
-  getMyTasks: (context: Context, user: DecodedUser) => Promise<Task[]>;
+  getMyTasks: (context: Context, user: DecodedUser) => Promise<{ tasks: Task[], columns: TaskColumn[] }>;
   assign: (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }) => Promise<{ success: boolean }>;
   unassign: (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }) => Promise<{ success: boolean }>;
   addComment: (context: Context, user: DecodedUser, taskId: number, data: CreateTaskCommentProperties) => Promise<TaskComment>;
@@ -252,7 +252,7 @@ const unassign = async (context: Context, user: DecodedUser, id: number, data: {
 }
 
 const addComment = async (context: Context, user: DecodedUser, taskId: number, data: CreateTaskCommentProperties): Promise<TaskComment> => {
-  return context.models.TaskComment.create({ ...data, taskId, createdBy: user.id, tenantId: user.tenant });
+  return context.models.TaskComment.create({ ...data, taskId, createdBy: user.id, tenantId: user.tenant } as TaskComment);
 };
 
 const deleteComment = async (context: Context, user: DecodedUser, commentId: number): Promise<{ success: boolean }> => {
