@@ -191,6 +191,14 @@ export const DocumentFactory = (sequelize: Sequelize, storage: AzureStorageServi
         ownerType: "invoice"
       }
     });
+
+    DocumentModel.belongsTo(models.Task, {
+      foreignKey: "owner_id",
+      as: "task",
+      scope: {
+        ownerType: "task"
+      }
+    });
   };
 
   return DocumentModel;

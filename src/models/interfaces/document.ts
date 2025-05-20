@@ -1,11 +1,12 @@
 import type { Company } from "./company";
 
-export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | "invoice" | null;
+export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | "invoice" | "task" | null;
 
 export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" |
   "plan" | "pdf" | "employee" | "medical-fitness-certificate" | "work-authorization-document" |
   "personal-protective-equipment-inspection-report" | "annual-subcontractor-framework-agreement" |
-  "annual-general-occupational-safety-training" | "data-processing-declaration" | "tig" | "invoice" | "before" | "during" | "completion" | "inspection" | "contract" | "invoice";
+  "annual-general-occupational-safety-training" | "data-processing-declaration" | "tig" | "invoice" |
+  "before" | "during" | "completion" | "inspection" | "contract" | "invoice" | "attachment";
 
 export interface DocumentProperties {
   startOfValidity?: string;

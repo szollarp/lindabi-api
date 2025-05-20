@@ -83,6 +83,29 @@ export const tenderService = (): TenderService => {
       return await context.models.Tender.findAll({
         include: [
           {
+            model: context.models.Task,
+            as: "tasks",
+            attributes: ["title"],
+            include: [
+              {
+                model: context.models.User,
+                as: "assignee",
+                attributes: ["name"],
+                include: [
+                  {
+                    model: context.models.Document,
+                    attributes: ["id", "name", "mimeType", "type", "stored"],
+                    as: 'documents',
+                    required: false,
+                    where: {
+                      type: 'avatar',
+                    }
+                  }
+                ],
+              }
+            ]
+          },
+          {
             model: context.models.Contact,
             as: "contact",
             attributes: ["name", "email"]

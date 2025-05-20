@@ -31,6 +31,9 @@ import { InvoiceFactory, type InvoiceModel } from "./invoice";
 import { FinancialSettingFactory, type FinancialSettingModel } from "./financial-setting";
 import { EmployeeScheduleFactory, type EmployeeScheduleModel } from "./employee-schedule";
 import { FinancialTransactionFactory, type FinancialTransactionModel } from "./financial-transaction";
+import { TaskCommentFactory, type TaskCommentModel } from "./task-comment";
+import { TaskFactory, type TaskModel } from "./task";
+import { TaskColumnFactory, type TaskColumnModel } from "./task-column";
 import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
@@ -67,6 +70,9 @@ export interface Models {
   FinancialSetting: typeof FinancialSettingModel
   EmployeeSchedule: typeof EmployeeScheduleModel
   FinancialTransaction: typeof FinancialTransactionModel
+  Task: typeof TaskModel
+  TaskComment: typeof TaskCommentModel
+  TaskColumn: typeof TaskColumnModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -105,6 +111,9 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     FinancialSetting: FinancialSettingFactory(sequelize),
     EmployeeSchedule: EmployeeScheduleFactory(sequelize),
     FinancialTransaction: FinancialTransactionFactory(sequelize),
+    Task: TaskFactory(sequelize),
+    TaskComment: TaskCommentFactory(sequelize),
+    TaskColumn: TaskColumnFactory(sequelize),
     sequelize
   };
 

@@ -21,6 +21,7 @@ import type { Models } from ".";
 import { TenderItemModel } from "./tender-item";
 import { TenderItem } from "./interfaces/tender-item";
 import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
+import { TaskModel } from "./task";
 
 export class TenderModel extends Model<Tender, CreateTenderProperties> implements Tender {
   public id!: number;
@@ -141,6 +142,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
     location: Association<TenderModel, LocationModel>,
     contact: Association<TenderModel, ContactModel>
     items: Association<TenderModel, TenderItemModel>,
+    tasks: Association<TenderModel, TaskModel>
   };
 
   public readonly netAmount?: number;
@@ -360,6 +362,11 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
         ownerType: "tender"
       },
       as: "journeys",
+    });
+
+    TenderModel.hasMany(models.Task, {
+      foreignKey: "tenderId",
+      as: "tasks",
     });
   };
 

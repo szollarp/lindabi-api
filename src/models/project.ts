@@ -28,6 +28,7 @@ import type { Models } from ".";
 import { ProjectCommentModel } from "./project-comment";
 import { ProjectComment } from "./interfaces/project-comment";
 import { getNetAmount, getVatAmount } from "../helpers/project";
+import { TaskModel } from "./task";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -186,6 +187,7 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     items: Association<ProjectModel, TenderItemModel>,
     milestones: Association<ProjectModel, MilestoneModel>
     comments: Association<ProjectModel, ProjectCommentModel>
+    tasks: Association<ProjectModel, TaskModel>
   };
 
   public readonly itemsNetAmount?: number;
@@ -443,6 +445,11 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
     ProjectModel.hasMany(models.Invoice, {
       foreignKey: "project_id",
       as: "invoices"
+    });
+
+    ProjectModel.hasMany(models.Task, {
+      foreignKey: "projectId",
+      as: "tasks",
     });
   };
 

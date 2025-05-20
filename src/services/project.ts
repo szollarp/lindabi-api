@@ -169,6 +169,29 @@ export const projectService = (): ProjectService => {
         attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "itemsTotalAmount", "inSchedule", "scheduleColor", "vatKey"],
         include: [
           {
+            model: context.models.Task,
+            as: "tasks",
+            attributes: ["title"],
+            include: [
+              {
+                model: context.models.User,
+                as: "assignee",
+                attributes: ["name"],
+                include: [
+                  {
+                    model: context.models.Document,
+                    attributes: ["id", "name", "mimeType", "type", "stored"],
+                    as: 'documents',
+                    required: false,
+                    where: {
+                      type: 'avatar',
+                    }
+                  }
+                ],
+              }
+            ]
+          },
+          {
             model: context.models.Location,
             as: "location",
             attributes: ["id", "city", "country", "zipCode", "address"]

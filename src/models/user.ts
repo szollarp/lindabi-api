@@ -496,6 +496,12 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       foreignKey: "employee_id",
       as: "schedules"
     });
+
+    UserModel.belongsToMany(models.Task, {
+      foreignKey: "user_id",
+      through: "task_users",
+      as: "tasks"
+    });
   };
 
   return UserModel;

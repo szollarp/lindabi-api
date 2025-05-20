@@ -260,7 +260,8 @@
 					"during",
 					"completion",
 					"inspection",
-					"contract"
+					"contract",
+					"attachment"
 				]
 			},
 			"DocumentOwnerType": {
@@ -276,6 +277,7 @@
 					"report",
 					"execution",
 					"invoice",
+					"task",
 					null
 				],
 				"nullable": true
@@ -4198,6 +4200,583 @@
 			"CreateTenantProperties": {
 				"$ref": "#/components/schemas/Omit_Tenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn_"
 			},
+			"TaskType": {
+				"type": "string",
+				"enum": [
+					"task",
+					"fix"
+				]
+			},
+			"TaskPriority": {
+				"type": "string",
+				"enum": [
+					"low",
+					"medium",
+					"high"
+				]
+			},
+			"TaskColumn": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"uid": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"position": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"fixed": {
+						"type": "boolean"
+					},
+					"finished": {
+						"type": "boolean"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"uid",
+					"name",
+					"position"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TaskComment": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"taskId": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"taskId",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Task": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"uid": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/TaskType"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/TaskPriority"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"column": {
+						"$ref": "#/components/schemas/TaskColumn"
+					},
+					"columnId": {
+						"type": "number",
+						"format": "double"
+					},
+					"assignee": {
+						"items": {
+							"$ref": "#/components/schemas/User"
+						},
+						"type": "array"
+					},
+					"assigneeIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"position": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"comments": {
+						"items": {
+							"$ref": "#/components/schemas/TaskComment"
+						},
+						"type": "array"
+					},
+					"commentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"attachmentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"attachments": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"reporter": {
+						"$ref": "#/components/schemas/User"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"uid",
+					"title",
+					"type",
+					"priority",
+					"dueDate",
+					"columnId",
+					"position"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_Task.Exclude_keyofTask.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-position__": {
+				"properties": {
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"type": {
+						"$ref": "#/components/schemas/TaskType"
+					},
+					"title": {
+						"type": "string"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/TaskPriority"
+					},
+					"column": {
+						"$ref": "#/components/schemas/TaskColumn"
+					},
+					"columnId": {
+						"type": "number",
+						"format": "double"
+					},
+					"assignee": {
+						"items": {
+							"$ref": "#/components/schemas/User"
+						},
+						"type": "array"
+					},
+					"assigneeIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"comments": {
+						"items": {
+							"$ref": "#/components/schemas/TaskComment"
+						},
+						"type": "array"
+					},
+					"commentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"attachmentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"attachments": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"reporter": {
+						"$ref": "#/components/schemas/User"
+					}
+				},
+				"required": [
+					"type",
+					"title",
+					"priority",
+					"columnId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Task.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-position_": {
+				"$ref": "#/components/schemas/Pick_Task.Exclude_keyofTask.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-position__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTaskProperties": {
+				"$ref": "#/components/schemas/Omit_Task.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-position_"
+			},
+			"Partial_Task_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"uid": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/TaskType"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/TaskPriority"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"column": {
+						"$ref": "#/components/schemas/TaskColumn"
+					},
+					"columnId": {
+						"type": "number",
+						"format": "double"
+					},
+					"assignee": {
+						"items": {
+							"$ref": "#/components/schemas/User"
+						},
+						"type": "array"
+					},
+					"assigneeIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"position": {
+						"type": "number",
+						"format": "double"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"comments": {
+						"items": {
+							"$ref": "#/components/schemas/TaskComment"
+						},
+						"type": "array"
+					},
+					"commentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"attachmentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"attachments": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"reporter": {
+						"$ref": "#/components/schemas/User"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_TaskComment.Exclude_keyofTaskComment.id-or-taskId-or-createdOn-or-updatedOn__": {
+				"properties": {
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_TaskComment.id-or-taskId-or-createdOn-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_TaskComment.Exclude_keyofTaskComment.id-or-taskId-or-createdOn-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateTaskCommentProperties": {
+				"$ref": "#/components/schemas/Omit_TaskComment.id-or-taskId-or-createdOn-or-updatedOn_"
+			},
+			"Partial_TaskColumn_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"uid": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"position": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"fixed": {
+						"type": "boolean"
+					},
+					"finished": {
+						"type": "boolean"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"STATUS_REPORT_STATUS": {
 				"enum": [
 					"fine",
@@ -4311,19 +4890,19 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"availableToClient": {
-						"type": "boolean"
-					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
+					},
+					"availableToClient": {
+						"type": "boolean"
 					}
 				},
 				"required": [
 					"status",
 					"dueDate",
-					"availableToClient",
-					"projectId"
+					"projectId",
+					"availableToClient"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -5612,6 +6191,9 @@
 					"project": {
 						"$ref": "#/components/schemas/Project"
 					},
+					"description": {
+						"type": "string"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -5637,9 +6219,6 @@
 						"format": "date-time"
 					},
 					"financialSchedule": {
-						"type": "string"
-					},
-					"description": {
 						"type": "string"
 					},
 					"otherNotes": {
@@ -5955,6 +6534,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"title": {
+						"type": "string"
+					},
 					"employeeId": {
 						"type": "number",
 						"format": "double"
@@ -5982,9 +6564,6 @@
 					"paymentDate": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"title": {
-						"type": "string"
 					},
 					"asEmail": {
 						"type": "boolean"
@@ -6964,6 +7543,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"description": {
+						"type": "string"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -6983,9 +7565,6 @@
 					"approvedOn": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"description": {
-						"type": "string"
 					},
 					"orderFormId": {
 						"type": "number",
@@ -9174,6 +9753,790 @@
 								"required": [
 									"files"
 								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks": {
+			"get": {
+				"operationId": "GetTasks",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"columns": {
+											"items": {
+												"$ref": "#/components/schemas/TaskColumn"
+											},
+											"type": "array"
+										},
+										"tasks": {
+											"items": {
+												"$ref": "#/components/schemas/Task"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"columns",
+										"tasks"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Task"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTaskProperties"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/my": {
+			"get": {
+				"operationId": "GetMyTasks",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Task"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/tasks/{id}": {
+			"get": {
+				"operationId": "GetTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Task"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Task"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Task_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/{id}/assign": {
+			"patch": {
+				"operationId": "AssignTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/{id}/unassign": {
+			"patch": {
+				"operationId": "UnassignTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"userId": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"userId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/{id}/comments": {
+			"post": {
+				"operationId": "AddComment",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TaskComment"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTaskCommentProperties"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/{id}/comments/{commentId}": {
+			"delete": {
+				"operationId": "DeleteComment",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "path",
+						"name": "commentId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tasks/columns": {
+			"post": {
+				"operationId": "CreateTaskColumn",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TaskColumn"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"TaskColumn:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/columns/{id}": {
+			"delete": {
+				"operationId": "DeleteTaskColumn",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"TaskColumn:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateTaskColumn",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TaskColumn"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"TaskColumn:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_TaskColumn_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/columns/{id}/cleanup": {
+			"patch": {
+				"operationId": "CleanupTaskColumn",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"TaskColumn:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tasks/columns/reorder": {
+			"put": {
+				"operationId": "MoveColumn",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"TaskColumn:Update"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"position": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"position"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tasks/reorder": {
+			"put": {
+				"operationId": "MoveTask",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Task:Update"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"column": {
+										"type": "number",
+										"format": "double"
+									},
+									"position": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"column",
+									"position"
+								],
+								"type": "object"
 							}
 						}
 					}
