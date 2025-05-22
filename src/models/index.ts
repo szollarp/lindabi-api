@@ -34,6 +34,7 @@ import { FinancialTransactionFactory, type FinancialTransactionModel } from "./f
 import { TaskCommentFactory, type TaskCommentModel } from "./task-comment";
 import { TaskFactory, type TaskModel } from "./task";
 import { TaskColumnFactory, type TaskColumnModel } from "./task-column";
+import { WorkTypeFactory, type WorkTypeModel } from "./work-type"
 import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
@@ -73,6 +74,7 @@ export interface Models {
   Task: typeof TaskModel
   TaskComment: typeof TaskCommentModel
   TaskColumn: typeof TaskColumnModel
+  WorkType: typeof WorkTypeModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -114,6 +116,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Task: TaskFactory(sequelize),
     TaskComment: TaskCommentFactory(sequelize),
     TaskColumn: TaskColumnFactory(sequelize),
+    WorkType: WorkTypeFactory(sequelize),
     sequelize
   };
 

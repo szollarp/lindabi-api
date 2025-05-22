@@ -7,7 +7,6 @@ import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 import { TENDER_STATUS } from "../constants";
 import { calculateTenderItemAmounts } from "../helpers/tender";
-import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>

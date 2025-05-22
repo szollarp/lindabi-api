@@ -24,6 +24,7 @@ import { type FinancialSettingsService, financialSettingsService } from "./finan
 import { type EmployeeScheduleService, employeeScheduleService } from "./employee-schedule";
 import { type FinancialTransactionService, financialTransactionService } from "./financial-transaction";
 import { type TaskService, taskService } from "./task"
+import { type WorkTypeService, workTypeService } from "./work-type";
 
 export interface Services {
   version: VersionService
@@ -52,6 +53,7 @@ export interface Services {
   employeeSchedule: EmployeeScheduleService
   financialTransaction: FinancialTransactionService
   task: TaskService
+  workType: WorkTypeService
 }
 
 export default (): Services => ({
@@ -80,5 +82,6 @@ export default (): Services => ({
   financialSettings: financialSettingsService(),
   employeeSchedule: employeeScheduleService(),
   financialTransaction: financialTransactionService(),
-  task: taskService()
+  task: taskService(),
+  workType: workTypeService()
 });

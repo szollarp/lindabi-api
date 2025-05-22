@@ -19,6 +19,7 @@
     "db:create": "sequelize --options-path sequalizerc.js db:create",
     "db:migrate": "sequelize --options-path sequalizerc.js db:migrate",
     "db:seed": "sequelize --options-path sequalizerc.js db:seed:all",
+    "seed": "sequelize --options-path sequalizerc.js db:seed",
     "migrate": "npm run db:migrate"
   },
   "keywords": [],

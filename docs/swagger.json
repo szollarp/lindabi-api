@@ -7,11 +7,317 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"USER_STATUS": {
+			"TENANT_STATUS.ACTIVE": {
 				"enum": [
-					"active",
-					"inactive",
-					"disabled",
+					"active"
+				],
+				"type": "string"
+			},
+			"TENANT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"DocumentType": {
+				"type": "string",
+				"enum": [
+					"logo",
+					"stamp",
+					"signature",
+					"avatar",
+					"survey",
+					"other",
+					"plan",
+					"pdf",
+					"employee",
+					"medical-fitness-certificate",
+					"work-authorization-document",
+					"personal-protective-equipment-inspection-report",
+					"annual-subcontractor-framework-agreement",
+					"annual-general-occupational-safety-training",
+					"data-processing-declaration",
+					"tig",
+					"invoice",
+					"before",
+					"during",
+					"completion",
+					"inspection",
+					"contract",
+					"attachment"
+				]
+			},
+			"DocumentOwnerType": {
+				"type": "string",
+				"enum": [
+					"user",
+					"tenant",
+					"contact",
+					"company",
+					"tender",
+					"project",
+					"milestone",
+					"report",
+					"execution",
+					"invoice",
+					"task",
+					null
+				],
+				"nullable": true
+			},
+			"DocumentProperties": {
+				"properties": {
+					"startOfValidity": {
+						"type": "string"
+					},
+					"endOfValidity": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"COMPANY_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"COMPANY_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CONTRACTOR": {
+				"enum": [
+					"contractor"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.CUSTOMER": {
+				"enum": [
+					"customer"
+				],
+				"type": "string"
+			},
+			"COMPANY_TYPE.SUPPLIER": {
+				"enum": [
+					"supplier"
+				],
+				"type": "string"
+			},
+			"Tenant": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.INACTIVE"
+							}
+						]
+					},
+					"taxNumber": {
+						"type": "string"
+					},
+					"registrationNumber": {
+						"type": "string"
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"email",
+					"country",
+					"city",
+					"address",
+					"zipCode",
+					"status",
+					"taxNumber",
+					"registrationNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Document": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"$ref": "#/components/schemas/DocumentType"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"approved": {
+						"type": "boolean"
+					},
+					"ownerId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"ownerType": {
+						"$ref": "#/components/schemas/DocumentOwnerType"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/DocumentProperties"
+					},
+					"companyId": {
+						"anyOf": [
+							{
+								"type": "number",
+								"format": "double"
+							},
+							{
+								"type": "string"
+							}
+						],
+						"nullable": true
+					},
+					"company": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Company"
+							}
+						],
+						"nullable": true
+					},
+					"stored": {
+						"properties": {
+							"thumbnail": {
+								"type": "string"
+							},
+							"resized": {
+								"type": "string"
+							},
+							"original": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"original"
+						],
+						"type": "object"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					}
+				},
+				"required": [
+					"type",
+					"mimeType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CONTACT_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"CONTACT_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.ACTIVE": {
+				"enum": [
+					"active"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.INACTIVE": {
+				"enum": [
+					"inactive"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.DISABLED": {
+				"enum": [
+					"disabled"
+				],
+				"type": "string"
+			},
+			"USER_STATUS.PENDING": {
+				"enum": [
 					"pending"
 				],
 				"type": "string"
@@ -137,395 +443,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"USER_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.DISABLED": {
-				"enum": [
-					"disabled"
-				],
-				"type": "string"
-			},
-			"USER_STATUS.PENDING": {
-				"enum": [
-					"pending"
-				],
-				"type": "string"
-			},
-			"Salary": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"endDate": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"hourlyRate": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"dailyRate": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"user": {
-						"$ref": "#/components/schemas/User"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"startDate"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"EXECUTION_SETTLEMENT": {
-				"enum": [
-					"itemized",
-					"hourly",
-					"daily",
-					"distance"
-				],
-				"type": "string"
-			},
-			"EXECUTION_STATUS": {
-				"enum": [
-					"pending",
-					"approved"
-				],
-				"type": "string"
-			},
-			"DocumentType": {
-				"type": "string",
-				"enum": [
-					"logo",
-					"stamp",
-					"signature",
-					"avatar",
-					"survey",
-					"other",
-					"plan",
-					"pdf",
-					"employee",
-					"medical-fitness-certificate",
-					"work-authorization-document",
-					"personal-protective-equipment-inspection-report",
-					"annual-subcontractor-framework-agreement",
-					"annual-general-occupational-safety-training",
-					"data-processing-declaration",
-					"tig",
-					"invoice",
-					"before",
-					"during",
-					"completion",
-					"inspection",
-					"contract",
-					"attachment"
-				]
-			},
-			"DocumentOwnerType": {
-				"type": "string",
-				"enum": [
-					"user",
-					"tenant",
-					"contact",
-					"company",
-					"tender",
-					"project",
-					"milestone",
-					"report",
-					"execution",
-					"invoice",
-					"task",
-					null
-				],
-				"nullable": true
-			},
-			"DocumentProperties": {
-				"properties": {
-					"startOfValidity": {
-						"type": "string"
-					},
-					"endOfValidity": {
-						"type": "string"
-					}
-				},
-				"type": "object",
-				"additionalProperties": false
-			},
-			"COMPANY_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"COMPANY_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.CONTRACTOR": {
-				"enum": [
-					"contractor"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.CUSTOMER": {
-				"enum": [
-					"customer"
-				],
-				"type": "string"
-			},
-			"COMPANY_TYPE.SUPPLIER": {
-				"enum": [
-					"supplier"
-				],
-				"type": "string"
-			},
-			"TENANT_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"TENANT_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
-			},
-			"Document": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string",
-						"nullable": true
-					},
-					"type": {
-						"$ref": "#/components/schemas/DocumentType"
-					},
-					"mimeType": {
-						"type": "string"
-					},
-					"approved": {
-						"type": "boolean"
-					},
-					"ownerId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"ownerType": {
-						"$ref": "#/components/schemas/DocumentOwnerType"
-					},
-					"properties": {
-						"$ref": "#/components/schemas/DocumentProperties"
-					},
-					"companyId": {
-						"anyOf": [
-							{
-								"type": "number",
-								"format": "double"
-							},
-							{
-								"type": "string"
-							}
-						],
-						"nullable": true
-					},
-					"company": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Company"
-							}
-						],
-						"nullable": true
-					},
-					"stored": {
-						"properties": {
-							"thumbnail": {
-								"type": "string"
-							},
-							"resized": {
-								"type": "string"
-							},
-							"original": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"original"
-						],
-						"type": "object"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					}
-				},
-				"required": [
-					"type",
-					"mimeType"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Tenant": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string",
-						"nullable": true
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"status": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/TENANT_STATUS.ACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/TENANT_STATUS.INACTIVE"
-							}
-						]
-					},
-					"taxNumber": {
-						"type": "string"
-					},
-					"registrationNumber": {
-						"type": "string"
-					},
-					"bankAccount": {
-						"type": "string",
-						"nullable": true
-					},
-					"documentIds": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"email",
-					"country",
-					"city",
-					"address",
-					"zipCode",
-					"status",
-					"taxNumber",
-					"registrationNumber"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CONTACT_STATUS.ACTIVE": {
-				"enum": [
-					"active"
-				],
-				"type": "string"
-			},
-			"CONTACT_STATUS.INACTIVE": {
-				"enum": [
-					"inactive"
-				],
-				"type": "string"
 			},
 			"User": {
 				"properties": {
@@ -813,6 +730,80 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Salary": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"hourlyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"dailyRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"startDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EXECUTION_SETTLEMENT": {
+				"enum": [
+					"itemized",
+					"hourly",
+					"daily",
+					"distance"
+				],
+				"type": "string"
+			},
+			"EXECUTION_STATUS": {
+				"enum": [
+					"pending",
+					"approved"
+				],
+				"type": "string"
 			},
 			"PROJECT_STATUS": {
 				"enum": [
@@ -2559,6 +2550,105 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"WorkType": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_WorkType.Exclude_keyofWorkType.id-or-createdAt-or-updatedAt__": {
+				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_WorkType.id-or-createdAt-or-updatedAt_": {
+				"$ref": "#/components/schemas/Pick_WorkType.Exclude_keyofWorkType.id-or-createdAt-or-updatedAt__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateWorkTypeProperties": {
+				"$ref": "#/components/schemas/Omit_WorkType.id-or-createdAt-or-updatedAt_"
+			},
+			"USER_STATUS": {
+				"enum": [
+					"active",
+					"inactive",
+					"disabled",
+					"pending"
+				],
+				"type": "string"
+			},
 			"Partial_User_": {
 				"properties": {
 					"id": {
@@ -2796,10 +2886,24 @@
 			},
 			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-accountVerifyToken-or-forgottenPasswordToken__": {
 				"properties": {
-					"email": {
-						"type": "string"
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
 					},
 					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
 						"type": "string"
 					},
 					"password": {
@@ -2968,9 +3072,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
 					"documentIds": {
 						"items": {
 							"type": "number",
@@ -2983,22 +3084,11 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"email",
 					"name",
+					"email",
 					"phoneNumber"
 				],
 				"type": "object",
@@ -3013,8 +3103,18 @@
 			},
 			"Pick_User.Exclude_keyofUser.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn-or-deletedOn-or-deletedBy-or-email-or-password-or-accountVerifyToken-or-forgottenPasswordToken-or-lastLoggedIn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
 					"name": {
 						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
 					},
 					"phoneNumber": {
 						"type": "string"
@@ -3175,9 +3275,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
-					},
 					"documentIds": {
 						"items": {
 							"type": "number",
@@ -3190,13 +3287,6 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					}
 				},
 				"required": [
@@ -3635,6 +3725,27 @@
 					"number": {
 						"type": "string"
 					},
+					"survey": {
+						"type": "string"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/Contact"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
 					"status": {
 						"$ref": "#/components/schemas/TENDER_STATUS"
 					},
@@ -3644,9 +3755,6 @@
 					"contactId": {
 						"type": "number",
 						"format": "double"
-					},
-					"contact": {
-						"$ref": "#/components/schemas/Contact"
 					},
 					"documentIds": {
 						"items": {
@@ -3660,24 +3768,6 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"survey": {
-						"type": "string"
 					},
 					"type": {
 						"type": "string"
@@ -3871,15 +3961,15 @@
 			},
 			"Pick_TenderItem.Exclude_keyofTenderItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
 					"name": {
 						"type": "string"
 					},
 					"createdBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"tender": {
-						"$ref": "#/components/schemas/Tender"
 					},
 					"netAmount": {
 						"type": "number",
@@ -4132,10 +4222,10 @@
 			},
 			"Pick_Tenant.Exclude_keyofTenant.id-or-createdOn-or-createdBy-or-updatedBy-or-updatedOn__": {
 				"properties": {
-					"email": {
+					"name": {
 						"type": "string"
 					},
-					"name": {
+					"email": {
 						"type": "string"
 					},
 					"status": {
@@ -4180,8 +4270,8 @@
 					}
 				},
 				"required": [
-					"email",
 					"name",
+					"email",
 					"status",
 					"country",
 					"city",
@@ -4471,12 +4561,18 @@
 			},
 			"Pick_Task.Exclude_keyofTask.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-position__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tender": {
+						"$ref": "#/components/schemas/Tender"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdOn": {
 						"type": "string",
@@ -4493,12 +4589,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"tender": {
-						"$ref": "#/components/schemas/Tender"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"type": {
 						"$ref": "#/components/schemas/TaskType"
@@ -4696,12 +4786,12 @@
 			},
 			"Pick_TaskComment.Exclude_keyofTaskComment.id-or-taskId-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -4853,6 +4943,20 @@
 			},
 			"Pick_StatusReport.Exclude_keyofStatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
 					"status": {
 						"$ref": "#/components/schemas/STATUS_REPORT_STATUS"
 					},
@@ -4871,20 +4975,6 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"dueDate": {
 						"type": "string",
@@ -4985,12 +5075,12 @@
 			},
 			"Pick_FinancialSetting.Exclude_keyofFinancialSetting.id-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -5105,12 +5195,18 @@
 			},
 			"Pick_EmployeeSchedule.Exclude_keyofEmployeeSchedule.id-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"company": {
+						"$ref": "#/components/schemas/User"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -5119,12 +5215,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"company": {
-						"$ref": "#/components/schemas/User"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"type": {
 						"$ref": "#/components/schemas/EmployeeScheduleType"
@@ -5488,8 +5578,15 @@
 			},
 			"Pick_Milestone.Exclude_keyofMilestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"name": {
 						"type": "string"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
 					},
 					"status": {
 						"$ref": "#/components/schemas/MILESTONE_STATUS"
@@ -5502,13 +5599,6 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"dueDate": {
 						"type": "string",
@@ -5743,21 +5833,21 @@
 			},
 			"Pick_ProjectItem.Exclude_keyofProjectItem.id-or-num-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
 					"name": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
-					},
-					"notes": {
 						"type": "string"
 					},
 					"createdBy": {
 						"type": "number",
 						"format": "double"
 					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
+					"status": {
+						"$ref": "#/components/schemas/PROJECT_ITEM_STATUS"
+					},
+					"notes": {
+						"type": "string"
 					},
 					"type": {
 						"$ref": "#/components/schemas/PROJECT_ITEM_TYPE"
@@ -6170,12 +6260,18 @@
 			},
 			"Pick_OrderForm.Exclude_keyofOrderForm.id-or-number-or-status-or-createdOn-or-updatedOn-or-approvedOn-or-approveCode__": {
 				"properties": {
-					"tenantId": {
-						"type": "number",
-						"format": "double"
+					"employee": {
+						"$ref": "#/components/schemas/User"
 					},
 					"tenant": {
 						"$ref": "#/components/schemas/Tenant"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
 					},
 					"createdBy": {
 						"type": "number",
@@ -6184,12 +6280,6 @@
 					"updatedBy": {
 						"type": "number",
 						"format": "double"
-					},
-					"employee": {
-						"$ref": "#/components/schemas/User"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
 					},
 					"description": {
 						"type": "string"
@@ -6423,8 +6513,19 @@
 			},
 			"Pick_Location.Exclude_keyofLocation.id-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"name": {
 						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
 					},
 					"status": {
 						"$ref": "#/components/schemas/LOCATION_STATUS"
@@ -6446,17 +6547,6 @@
 					},
 					"notes": {
 						"type": "string"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
 					},
 					"taxNumber": {
 						"type": "string"
@@ -6482,15 +6572,21 @@
 			},
 			"Pick_Invoice.Exclude_keyofInvoice.id-or-createdOn-or-updatedOn-or-approvedBy-or-approvedOn__": {
 				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/INVOICE_STATUS"
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"milestone": {
+						"$ref": "#/components/schemas/Milestone"
 					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -6500,14 +6596,8 @@
 						"type": "number",
 						"format": "double"
 					},
-					"employee": {
-						"$ref": "#/components/schemas/User"
-					},
-					"project": {
-						"$ref": "#/components/schemas/Project"
-					},
-					"milestone": {
-						"$ref": "#/components/schemas/Milestone"
+					"status": {
+						"$ref": "#/components/schemas/INVOICE_STATUS"
 					},
 					"type": {
 						"$ref": "#/components/schemas/INVOICE_TYPE"
@@ -7082,10 +7172,24 @@
 			},
 			"Pick_Contact.Exclude_keyofContact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
-					"email": {
-						"type": "string"
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
 						"type": "string"
 					},
 					"phoneNumber": {
@@ -7096,20 +7200,6 @@
 					},
 					"notes": {
 						"type": "string"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"user": {
-						"$ref": "#/components/schemas/User"
 					},
 					"userId": {
 						"type": "number",
@@ -7263,10 +7353,21 @@
 			},
 			"Pick_Company.Exclude_keyofCompany.id-or-createdOn-or-updatedBy-or-updatedOn__": {
 				"properties": {
-					"email": {
-						"type": "string"
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
 					},
 					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
 						"type": "string"
 					},
 					"status": {
@@ -7302,17 +7403,6 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
 					},
 					"type": {
 						"$ref": "#/components/schemas/COMPANY_TYPE"
@@ -7528,12 +7618,12 @@
 			},
 			"Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__": {
 				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
 					},
 					"createdBy": {
 						"type": "number",
@@ -7674,6 +7764,174 @@
 		"contact": {}
 	},
 	"paths": {
+		"/work-types": {
+			"get": {
+				"operationId": "GetWorkTypes",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/WorkType"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Work Type"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"WorkType:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateWorkType",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/WorkType"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Work Type"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"WorkType:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWorkTypeProperties"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/work-types/{id}": {
+			"put": {
+				"operationId": "UpdateWorkType",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/WorkType"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Work Type"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"WorkType:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWorkTypeProperties"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteWorkType",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Work Type"
+				],
+				"security": [
+					{
+						"jwtToken": [
+							"Tenant",
+							"WorkType:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/version": {
 			"get": {
 				"operationId": "Get",
@@ -9850,10 +10108,25 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Task"
+									"properties": {
+										"columns": {
+											"items": {
+												"$ref": "#/components/schemas/TaskColumn"
+											},
+											"type": "array"
+										},
+										"tasks": {
+											"items": {
+												"$ref": "#/components/schemas/Task"
+											},
+											"type": "array"
+										}
 									},
-									"type": "array"
+									"required": [
+										"columns",
+										"tasks"
+									],
+									"type": "object"
 								}
 							}
 						}
