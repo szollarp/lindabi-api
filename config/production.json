@@ -5,6 +5,10 @@
   "serviceBus": {
     "namespace": "lindabi.servicebus.windows.net"
   },
+  "postmark": {
+    "from": "noreply@lindabi.com",
+    "token": "f4c60d9a-d580-4f1b-99a8-513ba2598efb"
+  },
   "env": "production",
   "database": {
     "host": "lindabi-production-db.postgres.database.azure.com",
@@ -25,7 +29,7 @@
     "cryptoKey": "JtWVbZ7KouJJrDqTwatM",
     "authToken": {
       "key": "U5=aFfuchkT[:ekzi:=5U&DP?]!A+R8Qi4cz",
-      "expiresIn": "1m"
+      "expiresIn": "5m"
     },
     "refreshToken": {
       "key": "Ei]rpV=n]u7fq+$PSZ7BjqGNpt9N]#+g4tn(",
@@ -36,4 +40,15 @@
       "expiresIn": "1h"
     }
   },
+  "website": {
+    "hostname": "https://app.lindabi.com"
+  },
+  "azure": {
+    "storage": {
+      "accountName": "lindabi",
+      "accountKey": "BjSBmTLXkmTbA3im1+bCWmo7REQklZpdo2x3xnHgh8PFjRE+9LgTNJtSyMZgJmg4rn22IhMW9N1A+ASto9P3CA==",
+      "containerName": "uploads",
+      "connectionString": "DefaultEndpointsProtocol=https;AccountName=lindabi;AccountKey=BjSBmTLXkmTbA3im1+bCWmo7REQklZpdo2x3xnHgh8PFjRE+9LgTNJtSyMZgJmg4rn22IhMW9N1A+ASto9P3CA==;EndpointSuffix=core.windows.net"
+    }
+  }
 }
