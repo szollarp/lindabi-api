@@ -22,17 +22,9 @@ export class TenderItemModel extends Model<TenderItem, CreateTenderItemPropertie
 
   public materialNetAmount!: number;
 
-  // public materialActualNetAmount!: number;
-
-  // public totalMaterialAmount!: number;
-
   public feeNetUnitAmount!: number;
 
   public feeNetAmount!: number;
-
-  // public feeActualNetAmount!: number;
-
-  // public totalFeeAmount!: number;
 
   public num!: number;
 

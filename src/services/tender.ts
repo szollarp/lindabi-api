@@ -604,12 +604,14 @@ export const tenderService = (): TenderService => {
         where: { tenderId: sourceId }
       });
 
-      for (const item of tenderItems) {
-        const { id, tenderId, createdBy, createdOn, updatedOn, updatedBy, ...data } = item.toJSON();
+      const numOfItems = await context.models.TenderItem.count({ where: { tenderId: targetId } });
 
-        await context.models.TenderItem.create({
-          ...data, tenderId: targetId, createdBy: user.id,
-        }, { transaction: t });
+      for (let i = 0; i < tenderItems.length; i++) {
+        const item = tenderItems[i];
+        const { id, tenderId, createdBy, createdOn, updatedOn, updatedBy, ...otherData } = item.toJSON();
+
+        const data = { ...otherData, tenderId: targetId, createdBy: user.id, num: numOfItems + i + 1 };
+        await context.models.TenderItem.create(data, { transaction: t });
       }
 
       if (!transaction) {
