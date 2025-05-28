@@ -38,7 +38,7 @@ export const tenderService = (): TenderService => {
     }
 
     if ([TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED].includes(tender.status) && tender.contractorId) {
-      const year = new Date().getFullYear();
+      const year = tender.createdOn?.getFullYear() ?? new Date().getFullYear();
 
       const constructor = await context.models.Company.findOne({
         attributes: ["offerNum"],
@@ -57,8 +57,10 @@ export const tenderService = (): TenderService => {
             [Op.ne]: "",
           },
           createdOn: {
-            [Op.gte]: new Date(`${year}-01-01`),
-            [Op.lte]: new Date(`${year}-12-31`)
+            [Op.between]: [
+              new Date(`${year}-01-01`),
+              new Date(`${year}-12-31`)
+            ]
           }
         }
       });

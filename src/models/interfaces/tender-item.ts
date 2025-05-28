@@ -10,12 +10,8 @@ export interface TenderItem {
   unit: string
   materialNetUnitAmount: number
   materialNetAmount: number
-  // materialActualNetAmount: number
-  // totalMaterialAmount: number
   feeNetUnitAmount: number
   feeNetAmount: number
-  // feeActualNetAmount: number
-  // totalFeeAmount: number
   //
   tenderId: Tender["id"]
   tender?: Tender | null
