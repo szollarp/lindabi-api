@@ -34,6 +34,11 @@ const list = async (context: Context, user: DecodedUser): Promise<{ tasks: Task[
       },
       include: [
         {
+          model: context.models.TaskColumn,
+          as: 'column',
+          required: true
+        },
+        {
           model: context.models.TaskComment,
           as: 'comments',
           required: false,
@@ -134,9 +139,7 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
         [Op.or]: [
           { createdBy: user.id },
           {
-            '$assignees.id$': {
-              [Op.in]: user.id
-            }
+            '$assignee.id$': user.id
           }
         ]
       },
@@ -144,7 +147,6 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
         {
           model: context.models.TaskColumn,
           as: 'column',
-          attributes: ['id', 'name'],
           required: true
         },
         {
