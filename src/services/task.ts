@@ -132,11 +132,6 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
       where: {
         tenantId: user.tenant,
         [Op.or]: [
-          // {
-          //   assigneeIds: {
-          //     [Op.contains]: [user.id]
-          //   }
-          // },
           { createdBy: user.id }
         ]
       },

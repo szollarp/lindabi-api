@@ -188,6 +188,14 @@ export const projectService = (): ProjectService => {
                     }
                   }
                 ],
+              },
+              {
+                model: context.models.TaskColumn,
+                as: "column",
+                where: {
+                  finished: false,
+                },
+                required: true
               }
             ]
           },

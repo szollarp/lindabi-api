@@ -49,7 +49,7 @@ export const tenderService = (): TenderService => {
         return null;
       }
 
-      const tenderNum = await context.models.Tender.count({
+      const latestTender = await context.models.Tender.findOne({
         where: {
           contractorId: tender.contractorId,
           number: {
@@ -62,18 +62,25 @@ export const tenderService = (): TenderService => {
               new Date(`${year}-12-31`)
             ]
           }
-        }
+        },
+        order: [['createdOn', 'DESC']]
       });
 
-      const number = `${constructor.offerNum}-${year}-${tenderNum + 1}`;
+      if (latestTender?.number) {
+        const parts = latestTender.number.split("-");
+        const lastSegment = parts[parts.length - 1];
+        const lastNumber = parseInt(lastSegment, 10);
 
-      await context.services.journey.addSimpleLog(context, user, {
-        activity: `The tender number have been successfully generated.`,
-        property: "number",
-        updated: number
-      }, tender.id, "tender");
+        const number = `${constructor.offerNum}-${year}-${lastNumber + 1}`;
 
-      return number;
+        await context.services.journey.addSimpleLog(context, user, {
+          activity: `The tender number have been successfully generated.`,
+          property: "number",
+          updated: number
+        }, tender.id, "tender");
+
+        return number;
+      }
     }
 
     return null;
@@ -88,6 +95,14 @@ export const tenderService = (): TenderService => {
             as: "tasks",
             attributes: ["title"],
             include: [
+              {
+                model: context.models.TaskColumn,
+                as: "column",
+                where: {
+                  finished: false,
+                },
+                required: true
+              },
               {
                 model: context.models.User,
                 as: "assignee",
@@ -602,17 +617,18 @@ export const tenderService = (): TenderService => {
     const t = !transaction ? await context.models.sequelize.transaction() : transaction;
 
     try {
-      const tenderItems = await context.models.TenderItem.findAll({
+      const sourceItems = await context.models.TenderItem.findAll({
         where: { tenderId: sourceId }
       });
 
       const numOfItems = await context.models.TenderItem.count({ where: { tenderId: targetId } });
 
-      for (let i = 0; i < tenderItems.length; i++) {
-        const item = tenderItems[i];
+      for (let i = 0; i < sourceItems.length; i++) {
+        const item = sourceItems[i];
         const { id, tenderId, createdBy, createdOn, updatedOn, updatedBy, ...otherData } = item.toJSON();
+        const num = numOfItems === 0 ? item.num : numOfItems + i + 1;
 
-        const data = { ...otherData, tenderId: targetId, createdBy: user.id, num: numOfItems + i + 1 };
+        const data = { ...otherData, tenderId: targetId, createdBy: user.id, num };
         await context.models.TenderItem.create(data, { transaction: t });
       }
 
