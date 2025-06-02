@@ -133,7 +133,11 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
         tenantId: user.tenant,
         [Op.or]: [
           { createdBy: user.id },
-          { '$assignees.id$': user.id }
+          {
+            '$assignees.id$': {
+              [Op.in]: user.id
+            }
+          }
         ]
       },
       include: [
