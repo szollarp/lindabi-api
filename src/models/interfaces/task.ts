@@ -17,6 +17,8 @@ export interface Task {
   description?: string;
   type: TaskType;
   priority: TaskPriority;
+  //
+  startDate: Date;
   dueDate: Date;
   //
   column?: TaskColumn
@@ -49,4 +51,4 @@ export interface Task {
   updatedBy?: User["id"] | null
 }
 
-export type CreateTaskProperties = Omit<Task, 'id' | 'uid' | 'description' | 'projectId' | 'tenderId' | 'assignedIds' | 'createdAt' | 'updatedAt' | 'dueDate' | 'position'>;
+export type CreateTaskProperties = Omit<Task, 'id' | 'uid' | 'description' | 'projectId' | 'tenderId' | 'assignedIds' | 'createdAt' | 'updatedAt' | 'dueDate' | 'startDate' | 'position'>;

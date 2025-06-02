@@ -1,7 +1,7 @@
 module.exports = {
   local: {
     username: 'peterszollar',
-    password: 'Ns3enmSPsP',
+    password: '0516szollarP',
     database: 'api',
     port: 5432,
     host: 'development-pq.postgres.database.azure.com',

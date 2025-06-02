@@ -14,6 +14,8 @@ import getUpdateCustomerTemplate from "../helpers/notification-template/update-c
 import getCreteContractorTemplate from "../helpers/notification-template/create-contractor";
 import getUpdateContractorTemplate from "../helpers/notification-template/update-contractor";
 import getCreateOrderFormTemplate from "../helpers/notification-template/create-order-form";
+import getCreateTaskCommentTemplate from "../helpers/notification-template/create-task-comment";
+import getCreateTaskAssignTemplate from "../helpers/notification-template/create-task-assign";
 import { TENDER_STATUS, USER_STATUS } from "../constants";
 import type { Context } from "../types";
 import type { Tender } from "../models/interfaces/tender";
@@ -21,6 +23,8 @@ import type { User } from "../models/interfaces/user";
 import type { Company } from "../models/interfaces/company";
 import type { Contact } from "../models/interfaces/contact";
 import type { OrderForm } from "../models/interfaces/order-form";
+import { TaskComment } from "../models/interfaces/task-comment";
+import { Task } from "../models/interfaces/task";
 
 export interface NotificationService {
   sendTenderCreatedNotification: (context: Context, tender: Partial<Tender>) => Promise<{ success: boolean }>
@@ -36,6 +40,8 @@ export interface NotificationService {
   sendContractorCreatedNotification: (context: Context, customer: Company) => Promise<{ success: boolean }>
   sendContractorUpdateNotification: (context: Context, company: Company) => Promise<{ success: boolean }>
   sendOrderFormCreateNotification: (context: Context, orderForm: OrderForm) => Promise<{ success: boolean }>
+  sendCreateTaskCommentNotification: (context: Context, comment: TaskComment) => Promise<{ success: boolean }>
+  sendCreateTaskAssignNotification: (context: Context, task: Task, assignedUserId: number) => Promise<{ success: boolean }>
 }
 
 export const notificationService = (): NotificationService => {
@@ -238,6 +244,49 @@ export const notificationService = (): NotificationService => {
       getCreateOrderFormTemplate(orderForm, project!, employee!));
   };
 
+  const sendCreateTaskAssignNotification = async (context: Context, task: Task, assignedUserId: User["id"]): Promise<{ success: boolean }> => {
+    const assignedUser = await context.models.User.findByPk(assignedUserId, {
+      attributes: ["id", "name", "email"]
+    });
+
+    const createdBy = await context.models.User.findByPk(task.createdBy, {
+      attributes: ["id", "name", "email"]
+    });
+
+    return sendNotification(context, [assignedUser!], "Feladat felelősnek jelöltek", () =>
+      getCreateTaskAssignTemplate(task, createdBy!));
+  }
+
+  const sendCreateTaskCommentNotification = async (context: Context, comment: TaskComment): Promise<{ success: boolean }> => {
+    const task = await context.models.Task.findByPk(comment.taskId, {
+      attributes: ["id", "title", "uid"],
+      include: [
+        {
+          model: context.models.User,
+          as: "reporter",
+          attributes: ["id", "name", "email"]
+        },
+        {
+          model: context.models.User,
+          as: "assignee",
+          attributes: ["id", "name", "email"]
+        }
+      ]
+    });
+
+    const createdBy = await context.models.User.findByPk(comment.createdBy, {
+      attributes: ["id", "name", "email"]
+    });
+
+    const users = [
+      task!.reporter!,
+      ...(task?.assignee ?? [])
+    ];
+
+    return sendNotification(context, users, "Új feladat megjegyzés jött létre", () =>
+      getCreateTaskCommentTemplate(comment, task!, createdBy!));
+  }
+
   return {
     sendTenderCreatedNotification,
     sendTenderStatusChangedNotification,
@@ -251,6 +300,8 @@ export const notificationService = (): NotificationService => {
     sendCustomerUpdateNotification,
     sendContractorCreatedNotification,
     sendContractorUpdateNotification,
-    sendOrderFormCreateNotification
+    sendOrderFormCreateNotification,
+    sendCreateTaskCommentNotification,
+    sendCreateTaskAssignNotification
   }
 }

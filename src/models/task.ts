@@ -24,6 +24,8 @@ export class TaskModel extends Model<Task, CreateTaskProperties> implements Task
   public position!: number;
   public type!: "task" | "fix";
   public priority!: "low" | "medium" | "high";
+
+  public startDate!: Date;
   public dueDate!: Date;
 
   public columnId!: ForeignKey<TaskColumn["id"]>;
@@ -107,6 +109,10 @@ export const TaskFactory = (sequelize: Sequelize): typeof TaskModel => {
     priority: {
       type: DataTypes.ENUM("low", "medium", "high"),
       allowNull: false
+    },
+    startDate: {
+      type: DataTypes.DATE,
+      allowNull: true
     },
     dueDate: {
       type: DataTypes.DATE,

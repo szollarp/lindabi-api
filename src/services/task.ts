@@ -132,7 +132,8 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
       where: {
         tenantId: user.tenant,
         [Op.or]: [
-          { createdBy: user.id }
+          { createdBy: user.id },
+          { '$assignees.id$': user.id }
         ]
       },
       include: [
@@ -210,6 +211,7 @@ const create = async (context: Context, user: DecodedUser, data: CreateTaskPrope
     uid: uuidv4(),
     ...data,
     dueDate: tomorrow,
+    startDate: new Date(),
     createdBy: user.id,
     tenantId: user.tenant,
     position: numOfTasks + 1,
@@ -233,6 +235,7 @@ const assign = async (context: Context, user: DecodedUser, id: number, data: { u
   if (!task) throw new Error("Task not found");
 
   await task.addAssignee(data.userId);
+  await context.services.notification.sendCreateTaskAssignNotification(context, task, data.userId);
 
   return { success: true };
 }
@@ -247,7 +250,12 @@ const unassign = async (context: Context, user: DecodedUser, id: number, data: {
 }
 
 const addComment = async (context: Context, user: DecodedUser, taskId: number, data: CreateTaskCommentProperties): Promise<TaskComment> => {
-  return context.models.TaskComment.create({ ...data, taskId, createdBy: user.id, tenantId: user.tenant } as TaskComment);
+  const comment = await context.models.TaskComment.create({ ...data, taskId, createdBy: user.id, tenantId: user.tenant } as TaskComment);
+  if (comment) {
+    await context.services.notification.sendCreateTaskCommentNotification(context, comment);
+  }
+
+  return comment;
 };
 
 const deleteComment = async (context: Context, user: DecodedUser, commentId: number): Promise<{ success: boolean }> => {
