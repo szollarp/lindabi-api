@@ -598,9 +598,21 @@ export const tenderService = (): TenderService => {
     }
   }
 
+  const renumberTenderItems = async (context: Context, tenderId: number) => {
+    const items = await context.models.TenderItem.findAll({
+      where: { tenderId },
+      order: [["num", 'ASC']],
+    });
+
+    for (let i = 0; i < items.length; i++) {
+      await items[i].update({ num: i + 1 });
+    }
+  }
+
   const removeTenderItem = async (context: Context, user: DecodedUser, tenderId: number, id: number): Promise<{ success: boolean }> => {
     try {
       await context.models.TenderItem.destroy({ where: { id, tenderId } });
+      await renumberTenderItems(context, tenderId);
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender item have been successfully removed.",
