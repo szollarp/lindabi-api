@@ -232,6 +232,7 @@ export const authenticationService = (): AuthenticationService => {
       const headerToken = headers["x-refresh-token"];
       const authConfig: AuthConfig = context.config.get("auth");
       if (!jwt.verify(headerToken, authConfig.refreshToken.key)) {
+        console.error("Refresh token verification failed", { headerToken });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
@@ -247,6 +248,7 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!refreshToken || !refreshToken.user) {
+        console.error("Refresh token not found or user not associated", { headerToken, refreshToken });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
