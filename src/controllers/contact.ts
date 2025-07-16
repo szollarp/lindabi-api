@@ -17,7 +17,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Contact:List"])
+  @Security("authentication", ["Tenant", "Contact:List"])
   public async getContacts(@Request() request: ContextualRequest): Promise<Array<Partial<Contact>>> {
     const { context, user } = request;
     return await context.services.contact.getContacts(context, user.tenant);
@@ -34,7 +34,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Tenant", "Contact:Get"])
+  @Security("authentication", ["Tenant", "Contact:Get"])
   public async getContact(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     return await context.services.contact.getContact(context, user.tenant, id);
@@ -52,7 +52,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "Contact:Create"])
+  @Security("authentication", ["Tenant", "Contact:Create"])
   public async createContact(@Request() request: ContextualRequest, @Body() body: CreateContactProperties): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     const contact = await context.services.contact.createContact(context, user.tenant, user.id, body);
@@ -74,7 +74,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Tenant", "Contact:Update"])
+  @Security("authentication", ["Tenant", "Contact:Update"])
   public async updateContact(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Contact>): Promise<Partial<Contact> | null> {
     const { context, user } = request;
     const contact = await context.services.contact.updateContact(context, user.tenant, id, user.id, body);
@@ -96,7 +96,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Tenant", "Contact:Delete"])
+  @Security("authentication", ["Tenant", "Contact:Delete"])
   public async deleteContacts(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.deleteContacts(context, user.tenant, body);
@@ -113,7 +113,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Tenant", "Contact:Delete"])
+  @Security("authentication", ["Tenant", "Contact:Delete"])
   public async deleteContact(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.deleteContact(context, user.tenant, id);
@@ -129,7 +129,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Post("{id}/add-to-company")
-  @Security("jwtToken", ["Tenant", "Contact:List"])
+  @Security("authentication", ["Tenant", "Contact:List"])
   public async addToCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.addToCompany(context, user.tenant, id, body);
@@ -145,7 +145,7 @@ export class ContactController extends Controller {
   @Tags("Contact")
   @SuccessResponse("200", "OK")
   @Delete("{id}/remove-from-company")
-  @Security("jwtToken", ["Tenant", "Contact:List"])
+  @Security("authentication", ["Tenant", "Contact:List"])
   public async removeFromCompany(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { id: number }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.contact.removeFromCompany(context, user.tenant, id, body);

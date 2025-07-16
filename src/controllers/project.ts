@@ -26,7 +26,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/copy-from-tender")
-  @Security("jwtToken", ["Tenant", "Project:Create"])
+  @Security("authentication", ["Tenant", "Project:Create"])
   public async createProject(
     @Request() request: ContextualRequest,
     @UploadedFiles() files: Express.Multer.File[],
@@ -47,7 +47,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Tenant", "Project:Update"])
+  @Security("authentication", ["Tenant", "Project:Update"])
   public async updateProject(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Project>): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateProject(context, id, body, user);
@@ -62,7 +62,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Project:List"])
+  @Security("authentication", ["Tenant", "Project:List"])
   public async getProjects(@Request() request: ContextualRequest): Promise<Partial<Project>[]> {
     const { context, user } = request;
     return await context.services.project.getProjects(context, user);
@@ -79,7 +79,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Tenant", "Project:GetMain"])
+  @Security("authentication", ["Tenant", "Project:GetMain"])
   public async getProject(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Project> | null> {
     const { context, user } = request;
     return await context.services.project.getProject(context, user.tenant, id);
@@ -97,7 +97,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/contacts/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMaine"])
+  @Security("authentication", ["Tenant", "Project:UpdateMaine"])
   public async updateProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number, @Body() body: { canShow: boolean, userContact: boolean }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.updateProjectContact(context, user, id, cid, body);
@@ -114,7 +114,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/contacts")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
+  @Security("authentication", ["Tenant", "Project:UpdateMain"])
   public async addProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { contactId: number }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.addProjectContact(context, user, id, body.contactId);
@@ -131,7 +131,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/contacts/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
+  @Security("authentication", ["Tenant", "Project:UpdateMain"])
   public async removeProjectContact(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<void> {
     const { context, user } = request;
     return await context.services.project.removeProjectContact(context, user, id, cid);
@@ -148,7 +148,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/supervisors")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
+  @Security("authentication", ["Tenant", "Project:UpdateMain"])
   public async addProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { contactId: number }): Promise<void> {
     const { context, user } = request;
     return await context.services.project.addProjectSupervisor(context, user, id, body.contactId);
@@ -165,7 +165,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/supervisors/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMain"])
+  @Security("authentication", ["Tenant", "Project:UpdateMain"])
   public async removeProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<void> {
     const { context, user } = request;
     return await context.services.project.removeProjectSupervisor(context, user, id, cid);
@@ -181,7 +181,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/attributes/get-colors")
-  @Security("jwtToken", ["Tenant", "Project:GetMain"])
+  @Security("authentication", ["Tenant", "Project:GetMain"])
   public async getColors(@Request() request: ContextualRequest): Promise<string[]> {
     const { context, user } = request;
     return await context.services.project.getProjectColors(context, user.tenant);
@@ -198,7 +198,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/milestones")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
   public async addMilestone(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateMilestoneProperties): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.addMilestone(context, user, id, body);
@@ -216,7 +216,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/milestones/{mid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
   public async updateMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number, @Body() body: Partial<Milestone>): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateMilestone(context, user, id, mid, body);
@@ -233,7 +233,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/milestones/{mid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeMilestone(context, user, id, mid);
@@ -251,7 +251,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/milestones/{mid}/documents")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
   public async uploadMilestoneDocuments(@Request() request: ContextualRequest, @Path() mid: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, mid, "milestone", type, files, {}, false);
@@ -268,7 +268,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/milestones/{mid}/documents/{did}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateMilestones"])
+  @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
   public async removeMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<{ removed: boolean }> {
     const { context, user } = request;
     return await context.services.document.removeDocument(context, did);
@@ -285,7 +285,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("/{id}/milestones/{mid}/documents/{did}")
-  @Security("jwtToken", ["Tenant", "Project:GetMilestones"])
+  @Security("authentication", ["Tenant", "Project:GetMilestones"])
   public async getMilestoneDocument(@Request() request: ContextualRequest, @Path() mid: number, @Path() did: number): Promise<Partial<Document> | null> {
     const { context } = request;
     return await context.services.document.getDocument(context, mid, did, "milestone");
@@ -302,7 +302,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/items")
-  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
+  @Security("authentication", ["Tenant", "Project:UpdateItems"])
   public async addProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateProjectItemProperties): Promise<Partial<ProjectItem>> {
     const { context, user } = request;
     return await context.services.project.createProjectItem(context, id, user, body);
@@ -320,7 +320,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
+  @Security("authentication", ["Tenant", "Project:UpdateItems"])
   public async updateProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: Partial<ProjectItem>): Promise<Partial<ProjectItem | null>> {
     const { context, user } = request;
     return await context.services.project.updateProjectItem(context, id, itemId, user, body);
@@ -338,7 +338,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}/order")
-  @Security("jwtToken", ["Tenant", "Project:UpdateItems"])
+  @Security("authentication", ["Tenant", "Project:UpdateItems"])
   public async updateProjectItemOrder(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: { side: "up" | "down" }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateProjectItemOrder(context, id, itemId, user, body);
@@ -355,7 +355,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Project:DeleteItem"])
+  @Security("authentication", ["Tenant", "Project:DeleteItem"])
   public async removeProjectItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeProjectItem(context, user, id, itemId);
@@ -373,7 +373,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Project:GetDocuments"])
+  @Security("authentication", ["Tenant", "Project:GetDocuments"])
   public async getDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<Partial<Document> | null> {
     const { context } = request;
     return await context.services.document.getDocument(context, documentId, id, "project");
@@ -389,7 +389,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/journeys")
-  @Security("jwtToken", ["Tenant", "Project:GetJournal"])
+  @Security("authentication", ["Tenant", "Project:GetJournal"])
   public async getJourneys(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Journey>[]> {
     const { context } = request;
     return await context.services.project.getJourneys(context, id);
@@ -405,7 +405,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Get("{id}/invoices")
-  @Security("jwtToken", ["Tenant", "Project:Get"])
+  @Security("authentication", ["Tenant", "Project:Get"])
   public async getInvoices(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Invoice>[]> {
     const { context, user } = request;
     return await context.services.project.getInvoices(context, user.tenant, id);
@@ -423,7 +423,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Project:UpdateDocuments"])
+  @Security("authentication", ["Tenant", "Project:UpdateDocuments"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[],): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "project", type, files, {}, false);
@@ -441,7 +441,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
+  @Security("authentication", ["Tenant", "Project:DeleteDocument"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, documentId);
@@ -458,7 +458,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "Project:DeleteDocument"])
+  @Security("authentication", ["Tenant", "Project:DeleteDocument"])
   public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocuments(context, id, "project", type);
@@ -475,7 +475,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Post("/{id}/comments")
-  @Security("jwtToken", ["Tenant", "Project:UpdateNotes"])
+  @Security("authentication", ["Tenant", "Project:UpdateNotes"])
   public async addComment(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { notes: string }): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.addComment(context, user, id, body);
@@ -493,7 +493,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Put("/{id}/comments/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:UpdateNotes"])
+  @Security("authentication", ["Tenant", "Project:UpdateNotes"])
   public async updateComment(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number, @Body() body: Partial<ProjectComment>): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.updateComment(context, user, id, cid, body);
@@ -510,7 +510,7 @@ export class ProjectController extends Controller {
   @Tags("Project")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/comments/{cid}")
-  @Security("jwtToken", ["Tenant", "Project:DeleteNote"])
+  @Security("authentication", ["Tenant", "Project:DeleteNote"])
   public async removeComment(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<{ updated: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeComment(context, user, id, cid);
@@ -527,7 +527,7 @@ export class ProjectController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Tenant", "Project:Delete"])
+  @Security("authentication", ["Tenant", "Project:Delete"])
   public async deleteProject(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeProjects(context, user, body.ids);
@@ -544,7 +544,7 @@ export class ProjectController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Tenant", "Project:Delete"])
+  @Security("authentication", ["Tenant", "Project:Delete"])
   public async deleteProjects(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.project.removeProject(context, user, id);

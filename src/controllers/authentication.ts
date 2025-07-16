@@ -33,7 +33,7 @@ export class AuthenticationController extends Controller {
   @Post("login")
   public async logIn(@Request() request: ContextualRequest, @Body() body: LoginRequest): Promise<LoginResponse> {
     const { context, headers } = request;
-    const deviceId = headers["x-device-id"] as string | undefined;
+    const deviceId = headers["x-session-id"] as string | undefined;
     return await context.services.authentication.login(context, body, deviceId);
   }
 
@@ -57,7 +57,7 @@ export class AuthenticationController extends Controller {
   @Post("login/2fa")
   public async logIn2Fa(@Request() request: ContextualRequest, @Body() body: Login2FaRequest): Promise<LoginResponse> {
     const { context, headers } = request;
-    const deviceId = headers["x-device-id"] as string | undefined;
+    const deviceId = headers["x-session-id"] as string | undefined;
     return await context.services.authentication.loginTwoFactor(context, body, deviceId);
   }
 
@@ -191,7 +191,7 @@ export class AuthenticationController extends Controller {
   @Tags("Authentication")
   @SuccessResponse("200", "OK")
   @Get("me")
-  @Security("jwtToken", [])
+  @Security("me", [])
   public async getMe(@Request() request: ContextualRequest): Promise<Partial<User | null>> {
     const { context, user } = request;
     return await context.services.user.get(context, user.tenant, user.id);

@@ -18,7 +18,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant"])
+  @Security("authentication", ["Tenant"])
   public async getEmployees(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
     return await context.services.user.list(context, user.tenant, USER_TYPE.EMPLOYEE);
@@ -35,7 +35,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Employee:Create", "Tenant"])
+  @Security("authentication", ["Employee:Create", "Tenant"])
   public async createEmployee(@Request() request: ContextualRequest, @Body() body: CreateUserProperties): Promise<Partial<User>> {
     const { context, user } = request;
     const newUser = await context.services.user.create(context, user.tenant, body, user.id);
@@ -57,7 +57,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Employee:Delete", "Tenant"])
+  @Security("authentication", ["Employee:Delete", "Tenant"])
   public async deleteEmployees(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.deleteUsers(context, user.tenant, body, USER_TYPE.EMPLOYEE);
@@ -75,7 +75,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["Employee:Update", "Tenant"])
+  @Security("authentication", ["Employee:Update", "Tenant"])
   public async updateEmployee(@Request() request: ContextualRequest, @Body() body: Partial<User>, @Path() id: number): Promise<Partial<User>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -98,7 +98,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Get("{id}")
-  @Security("jwtToken", ["Employee:Get", "Tenant"])
+  @Security("authentication", ["Employee:Get", "Tenant"])
   public async getEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User | null>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -117,7 +117,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Employee:Delete", "Tenant"])
+  @Security("authentication", ["Employee:Delete", "Tenant"])
   public async deleteEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.deleteUser(context, user.tenant, id, USER_TYPE.EMPLOYEE);
@@ -134,7 +134,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Post("{id}/documents")
-  @Security("jwtToken", ["Employee:Update", "Tenant"])
+  @Security("authentication", ["Employee:Update", "Tenant"])
   public async addDocument(
     @Request() request: ContextualRequest,
     @Path() id: number,
@@ -160,7 +160,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Delete("{ownerId}/document/{id}")
-  @Security("jwtToken", ["Employee:Update", "Tenant"])
+  @Security("authentication", ["Employee:Update", "Tenant"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id);
@@ -178,7 +178,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Put("{ownerId}/document/{id}")
-  @Security("jwtToken", ["Employee:Update", "Tenant"])
+  @Security("authentication", ["Employee:Update", "Tenant"])
   public async updateDocument(@Request() request: ContextualRequest, @Path() ownerId: number, @Path() id: number, @Body() body: Partial<Document>): Promise<Document> {
     const { context } = request;
     return await context.services.document.update(context, ownerId, id, "user", body);
@@ -194,7 +194,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Get("{id}/check-documents")
-  @Security("jwtToken", ["Employee:Get", "Tenant"])
+  @Security("authentication", ["Employee:Get", "Tenant"])
   public async checkDocuments(@Request() request: ContextualRequest, @Path() id: number): Promise<any> {
     const { context, user } = request;
     return await context.services.document.checkUserDocuments(context, user.tenant, id);
@@ -210,7 +210,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Get("{id}/invoices")
-  @Security("jwtToken", ["Employee:Get", "Tenant"])
+  @Security("authentication", ["Employee:Get", "Tenant"])
   public async getInvoices(@Request() request: ContextualRequest, @Path() id: number): Promise<Invoice[]> {
     const { context, user } = request;
     return await context.services.user.getInvoices(context, user.tenant, id);
@@ -227,7 +227,7 @@ export class EmployeeController extends Controller {
   @Tags("Employee")
   @SuccessResponse("200", "OK")
   @Put("{id}/billing")
-  @Security("jwtToken", ["Employee:Update", "Tenant"])
+  @Security("authentication", ["Employee:Update", "Tenant"])
   public async updateBilling(@Request() request: ContextualRequest, @Path() id: number, @Body() body: UserBilling): Promise<Partial<User>> {
     const { context, user } = request;
     return await context.services.user.update(context, user.tenant, id, { billing: body }, user.id);

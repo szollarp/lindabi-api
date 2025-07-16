@@ -15,7 +15,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Schedule:List", "Tenant"])
+  @Security("authentication", ["Schedule:List", "Tenant"])
   public async getSchedules(@Request() request: ContextualRequest, @Query() startDate?: string, @Query() endDate?: string, @Query() employeeId?: number): Promise<Array<Partial<EmployeeSchedule>>> {
     const { context, user } = request;
     return await context.services.employeeSchedule.list(context, user, {
@@ -33,7 +33,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  @Security("authentication", ["Schedule:Create", "Tenant"])
   public async createSchedule(@Request() request: ContextualRequest, @Body() body: CreateEmployeeScheduleProperties): Promise<Partial<EmployeeSchedule>> {
     const { context, user } = request;
     return await context.services.employeeSchedule.create(context, user, body);
@@ -49,7 +49,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Post("/holiday/add")
-  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  @Security("authentication", ["Schedule:Create", "Tenant"])
   public async addHoliday(@Request() request: ContextualRequest, @Body() body: CreateHolidayScheduleProperties): Promise<Partial<EmployeeSchedule>> {
     const { context, user } = request;
     return await context.services.employeeSchedule.createHoliday(context, user, body);
@@ -64,7 +64,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Delete("/{id}")
-  @Security("jwtToken", ["Schedule:Delete", "Tenant"])
+  @Security("authentication", ["Schedule:Delete", "Tenant"])
   public async removeSchedule(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return context.services.employeeSchedule.remove(context, id);
@@ -79,7 +79,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Get("/employee")
-  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  @Security("authentication", ["Schedule:Create", "Tenant"])
   public async getEmployees(@Request() request: ContextualRequest): Promise<Partial<User>[]> {
     const { context, user } = request;
     return await context.services.user.list(context, user.tenant, USER_TYPE.EMPLOYEE, true);
@@ -95,7 +95,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Put("/employee")
-  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  @Security("authentication", ["Schedule:Create", "Tenant"])
   public async addEmployee(@Request() request: ContextualRequest, @Body() body: { id: number }): Promise<Partial<User>> {
     const { context, user } = request;
     return await context.services.user.update(context, user.tenant, body.id, { inSchedule: true }, user.id);
@@ -110,7 +110,7 @@ export class ScheduleController extends Controller {
   @Tags("Schedule")
   @SuccessResponse("200", "OK")
   @Delete("/employee/{id}")
-  @Security("jwtToken", ["Schedule:Create", "Tenant"])
+  @Security("authentication", ["Schedule:Create", "Tenant"])
   public async removeEmployee(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context, user } = request;
     await context.services.user.update(context, user.tenant, id, { inSchedule: false }, user.id);

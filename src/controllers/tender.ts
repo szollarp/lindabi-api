@@ -17,7 +17,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "Tender:Create"])
+  @Security("authentication", ["Tenant", "Tender:Create"])
   public async createTender(@Request() request: ContextualRequest, @Body() body: CreateTenderProperties): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     const tender = await context.services.tender.createTender(context, user.tenant, user, body);
@@ -38,7 +38,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/copy")
-  @Security("jwtToken", ["Tenant", "Tender:Create"])
+  @Security("authentication", ["Tenant", "Tender:Create"])
   public async copyTender(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     return await context.services.tender.copyTender(context, user, id);
@@ -55,7 +55,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/send")
-  @Security("jwtToken", ["Tenant", "Tender:Create"])
+  @Security("authentication", ["Tenant", "Tender:Create"])
   public async sendEmail(@Request() request: ContextualRequest, @Path() id: number, @FormField() message: string, @UploadedFile() content: File): Promise<{ success: boolean }> {
     const { context, user } = request;
     // const { message, content } = body;
@@ -71,7 +71,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Tender:List"])
+  @Security("authentication", ["Tenant", "Tender:List"])
   public async getTenders(@Request() request: ContextualRequest): Promise<Partial<Tender>[]> {
     const { context, user } = request;
     return await context.services.tender.getTenders(context, user.tenant);
@@ -88,7 +88,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
+  @Security("authentication", ["Tenant", "Tender:Get"])
   public async getTender(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     return await context.services.tender.getTender(context, user.tenant, id);
@@ -105,7 +105,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("/{id}/items")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
+  @Security("authentication", ["Tenant", "Tender:Get"])
   public async getTenderItems(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<TenderItem>[]> {
     const { context, user } = request;
     return await context.services.tender.getTenderItems(context, user.tenant, id);
@@ -122,7 +122,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Post("/{id}/items")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
+  @Security("authentication", ["Tenant", "Tender:Get"])
   public async addTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateTenderItemProperties): Promise<Partial<TenderItem>> {
     const { context, user } = request;
     return await context.services.tender.createTenderItem(context, id, user, body);
@@ -139,7 +139,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("/{sourceId}/items-copy/{targetId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async copyTenderItem(@Request() request: ContextualRequest, @Path() sourceId: number, @Path() targetId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.copyTenderItem(context, sourceId, targetId, user);
@@ -157,7 +157,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async updateTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: Partial<TenderItem>): Promise<Partial<TenderItem | null>> {
     const { context, user } = request;
     return await context.services.tender.updateTenderItem(context, id, itemId, user, body);
@@ -166,7 +166,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("/{id}/items/{itemId}/order")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async updateTenderItemOrder(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number, @Body() body: { side: "up" | "down" }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.updateTenderItemOrder(context, id, itemId, user, body);
@@ -183,7 +183,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("/{id}/items/{itemId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async removeTenderItem(@Request() request: ContextualRequest, @Path() id: number, @Path() itemId: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.removeTenderItem(context, user, id, itemId);
@@ -201,7 +201,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
+  @Security("authentication", ["Tenant", "Tender:Get"])
   public async getTenderDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<any> {
     const { context } = request;
     return await context.services.document.getDocument(context, documentId, id, "tender");
@@ -217,7 +217,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("{id}/journeys")
-  @Security("jwtToken", ["Tenant", "Tender:Get"])
+  @Security("authentication", ["Tenant", "Tender:Get"])
   public async getTenderJourneys(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Journey>[]> {
     const { context } = request;
     return await context.services.tender.getTenderJourneys(context, id);
@@ -235,7 +235,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async uploadTenderDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "tender", type, files, {}, false);
@@ -253,7 +253,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, documentId);
@@ -270,7 +270,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "Tender:Update"])
+  @Security("authentication", ["Tenant", "Tender:Update"])
   public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocuments(context, id, "tender", type);
@@ -287,7 +287,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["Tender:Update"])
+  @Security("authentication", ["Tender:Update"])
   public async updateTender(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Tender>): Promise<Partial<Tender> | null> {
     const { context, user } = request;
     const data = await context.services.tender.updateTender(context, id, user, body);
@@ -309,7 +309,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Tenant", "Tender:Delete"])
+  @Security("authentication", ["Tenant", "Tender:Delete"])
   public async deleteTenders(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.deleteTenders(context, user.tenant, body);
@@ -326,7 +326,7 @@ export class TenderController extends Controller {
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Tenant", "Tender:Delete"])
+  @Security("authentication", ["Tenant", "Tender:Delete"])
   public async deleteTender(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.tender.deleteTender(context, user.tenant, id);

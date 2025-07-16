@@ -13,7 +13,7 @@ export class SearchController extends Controller {
   @Tags("Search")
   @SuccessResponse("200", "OK")
   @Put("/global")
-  @Security("jwtToken", [])
+  @Security("authentication", [])
   public async search(@Request() request: ContextualRequest, @Body() body: { keyword: string }): Promise<any> {
     const { context } = request;
     return await context.services.search.globalSearch(context, body);

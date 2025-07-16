@@ -15,7 +15,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["User:List", "Tenant"])
+  @Security("authentication", ["User:List", "Tenant"])
   public async getUsers(@Request() request: ContextualRequest): Promise<Array<Partial<User>>> {
     const { context, user } = request;
     return await context.services.user.list(context, user.tenant, USER_TYPE.USER);
@@ -32,7 +32,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["User:Create", "Tenant"])
+  @Security("authentication", ["User:Create", "Tenant"])
   public async createUser(@Request() request: ContextualRequest, @Body() body: CreateUserProperties): Promise<Partial<User>> {
     const { context, user } = request;
     const newUser = await context.services.user.create(context, user.tenant, body, user.id);
@@ -54,7 +54,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["User:Delete", "Tenant"])
+  @Security("authentication", ["User:Delete", "Tenant"])
   public async deleteUsers(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.deleteUsers(context, user.tenant, body, USER_TYPE.USER);
@@ -72,7 +72,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("authentication", ["User:Update", "Me:*", "Tenant"])
   public async updateUser(@Request() request: ContextualRequest, @Body() body: UpdateUserProperties, @Path() id: number): Promise<Partial<User>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -95,7 +95,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Get("{id}")
-  @Security("jwtToken", ["User:Get", "Me:*", "Tenant"])
+  @Security("authentication", ["User:Get", "Me:*", "Tenant"])
   public async getUser(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<User | null>> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -114,7 +114,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("authentication", ["User:Update", "Me:*", "Tenant"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[]): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "user", type, files, {}, true);
@@ -132,7 +132,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/new-password")
-  @Security("jwtToken", ["User:Update", "Me:*", "Tenant"])
+  @Security("authentication", ["User:Update", "Me:*", "Tenant"])
   public async updateUserPassword(@Request() request: ContextualRequest, @Body() body: UpdatePasswordProperties, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.updatePassword(context, user.tenant, id, body);
@@ -149,7 +149,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/resend-verification-email")
-  @Security("jwtToken", ["User:Update", "Tenant"])
+  @Security("authentication", ["User:Update", "Tenant"])
   public async resendVerificationEmail(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.resendVerificationEmail(context, user.tenant, id);
@@ -166,7 +166,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Post("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*"])
+  @Security("authentication", ["User:Update", "Me:*"])
   public async generateTwoFactorAuthenticationConfig(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean, qrCode: string }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -186,7 +186,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*"])
+  @Security("authentication", ["User:Update", "Me:*"])
   public async enableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { code: string }): Promise<{ success: boolean }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -204,7 +204,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("{id}/two-factor-authentication")
-  @Security("jwtToken", ["User:Update", "Me:*"])
+  @Security("authentication", ["User:Update", "Me:*"])
   public async disableTwoFactorAuthentication(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     const tenant = user.id === id ? null : user.tenant;
@@ -222,7 +222,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Put("{id}/notifications")
-  @Security("jwtToken", ["Me:*"])
+  @Security("authentication", ["Me:*"])
   public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Notifications): Promise<Notifications | null> {
     const { context } = request;
     return await context.services.user.updateNotifications(context, id, body);
@@ -239,7 +239,7 @@ export class UserController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["User:Delete", "Me:*", "Tenant"])
+  @Security("authentication", ["User:Delete", "Me:*", "Tenant"])
   public async delete(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.user.deleteUser(context, user.tenant, id, USER_TYPE.USER);

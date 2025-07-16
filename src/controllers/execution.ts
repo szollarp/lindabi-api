@@ -18,7 +18,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Execution:List"])
+  @Security("authentication", ["Tenant", "Execution:List"])
   public async getExecutions(@Request() request: ContextualRequest): Promise<Partial<Execution>[]> {
     const { context, user } = request;
     return await context.services.execution.list(context, user);
@@ -33,7 +33,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Get("/related-projects")
-  @Security("jwtToken", ["Tenant", "Execution:List"])
+  @Security("authentication", ["Tenant", "Execution:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<Array<Partial<Project>>> {
     const { context, user } = request;
     return await context.services.execution.getProjects(context, user);
@@ -49,7 +49,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "Execution:Create"])
+  @Security("authentication", ["Tenant", "Execution:Create"])
   public async createExecution(@Request() request: ContextualRequest, @Body() body: Partial<Execution>): Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }> {
     const { context, user } = request;
     return await context.services.execution.create(context, user, body);
@@ -67,7 +67,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Get("{id}")
-  @Security("jwtToken", ["Tenant", "Execution:Get"])
+  @Security("authentication", ["Tenant", "Execution:Get"])
   public async getExecution(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Execution> | null> {
     const { context, user } = request;
     return await context.services.execution.get(context, user, id);
@@ -84,7 +84,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["Execution:Update"])
+  @Security("authentication", ["Execution:Update"])
   public async updateExecution(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Execution>): Promise<Partial<Execution> | null> {
     const { context, user } = request;
     return await context.services.execution.update(context, user, id, body);
@@ -100,7 +100,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Put("{id}/approve")
-  @Security("jwtToken", ["Execution:Approve"])
+  @Security("authentication", ["Execution:Approve"])
   public async approveExecution(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Execution> | null> {
     const { context, user } = request;
     return await context.services.execution.approve(context, user, id);
@@ -118,7 +118,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant", "Execution:Update"])
+  @Security("authentication", ["Tenant", "Execution:Update"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType, @UploadedFiles() files: Express.Multer.File[],): Promise<any> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "execution", type, files, {}, false);
@@ -136,7 +136,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents/{documentId}")
-  @Security("jwtToken", ["Tenant", "Execution:Update"])
+  @Security("authentication", ["Tenant", "Execution:Update"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() documentId: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, documentId);
@@ -153,7 +153,7 @@ export class ExecutionController extends Controller {
   @Tags("Execution")
   @SuccessResponse("200", "OK")
   @Delete("{id}/documents-by-type")
-  @Security("jwtToken", ["Tenant", "Execution:Update"])
+  @Security("authentication", ["Tenant", "Execution:Update"])
   public async removeDocuments(@Request() request: ContextualRequest, @Path() id: number, @Query() type: DocumentType,): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocuments(context, id, "execution", type);

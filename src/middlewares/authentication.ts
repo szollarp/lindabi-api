@@ -11,7 +11,7 @@ const getHeaderTokens = (request: Request): { authToken: string, refreshToken: s
   }
 
   const refreshToken = request.cookies["X-Refresh-Token"] || request.headers["x-refresh-token"] || null;
-  const deviceId = request.cookies["X-Device-Id"] || request.headers["x-device-id"] || null;
+  const deviceId = request.cookies["X-Session-Id"] || request.headers["x-session-id"] || null;
   return { authToken: authToken.replace("Bearer ", ""), refreshToken, deviceId };
 };
 
@@ -19,10 +19,22 @@ const getTenant = (request: Request): number => {
   return Number(request.headers["x-tenant"]);
 };
 
-const validateHeaderToken = async (context: Context, authToken: string, refreshToken: string, deviceId: string): Promise<{ user: DecodedUser }> => {
+const validateHeaderToken = async (context: Context, authToken: string, refreshToken: string, deviceId: string, checkAccessToken?: boolean): Promise<{ user: DecodedUser }> => {
   const authConfig: { refreshToken: { key: string }, authToken: { key: string } } = context.config.get("auth");
-  const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
-  if (decodedToken == null) {
+
+  let user: DecodedUser | null = null;
+  if (checkAccessToken) {
+    const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
+
+    if (!decodedToken) {
+      throw new Unauthorized();
+    }
+
+    user = decodedToken.user;
+  }
+
+  const decodedToken = jwt.verify(refreshToken, authConfig.refreshToken.key) as { user: DecodedUser };
+  if (!decodedToken) {
     throw new Unauthorized();
   }
 
@@ -34,9 +46,9 @@ const validateHeaderToken = async (context: Context, authToken: string, refreshT
     throw new Unauthorized();
   }
 
-  return {
-    user: decodedToken.user
-  };
+  user = decodedToken.user;
+
+  return { user };
 };
 
 const hasPermission = (user: User, permission: string): boolean => {
@@ -67,18 +79,19 @@ export const expressAuthentication = async (request: Request, securityName: stri
 
   const { context, path } = request;
 
-  if (securityName !== "jwtToken") {
+  if (securityName !== "authentication" && securityName !== "me") {
     throw new Forbidden("Your login credentials have either expired or are no longer valid, please enter your credentials again.");
   }
 
   const { authToken, refreshToken, deviceId } = getHeaderTokens(request);
-  const decodedToken = await validateHeaderToken(context, authToken, refreshToken, deviceId);
+  const decodedToken = await validateHeaderToken(context, authToken, refreshToken, deviceId, securityName === "authentication");
 
   if (!decodedToken?.user) {
     throw new Unauthorized();
   }
 
   const tenant = getTenant(request);
+
   if (inputPermissions?.includes("Tenant") && !tenant) {
     throw new Forbidden("You do not have permission to access this resource.");
   }

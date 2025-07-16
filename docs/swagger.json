@@ -7796,7 +7796,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"WorkType:List"
 						]
@@ -7823,7 +7823,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"WorkType:Create"
 						]
@@ -7867,7 +7867,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"WorkType:Update"
 						]
@@ -7922,7 +7922,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"WorkType:Delete"
 						]
@@ -7988,7 +7988,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:List",
 							"Tenant"
 						]
@@ -8016,7 +8016,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Create",
 							"Tenant"
 						]
@@ -8064,7 +8064,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Delete",
 							"Tenant"
 						]
@@ -8118,7 +8118,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*",
 							"Tenant"
@@ -8170,7 +8170,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Get",
 							"Me:*",
 							"Tenant"
@@ -8218,7 +8218,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Delete",
 							"Me:*",
 							"Tenant"
@@ -8258,7 +8258,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*",
 							"Tenant"
@@ -8338,7 +8338,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*",
 							"Tenant"
@@ -8400,7 +8400,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Tenant"
 						]
@@ -8453,7 +8453,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*"
 						]
@@ -8500,7 +8500,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*"
 						]
@@ -8567,7 +8567,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"User:Update",
 							"Me:*"
 						]
@@ -8613,7 +8613,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Me:*"
 						]
 					}
@@ -8670,7 +8670,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Create"
 						]
@@ -8713,7 +8713,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:List"
 						]
@@ -8749,7 +8749,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Delete"
 						]
@@ -8808,7 +8808,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Create"
 						]
@@ -8857,7 +8857,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Create"
 						]
@@ -8926,7 +8926,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Get"
 						]
@@ -8970,7 +8970,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tender:Update"
 						]
 					}
@@ -9028,7 +9028,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Delete"
 						]
@@ -9072,7 +9072,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Get"
 						]
@@ -9111,7 +9111,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Get"
 						]
@@ -9172,7 +9172,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9221,7 +9221,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9290,7 +9290,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9348,7 +9348,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9417,7 +9417,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Get"
 						]
@@ -9474,7 +9474,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9528,7 +9528,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Get"
 						]
@@ -9567,7 +9567,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9646,7 +9646,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Tender:Update"
 						]
@@ -9699,7 +9699,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:List"
 						]
 					}
@@ -9731,7 +9731,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Create"
 						]
 					}
@@ -9778,7 +9778,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Delete"
 						]
 					}
@@ -9836,7 +9836,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Get"
 						]
 					}
@@ -9879,7 +9879,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Update"
 						]
 					}
@@ -9937,7 +9937,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Delete"
 						]
 					}
@@ -9985,7 +9985,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:Update"
 						]
 					}
@@ -10064,7 +10064,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:List"
 						]
 					}
@@ -10090,7 +10090,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Create"
 						]
 					}
@@ -10106,6 +10106,52 @@
 						}
 					}
 				}
+			}
+		},
+		"/tasks/resources": {
+			"get": {
+				"operationId": "GetTasksAsResources",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"columns": {
+											"items": {
+												"$ref": "#/components/schemas/TaskColumn"
+											},
+											"type": "array"
+										},
+										"tasks": {
+											"items": {
+												"$ref": "#/components/schemas/Task"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"columns",
+										"tasks"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Task:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/tasks/my": {
@@ -10146,7 +10192,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:List"
 						]
 					}
@@ -10179,7 +10225,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Get"
 						]
 					}
@@ -10223,7 +10269,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Delete"
 						]
 					}
@@ -10259,7 +10305,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10315,7 +10361,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10380,7 +10426,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10437,7 +10483,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10493,7 +10539,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10540,7 +10586,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"TaskColumn:Create"
 						]
 					}
@@ -10594,7 +10640,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"TaskColumn:Delete"
 						]
 					}
@@ -10630,7 +10676,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"TaskColumn:Update"
 						]
 					}
@@ -10686,7 +10732,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"TaskColumn:Update"
 						]
 					}
@@ -10732,7 +10778,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"TaskColumn:Update"
 						]
 					}
@@ -10790,7 +10836,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Task:Update"
 						]
 					}
@@ -10849,7 +10895,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:List"
 						]
@@ -10892,7 +10938,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:Create"
 						]
@@ -10950,7 +10996,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:List"
 						]
@@ -10985,7 +11031,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:Get"
 						]
@@ -11029,7 +11075,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Report:Update"
 						]
 					}
@@ -11079,7 +11125,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:Update"
 						]
@@ -11158,7 +11204,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:Update"
 						]
@@ -11217,7 +11263,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Report:Update"
 						]
@@ -11286,7 +11332,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant:List"
 						]
 					}
@@ -11317,7 +11363,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": []
+						"authentication": []
 					}
 				],
 				"parameters": []
@@ -11344,7 +11390,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": []
+						"authentication": []
 					}
 				],
 				"parameters": [],
@@ -11388,7 +11434,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": []
+						"authentication": []
 					}
 				],
 				"parameters": [
@@ -11423,7 +11469,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": []
+						"authentication": []
 					}
 				],
 				"parameters": [],
@@ -11471,7 +11517,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:List",
 							"Tenant"
 						]
@@ -11525,7 +11571,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Create",
 							"Tenant"
 						]
@@ -11567,7 +11613,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Create",
 							"Tenant"
 						]
@@ -11617,7 +11663,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Delete",
 							"Tenant"
 						]
@@ -11661,7 +11707,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Create",
 							"Tenant"
 						]
@@ -11689,7 +11735,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Create",
 							"Tenant"
 						]
@@ -11748,7 +11794,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Schedule:Create",
 							"Tenant"
 						]
@@ -11791,7 +11837,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant"
 						]
 					}
@@ -11823,7 +11869,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant"
 						]
 					}
@@ -11853,7 +11899,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Permission:Update"
 						]
@@ -11907,7 +11953,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:Create"
 						]
@@ -11975,7 +12021,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:Update"
 						]
@@ -12031,7 +12077,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:GetMain"
 						]
@@ -12078,7 +12124,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:Delete"
 						]
@@ -12122,7 +12168,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:List"
 						]
@@ -12158,7 +12204,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:Delete"
 						]
@@ -12205,7 +12251,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMaine"
 						]
@@ -12271,7 +12317,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMain"
 						]
@@ -12315,7 +12361,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMain"
 						]
@@ -12370,7 +12416,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMain"
 						]
@@ -12425,7 +12471,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMain"
 						]
@@ -12479,7 +12525,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:GetMain"
 						]
@@ -12517,7 +12563,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMilestones"
 						]
@@ -12578,7 +12624,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMilestones"
 						]
@@ -12647,7 +12693,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMilestones"
 						]
@@ -12696,7 +12742,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMilestones"
 						]
@@ -12775,7 +12821,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateMilestones"
 						]
@@ -12829,7 +12875,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:GetMilestones"
 						]
@@ -12880,7 +12926,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateItems"
 						]
@@ -12933,7 +12979,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateItems"
 						]
@@ -13002,7 +13048,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:DeleteItem"
 						]
@@ -13061,7 +13107,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateItems"
 						]
@@ -13141,7 +13187,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:GetDocuments"
 						]
@@ -13198,7 +13244,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:DeleteDocument"
 						]
@@ -13252,7 +13298,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:GetJournal"
 						]
@@ -13296,7 +13342,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:Get"
 						]
@@ -13335,7 +13381,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateDocuments"
 						]
@@ -13414,7 +13460,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:DeleteDocument"
 						]
@@ -13472,7 +13518,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateNotes"
 						]
@@ -13541,7 +13587,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:UpdateNotes"
 						]
@@ -13610,7 +13656,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Project:DeleteNote"
 						]
@@ -13663,7 +13709,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Payroll:List"
 						]
@@ -13717,7 +13763,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Payroll:List"
 						]
@@ -13783,7 +13829,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:List"
 						]
@@ -13810,7 +13856,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Create"
 						]
@@ -13854,7 +13900,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Get"
 						]
@@ -13891,7 +13937,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Update"
 						]
@@ -13946,7 +13992,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Delete"
 						]
@@ -13985,7 +14031,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Approve"
 						]
@@ -14032,7 +14078,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:Approve"
 						]
@@ -14084,7 +14130,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"OrderForm:List"
 						]
@@ -14117,7 +14163,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant"
 						]
 					}
@@ -14149,7 +14195,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:Create"
 						]
@@ -14197,7 +14243,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:Delete"
 						]
@@ -14256,7 +14302,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:Get"
 						]
@@ -14300,7 +14346,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:Update"
 						]
@@ -14359,7 +14405,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:Delete"
 						]
@@ -14408,7 +14454,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:List"
 						]
@@ -14477,7 +14523,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Location:List"
 						]
@@ -14540,7 +14586,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:List"
 						]
@@ -14567,7 +14613,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:Create"
 						]
@@ -14611,7 +14657,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:Get"
 						]
@@ -14648,7 +14694,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:Update"
 						]
@@ -14703,7 +14749,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:Delete"
 						]
@@ -14745,7 +14791,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Invoice:Get"
 						]
@@ -14801,7 +14847,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Invoice:Update",
 							"Tenant"
 						]
@@ -14870,7 +14916,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Invoice:Update",
 							"Tenant"
 						]
@@ -14936,7 +14982,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"PettyCash:List",
 							"Tenant"
 						]
@@ -14969,7 +15015,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"PettyCash:Create",
 							"Tenant"
 						]
@@ -15013,7 +15059,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:List"
 						]
@@ -15059,7 +15105,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:Create"
 						]
@@ -15104,7 +15150,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:List"
 						]
@@ -15139,7 +15185,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:Get"
 						]
@@ -15183,7 +15229,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Execution:Update"
 						]
 					}
@@ -15240,7 +15286,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Execution:Approve"
 						]
 					}
@@ -15278,7 +15324,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:Update"
 						]
@@ -15357,7 +15403,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:Update"
 						]
@@ -15406,7 +15452,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Execution:Update"
 						]
@@ -15459,7 +15505,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:List"
 						]
@@ -15492,7 +15538,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:Create"
 						]
@@ -15540,7 +15586,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:Delete"
 						]
@@ -15599,7 +15645,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:Get"
 						]
@@ -15643,7 +15689,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:Update"
 						]
@@ -15702,7 +15748,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:Delete"
 						]
@@ -15751,7 +15797,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:List"
 						]
@@ -15820,7 +15866,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Contact:List"
 						]
@@ -15884,7 +15930,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant"
 						]
 					}
@@ -15924,7 +15970,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Create"
 						]
@@ -15972,7 +16018,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Delete"
 						]
@@ -16031,7 +16077,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Get"
 						]
@@ -16075,7 +16121,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Update"
 						]
@@ -16134,7 +16180,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Delete"
 						]
@@ -16173,7 +16219,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Get"
 						]
@@ -16210,7 +16256,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Update"
 						]
@@ -16289,7 +16335,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Update"
 						]
@@ -16353,7 +16399,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Company:Update"
 						]
@@ -16650,7 +16696,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": []
+						"me": []
 					}
 				],
 				"parameters": []
@@ -16679,7 +16725,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:List"
 						]
@@ -16706,7 +16752,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:Create"
 						]
@@ -16750,7 +16796,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:Get"
 						]
@@ -16787,7 +16833,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:Update"
 						]
@@ -16842,7 +16888,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:Delete"
 						]
@@ -16884,7 +16930,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"CompletionCertificate:Get"
 						]
@@ -16940,7 +16986,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Documents:Upload"
 						]
@@ -16994,7 +17040,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Documents:Upload"
 						]
@@ -17039,7 +17085,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Documents:Upload"
 						]
@@ -17103,7 +17149,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Documents:Upload"
 						]
@@ -17145,7 +17191,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant",
 							"Documents:List"
 						]
@@ -17204,7 +17250,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Tenant"
 						]
 					}
@@ -17231,7 +17277,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Create",
 							"Tenant"
 						]
@@ -17279,7 +17325,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Delete",
 							"Tenant"
 						]
@@ -17333,7 +17379,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Update",
 							"Tenant"
 						]
@@ -17384,7 +17430,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Get",
 							"Tenant"
 						]
@@ -17431,7 +17477,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Delete",
 							"Tenant"
 						]
@@ -17480,7 +17526,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Update",
 							"Tenant"
 						]
@@ -17567,7 +17613,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Update",
 							"Tenant"
 						]
@@ -17606,7 +17652,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Update",
 							"Tenant"
 						]
@@ -17667,7 +17713,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Get",
 							"Tenant"
 						]
@@ -17711,7 +17757,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Get",
 							"Tenant"
 						]
@@ -17752,7 +17798,7 @@
 				],
 				"security": [
 					{
-						"jwtToken": [
+						"authentication": [
 							"Employee:Update",
 							"Tenant"
 						]

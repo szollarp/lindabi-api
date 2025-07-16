@@ -7,7 +7,7 @@ export class SettingsController extends Controller {
   @Tags("Settings")
   @SuccessResponse("200", "OK")
   @Get("/financial")
-  @Security("jwtToken", [])
+  @Security("authentication", [])
   public async getSettings(@Request() request: ContextualRequest): Promise<FinancialSetting[]> {
     const { context, user } = request;
     return await context.services.financialSettings.list(context, user);
@@ -16,7 +16,7 @@ export class SettingsController extends Controller {
   @Tags("Settings")
   @SuccessResponse("200", "OK")
   @Post("/financial")
-  @Security("jwtToken", [])
+  @Security("authentication", [])
   public async addSettings(@Request() request: ContextualRequest, @Body() body: { type: string, items: CreateFinancialSettingProperties[] }): Promise<FinancialSetting[]> {
     const { context, user } = request;
     return await context.services.financialSettings.add(context, user, body);
@@ -25,7 +25,7 @@ export class SettingsController extends Controller {
   @Tags("Settings")
   @SuccessResponse("200", "OK")
   @Delete("/financial/{id}")
-  @Security("jwtToken", [])
+  @Security("authentication", [])
   public async removeSettings(@Request() request: ContextualRequest, @Path() id: number): Promise<void> {
     const { context, user } = request;
     await context.services.financialSettings.remove(context, user, id);

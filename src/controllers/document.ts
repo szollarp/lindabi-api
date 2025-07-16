@@ -25,7 +25,7 @@ export class DocumentController extends Controller {
   @Tags("Document")
   @SuccessResponse("200", "OK")
   @Put("/chunk")
-  @Security("jwtToken", ["Tenant", "Documents:Upload"])
+  @Security("authentication", ["Tenant", "Documents:Upload"])
   public async uploadDocument(
     @UploadedFile() chunk: Express.Multer.File,
     @FormField() chunkIndex: number,
@@ -40,7 +40,7 @@ export class DocumentController extends Controller {
   @Tags("Document")
   @SuccessResponse("200", "OK")
   @Post("/merge")
-  @Security("jwtToken", ["Tenant", "Documents:Upload"])
+  @Security("authentication", ["Tenant", "Documents:Upload"])
   public async mergeDocument(@Request() request: ContextualRequest, @Body() body: any): Promise<any> {
     // public async mergeDocument(@Request() request: ContextualRequest, @Body() body: { fileName: string, numOfChunks: number, ownerType: DocumentOwnerType, type: DocumentType, ownerId?: number }): Promise<any> {
     const { context, user } = request;
@@ -53,7 +53,7 @@ export class DocumentController extends Controller {
   @Tags("Document")
   @SuccessResponse("200", "OK")
   @Post("/assign")
-  @Security("jwtToken", ["Tenant", "Documents:Upload"])
+  @Security("authentication", ["Tenant", "Documents:Upload"])
   public async assignDocument(@Request() request: ContextualRequest, @Body() body: { ownerId: number, documentIds: number[] }): Promise<{ assigned: boolean }> {
     const { context, user } = request;
     const { ownerId, documentIds } = body;
@@ -64,7 +64,7 @@ export class DocumentController extends Controller {
   @Tags("Document")
   @SuccessResponse("200", "OK")
   @Delete("/{id}")
-  @Security("jwtToken", ["Tenant", "Documents:Upload"])
+  @Security("authentication", ["Tenant", "Documents:Upload"])
   public async removeDocument(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
     return await context.services.document.removeDocument(context, id);
@@ -73,7 +73,7 @@ export class DocumentController extends Controller {
   @Tags("Document")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "Documents:List"])
+  @Security("authentication", ["Tenant", "Documents:List"])
   public async getDocuments(@Request() request: ContextualRequest, @Query() ownerType: DocumentOwnerType, @Query() ownerId: number, @Query() type: string): Promise<Document[]> {
     const { context } = request;
     return await context.services.document.getDocuments(context, ownerId, ownerType, type);

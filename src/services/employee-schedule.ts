@@ -30,6 +30,7 @@ const list = async (context: Context, user: DecodedUser, query: ScheduleQueryPar
         tenantId: user.tenant,
         entity: "employee"
       },
+      order: [["name", "ASC"]],
       include: [
         {
           model: context.models.EmployeeSchedule,

@@ -13,7 +13,7 @@ export class FinancialTransactionController extends Controller {
   @Tags("Financial Transaction")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["PettyCash:List", "Tenant"])
+  @Security("authentication", ["PettyCash:List", "Tenant"])
   public async getTransactions(@Request() request: ContextualRequest): Promise<FinancialTransaction[]> {
     const { context, user } = request;
     return await context.services.financialTransaction.getFinancialTransactions(context, user);
@@ -30,7 +30,7 @@ export class FinancialTransactionController extends Controller {
   @Tags("Financial Transaction")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["PettyCash:Create", "Tenant"])
+  @Security("authentication", ["PettyCash:Create", "Tenant"])
   public async createTransaction(@Request() request: ContextualRequest, @Body() body: any): Promise<Partial<FinancialTransaction> | null> {
     const { context, user } = request;
     return await context.services.financialTransaction.createFinancialTransactions(context, user.tenant, user.id, body);

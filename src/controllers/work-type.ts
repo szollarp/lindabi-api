@@ -7,7 +7,7 @@ export class WorkTypeController extends Controller {
   @Tags("Work Type")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "WorkType:List"])
+  @Security("authentication", ["Tenant", "WorkType:List"])
   public async getWorkTypes(@Request() request: ContextualRequest): Promise<WorkType[]> {
     const { context, user } = request;
     return await context.services.workType.get(context, user);
@@ -16,7 +16,7 @@ export class WorkTypeController extends Controller {
   @Tags("Work Type")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "WorkType:Create"])
+  @Security("authentication", ["Tenant", "WorkType:Create"])
   public async createWorkType(@Request() request: ContextualRequest, @Body() data: CreateWorkTypeProperties): Promise<WorkType> {
     const { context, user } = request;
     return await context.services.workType.create(context, user, data);
@@ -25,7 +25,7 @@ export class WorkTypeController extends Controller {
   @Tags("Work Type")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Tenant", "WorkType:Update"])
+  @Security("authentication", ["Tenant", "WorkType:Update"])
   public async updateWorkType(@Request() request: ContextualRequest, @Path() id: number, @Body() data: CreateWorkTypeProperties): Promise<WorkType | null> {
     const { context, user } = request;
     return await context.services.workType.update(context, user, id, data);
@@ -34,7 +34,7 @@ export class WorkTypeController extends Controller {
   @Tags("Work Type")
   @SuccessResponse("200", "OK")
   @Delete("/{id}")
-  @Security("jwtToken", ["Tenant", "WorkType:Delete"])
+  @Security("authentication", ["Tenant", "WorkType:Delete"])
   public async deleteWorkType(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.workType.delete(context, user, id);

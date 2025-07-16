@@ -11,7 +11,7 @@ export class StatisticsController extends Controller {
   @Tags("Statistics")
   @SuccessResponse("200", "OK")
   @Get("overview")
-  @Security("jwtToken", ["Tenant:List"])
+  @Security("authentication", ["Tenant:List"])
   public get(@Request() request: ContextualRequest): Promise<{ userNum: number, tenderNum: number, invoiceNum: number }> {
     const { context } = request;
     return context.services.statistics.getOverview(context);

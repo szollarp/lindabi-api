@@ -11,7 +11,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant", "OrderForm:List"])
+  @Security("authentication", ["Tenant", "OrderForm:List"])
   public async getOrderForms(@Request() request: ContextualRequest): Promise<OrderForm[]> {
     const { context, user } = request;
     return await context.services.orderForm.list(context, user);
@@ -20,7 +20,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant", "OrderForm:Create"])
+  @Security("authentication", ["Tenant", "OrderForm:Create"])
   public async createOrderForm(@Request() request: ContextualRequest, @Body() body: CreateOrderFormProperties): Promise<OrderForm> {
     const { context, user } = request;
     const orderForm = await context.services.orderForm.create(context, user, body);
@@ -35,7 +35,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Get("{id}")
-  @Security("jwtToken", ["Tenant", "OrderForm:Get"])
+  @Security("authentication", ["Tenant", "OrderForm:Get"])
   public async getOrderForm(@Request() request: ContextualRequest, @Path() id: number): Promise<OrderForm | null> {
     const { context, user } = request;
     return await context.services.orderForm.get(context, user, id);
@@ -44,7 +44,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Put("{id}")
-  @Security("jwtToken", ["Tenant", "OrderForm:Update"])
+  @Security("authentication", ["Tenant", "OrderForm:Update"])
   public async updateOrderForm(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<OrderForm>): Promise<OrderForm> {
     const { context, user } = request;
     return await context.services.orderForm.update(context, user, id, body);
@@ -53,7 +53,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Put("{id}/resend-code")
-  @Security("jwtToken", ["Tenant", "OrderForm:Approve"])
+  @Security("authentication", ["Tenant", "OrderForm:Approve"])
   public async resendApproveCode(@Request() request: ContextualRequest, @Path() id: number): Promise<OrderForm> {
     const { context, user } = request;
     return await context.services.orderForm.resendCode(context, user, id);
@@ -62,7 +62,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Put("{id}/approve")
-  @Security("jwtToken", ["Tenant", "OrderForm:Approve"])
+  @Security("authentication", ["Tenant", "OrderForm:Approve"])
   public async approveOrderForm(@Request() request: ContextualRequest, @Path() id: number, @Body() body: ApproveOrderFormProperties): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.orderForm.approve(context, user, id, body);
@@ -71,7 +71,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Get("/projects/related")
-  @Security("jwtToken", ["Tenant", "OrderForm:List"])
+  @Security("authentication", ["Tenant", "OrderForm:List"])
   public async getRelatedProjects(@Request() request: ContextualRequest): Promise<Array<Partial<Project>>> {
     const { context, user } = request;
     return await context.services.orderForm.getProjects(context, user);
@@ -80,7 +80,7 @@ export class OrderFormController extends Controller {
   @Tags("Order Form")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Tenant", "OrderForm:Delete"])
+  @Security("authentication", ["Tenant", "OrderForm:Delete"])
   public async deleteOrderForm(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.orderForm.remove(context, user, id);

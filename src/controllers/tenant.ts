@@ -14,7 +14,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Get("/")
-  @Security("jwtToken", ["Tenant:List"])
+  @Security("authentication", ["Tenant:List"])
   public async getTenants(@Request() request: ContextualRequest): Promise<Array<Partial<Tenant>>> {
     const { context } = request;
     return await context.services.tenant.getTenants(context);
@@ -30,7 +30,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("jwtToken", ["Tenant:Get"])
+  @Security("authentication", ["Tenant:Get"])
   public async getTenant(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Tenant> | null> {
     const { context } = request;
     return await context.services.tenant.getTenant(context, id);
@@ -46,7 +46,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Post("/")
-  @Security("jwtToken", ["Tenant:Create"])
+  @Security("authentication", ["Tenant:Create"])
   public async createTenant(@Request() request: ContextualRequest, @Body() body: CreateTenantProperties): Promise<Partial<Tenant> | null> {
     const { context } = request;
     return await context.services.tenant.createTenant(context, body);
@@ -63,7 +63,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Put("/{id}")
-  @Security("jwtToken", ["Tenant:Update"])
+  @Security("authentication", ["Tenant:Update"])
   public async updateTenant(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Partial<Tenant>): Promise<Partial<Tenant> | null> {
     const { context } = request;
     return await context.services.tenant.updateTenant(context, id, body);
@@ -80,7 +80,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Put("{id}/documents")
-  @Security("jwtToken", ["Tenant:Update"])
+  @Security("authentication", ["Tenant:Update"])
   public async uploadDocuments(@Request() request: ContextualRequest, @Path() id: number, @UploadedFiles() files: Express.Multer.File[]): Promise<{ uploaded: boolean }> {
     const { context, user } = request;
     return await context.services.document.upload(context, user, id, "tenant", "logo", files, {}, true);
@@ -97,7 +97,7 @@ export class TenantController extends Controller {
   @Tags("User")
   @SuccessResponse("200", "OK")
   @Delete("/")
-  @Security("jwtToken", ["Tenant:Delete"])
+  @Security("authentication", ["Tenant:Delete"])
   public async deleteTenants(@Request() request: ContextualRequest, @Body() body: { ids: number[] }): Promise<{ success: boolean }> {
     const { context } = request;
     return await context.services.tenant.deleteTenants(context, body);
@@ -113,7 +113,7 @@ export class TenantController extends Controller {
   @Tags("Tenant")
   @SuccessResponse("200", "OK")
   @Delete("{id}")
-  @Security("jwtToken", ["Tenant:Delete"])
+  @Security("authentication", ["Tenant:Delete"])
   public async deleteTenant(@Request() request: ContextualRequest, @Path() id: number): Promise<{ success: boolean }> {
     const { context } = request;
     return await context.services.tenant.deleteTenant(context, id);
