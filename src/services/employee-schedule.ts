@@ -49,7 +49,8 @@ const list = async (context: Context, user: DecodedUser, query: ScheduleQueryPar
               as: "project",
               attributes: ["id", "name", "scheduleColor", "shortName"]
             }
-          ]
+          ],
+          order: [["startDate", "ASC"]]
         }
       ]
     });
