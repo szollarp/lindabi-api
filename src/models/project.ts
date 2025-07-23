@@ -29,6 +29,7 @@ import { ProjectCommentModel } from "./project-comment";
 import { ProjectComment } from "./interfaces/project-comment";
 import { getNetAmount, getVatAmount } from "../helpers/project";
 import { TaskModel } from "./task";
+import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -291,14 +292,14 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    netAmount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false
-    },
-    vatAmount: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false
-    },
+    // netAmount: {
+    //   type: DataTypes.DECIMAL(10, 2),
+    //   allowNull: false
+    // },
+    // vatAmount: {
+    //   type: DataTypes.DECIMAL(10, 2),
+    //   allowNull: false
+    // },
     supervisorBonus: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -339,6 +340,18 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       type: DataTypes.DATE,
       defaultValue: null,
       allowNull: true
+    },
+    netAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getTotalNetAmount(this.tender!);
+      }
+    },
+    vatAmount: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return getTotalVatAmount(this.tender!);
+      }
     },
     itemsNetAmount: {
       type: DataTypes.VIRTUAL,
