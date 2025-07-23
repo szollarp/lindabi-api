@@ -228,6 +228,16 @@ export const projectService = (): ProjectService => {
             model: context.models.ProjectItem,
             as: "items",
             attributes: ["id", "netAmount"],
+          },
+          {
+            model: context.models.Tender,
+            as: "tender",
+            required: true,
+            include: [{
+              model: context.models.TenderItem,
+              as: "items",
+              required: true
+            }]
           }
         ],
         where: { id: { [Op.in]: userProjectIds } },
