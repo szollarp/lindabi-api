@@ -275,6 +275,9 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
 
     return employees.map((employee) => getEmployeePayroll(employee, settings));
   } catch (error) {
+    console.error("Error fetching payrolls:", error);
+    console.error(error.stack);
+
     throw error;
   }
 };
