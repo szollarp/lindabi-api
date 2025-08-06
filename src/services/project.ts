@@ -90,13 +90,15 @@ export const projectService = (): ProjectService => {
       } as any, { transaction: t });
 
       for (const item of items!) {
-        const { name, quantity, unit, num } = item;
+        const { name, quantity, unit, num, materialNetAmount, feeNetAmount } = item;
 
         await context.models.ProjectItem.create({
           name,
           quantity,
           unit,
           num,
+          materialNetAmount,
+          feeNetAmount,
           projectId: project.id,
           createdBy: user.id,
           type: PROJECT_ITEM_TYPE.ITEMIZED,
