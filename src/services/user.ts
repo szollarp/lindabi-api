@@ -58,7 +58,7 @@ export const userService = (): UserService => {
         where,
         attributes,
         include,
-        order: [["id", "ASC"]]
+        order: [["name", "ASC"]]
       });
     } catch (error) {
       context.logger.error(error);

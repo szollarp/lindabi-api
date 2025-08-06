@@ -10,6 +10,7 @@ export class PayrollController extends Controller {
   @Security("authentication", ["Tenant", "Payroll:List"])
   public async getPayrolls(@Request() request: ContextualRequest, @Query() startDate: string, @Query() endDate: string, @Query() approved: boolean): Promise<Partial<User>[]> {
     const { context, user } = request;
+    console.log("Fetching payrolls with params:", { startDate, endDate, user, approved });
     return await context.services.payroll.getPayrolls(context, user, startDate, endDate, approved);
   }
 

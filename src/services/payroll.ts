@@ -167,7 +167,10 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
 
 const getPayrolls = async (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean = true): Promise<Partial<User>[]> => {
   try {
+    console.log({ startDate, endDate, user, approved });
+
     const settings = await getFinancialSettings(context, user, startDate, endDate);
+    console.log({ settings });
 
     const employees = await context.models.User.findAll({
       attributes: ["id", "name", "status"],

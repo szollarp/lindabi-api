@@ -1767,6 +1767,16 @@
 						"type": "string",
 						"nullable": true
 					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -2640,6 +2650,118 @@
 			"CreateWorkTypeProperties": {
 				"$ref": "#/components/schemas/Omit_WorkType.id-or-createdAt-or-updatedAt_"
 			},
+			"Partial_Warehouse_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Warehouse.Exclude_keyofWarehouse.id-or-createdAt-or-updatedAt__": {
+				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Warehouse.id-or-createdAt-or-updatedAt_": {
+				"$ref": "#/components/schemas/Pick_Warehouse.Exclude_keyofWarehouse.id-or-createdAt-or-updatedAt__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateWarehouseProperties": {
+				"$ref": "#/components/schemas/Omit_Warehouse.id-or-createdAt-or-updatedAt_"
+			},
 			"USER_STATUS": {
 				"enum": [
 					"active",
@@ -2903,6 +3025,21 @@
 						"type": "number",
 						"format": "double"
 					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
 					"email": {
 						"type": "string"
 					},
@@ -2920,21 +3057,6 @@
 					},
 					"enableTwoFactor": {
 						"type": "boolean"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string"
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
 					},
 					"lastLoggedIn": {
 						"type": "string",
@@ -3116,18 +3238,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"phoneNumber": {
-						"type": "string"
-					},
-					"salt": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/USER_STATUS"
-					},
-					"enableTwoFactor": {
-						"type": "boolean"
-					},
 					"country": {
 						"type": "string"
 					},
@@ -3142,6 +3252,18 @@
 					},
 					"zipCode": {
 						"type": "string"
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"salt": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/USER_STATUS"
+					},
+					"enableTwoFactor": {
+						"type": "boolean"
 					},
 					"notifications": {
 						"$ref": "#/components/schemas/Notifications"
@@ -4225,12 +4347,6 @@
 					"name": {
 						"type": "string"
 					},
-					"email": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/TENANT_STATUS"
-					},
 					"country": {
 						"type": "string"
 					},
@@ -4245,6 +4361,12 @@
 					},
 					"zipCode": {
 						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/TENANT_STATUS"
 					},
 					"documentIds": {
 						"items": {
@@ -4271,12 +4393,12 @@
 				},
 				"required": [
 					"name",
-					"email",
-					"status",
 					"country",
 					"city",
 					"address",
 					"zipCode",
+					"email",
+					"status",
 					"taxNumber",
 					"registrationNumber"
 				],
@@ -5813,6 +5935,14 @@
 					"notes": {
 						"type": "string"
 					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -5872,6 +6002,14 @@
 					"unit": {
 						"type": "string"
 					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -5927,6 +6065,14 @@
 					},
 					"notes": {
 						"type": "string"
+					},
+					"materialNetAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"feeNetAmount": {
+						"type": "number",
+						"format": "double"
 					},
 					"projectId": {
 						"type": "number",
@@ -6536,9 +6682,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"status": {
-						"$ref": "#/components/schemas/LOCATION_STATUS"
-					},
 					"country": {
 						"type": "string"
 					},
@@ -6554,6 +6697,9 @@
 					"zipCode": {
 						"type": "string"
 					},
+					"status": {
+						"$ref": "#/components/schemas/LOCATION_STATUS"
+					},
 					"notes": {
 						"type": "string"
 					},
@@ -6563,11 +6709,11 @@
 				},
 				"required": [
 					"name",
-					"status",
 					"country",
 					"city",
 					"address",
-					"zipCode"
+					"zipCode",
+					"status"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -6578,6 +6724,123 @@
 			},
 			"CreateLocationProperties": {
 				"$ref": "#/components/schemas/Omit_Location.id-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"Partial_Item_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"manufacturer": {
+						"type": "string"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"Pick_Item.Exclude_keyofItem.id-or-createdAt-or-updatedAt__": {
+				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"unit": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"manufacturer": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"vatKey"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Item.id-or-createdAt-or-updatedAt_": {
+				"$ref": "#/components/schemas/Pick_Item.Exclude_keyofItem.id-or-createdAt-or-updatedAt__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateItemProperties": {
+				"$ref": "#/components/schemas/Omit_Item.id-or-createdAt-or-updatedAt_"
 			},
 			"Pick_Invoice.Exclude_keyofInvoice.id-or-createdOn-or-updatedOn-or-approvedBy-or-approvedOn__": {
 				"properties": {
@@ -7376,12 +7639,6 @@
 						"type": "number",
 						"format": "double"
 					},
-					"email": {
-						"type": "string"
-					},
-					"status": {
-						"$ref": "#/components/schemas/COMPANY_STATUS"
-					},
 					"country": {
 						"type": "string"
 					},
@@ -7396,6 +7653,12 @@
 					},
 					"zipCode": {
 						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/COMPANY_STATUS"
 					},
 					"notes": {
 						"type": "string"
@@ -7453,11 +7716,11 @@
 				},
 				"required": [
 					"name",
-					"status",
 					"country",
 					"city",
 					"address",
 					"zipCode",
+					"status",
 					"type"
 				],
 				"type": "object",
@@ -7930,6 +8193,292 @@
 				],
 				"parameters": [
 					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/warehouses": {
+			"get": {
+				"operationId": "GetWarehouses",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Warehouse_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of locations associated with the authenticated user's tenant.\nRequires a valid JWT token with \"Location:List\" permission. \n\nThis method returns a list of warehouse objects, each containing partial information about a warehouse.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateWarehouse",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Warehouse_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new warehouse with the provided properties under the authenticated user's tenant.\nA valid JWT token with \"Warehouse:Create\" permission is required.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Warehouse:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties to create a new warehouse.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWarehouseProperties",
+								"description": "The properties to create a new warehouse."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteWarehouses",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple warehouses based on the provided array of IDs.\nRequires a valid JWT token with \"Warehouse:Delete\" permission.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Warehouse:Delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of warehouse IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of warehouse IDs to delete."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/warehouses/{id}": {
+			"get": {
+				"operationId": "GetWarehouse",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Warehouse_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Fetches detailed information about a specific warehouse identified by its ID.\nRequires JWT authentication with \"Warehouse:Get\" permission.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Warehouse:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the warehouse to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateWarehouse",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Warehouse_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates an existing warehouse identified by its ID with the provided properties.\nThis operation requires JWT authentication and \"Warehouse:Update\" permission.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Warehouse:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the warehouse to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The properties to update in the warehouse.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Warehouse_",
+								"description": "The properties to update in the warehouse."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteWarehouse",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a specific warehouse identified by its ID.\nThis endpoint requires JWT authentication and \"Warehouse:Delete\" permission.",
+				"tags": [
+					"Warehouse"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Warehouse:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the warehouse to delete.",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -14563,6 +15112,292 @@
 				}
 			}
 		},
+		"/items": {
+			"get": {
+				"operationId": "GetItems",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Item_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of locations associated with the authenticated user's tenant.\nRequires a valid JWT token with \"Location:List\" permission. \n\nThis method returns a list of item objects, each containing partial information about an item.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Item_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a new item with the provided properties under the authenticated user's tenant.\nA valid JWT token with \"Item:Create\" permission is required.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Item:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties to create a new item.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateItemProperties",
+								"description": "The properties to create a new item."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteItems",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes multiple items based on the provided array of IDs.\nRequires a valid JWT token with \"Item:Delete\" permission.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Item:Delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "An object containing an array of item IDs to delete.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"ids": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"ids"
+								],
+								"type": "object",
+								"description": "An object containing an array of item IDs to delete."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/items/{id}": {
+			"get": {
+				"operationId": "GetItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Item_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Fetches detailed information about a specific item identified by its ID.\nRequires JWT authentication with \"Item:Get\" permission.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Item:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the item to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Item_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates an existing item identified by its ID with the provided properties.\nThis operation requires JWT authentication and \"Item:Update\" permission.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Item:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the item to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The properties to update in the item.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_Item_",
+								"description": "The properties to update in the item."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteItem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a specific warehouse identified by its ID.\nThis endpoint requires JWT authentication and \"Warehouse:Delete\" permission.",
+				"tags": [
+					"Item"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Item:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the warehouse to delete.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/invoices": {
 			"get": {
 				"operationId": "GetInvoices",
@@ -15156,7 +15991,17 @@
 						]
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "employee",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/executions/{id}": {

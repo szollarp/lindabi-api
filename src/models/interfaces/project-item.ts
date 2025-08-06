@@ -14,6 +14,9 @@ export interface ProjectItem {
   netAmount?: number | null
   notes?: string | null
   //
+  materialNetAmount?: number | null
+  feeNetAmount?: number | null
+  //
   projectId: Project["id"]
   project?: Project
   //

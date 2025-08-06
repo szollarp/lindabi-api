@@ -23,6 +23,10 @@ export class ProjectItemModel extends Model<ProjectItem, CreateProjectItemProper
 
   public status!: PROJECT_ITEM_STATUS;
 
+  public materialNetAmount?: number;
+
+  public feeNetAmount?: number;
+
   public netAmount!: number;
 
   public notes?: string | null;
@@ -80,6 +84,16 @@ export const ProjectItemFactory = (sequelize: Sequelize): typeof ProjectItemMode
       defaultValue: PROJECT_ITEM_STATUS.OPEN
     },
     netAmount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: null
+    },
+    materialNetAmount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: null
+    },
+    feeNetAmount: {
       type: DataTypes.DECIMAL,
       allowNull: true,
       defaultValue: null

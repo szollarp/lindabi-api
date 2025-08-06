@@ -15,7 +15,7 @@ export interface ExecutionService {
   create: (context: Context, user: DecodedUser, body: Partial<Execution>) => CreateResponse;
   update: (context: Context, user: DecodedUser, id: number, data: Partial<Execution>) => Promise<Partial<Execution> | null>;
   approve: (context: Context, user: DecodedUser, id: number) => Promise<Execution | null>;
-  getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>;
+  getProjects: (context: Context, employee: number, user: DecodedUser) => Promise<Array<Partial<Project>>>;
 }
 
 export const executionService = (): ExecutionService => ({
@@ -62,9 +62,9 @@ const get = async (context: Context, user: DecodedUser, id: number): Promise<Par
   }
 };
 
-const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
+const getProjects = async (context: Context, employee: number, user: DecodedUser,): Promise<Array<Partial<Project>>> => {
   try {
-    return await getRelatedProjectsByExecution(context, user);
+    return await getRelatedProjectsByExecution(context, employee, user);
   } catch (error) {
     context.logger.error(error);
     throw error;
@@ -88,7 +88,7 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
       }
     });
 
-    if (isExists) {
+    if (isExists && isExists.projectItemId !== body.projectItemId) {
       return { exists: true };
     }
 

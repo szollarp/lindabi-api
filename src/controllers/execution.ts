@@ -34,9 +34,9 @@ export class ExecutionController extends Controller {
   @SuccessResponse("200", "OK")
   @Get("/related-projects")
   @Security("authentication", ["Tenant", "Execution:List"])
-  public async getRelatedProjects(@Request() request: ContextualRequest): Promise<Array<Partial<Project>>> {
+  public async getRelatedProjects(@Request() request: ContextualRequest, @Query() employee: number): Promise<Array<Partial<Project>>> {
     const { context, user } = request;
-    return await context.services.execution.getProjects(context, user);
+    return await context.services.execution.getProjects(context, employee, user);
   }
 
   /**

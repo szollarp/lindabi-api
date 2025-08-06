@@ -35,6 +35,10 @@ import { TaskCommentFactory, type TaskCommentModel } from "./task-comment";
 import { TaskFactory, type TaskModel } from "./task";
 import { TaskColumnFactory, type TaskColumnModel } from "./task-column";
 import { WorkTypeFactory, type WorkTypeModel } from "./work-type"
+import { ItemMovementFactory, ItemMovementModel } from "./item-movement";
+import { ItemFactory, type ItemModel } from "./item";
+import { WarehouseFactory, type WarehouseModel } from "./warehouse";
+
 import { AzureStorageService } from "../helpers/azure-storage";
 
 export interface Models {
@@ -75,6 +79,9 @@ export interface Models {
   TaskComment: typeof TaskCommentModel
   TaskColumn: typeof TaskColumnModel
   WorkType: typeof WorkTypeModel
+  ItemMovement: typeof ItemMovementModel
+  Item: typeof ItemModel
+  Warehouse: typeof WarehouseModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -117,6 +124,9 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     TaskComment: TaskCommentFactory(sequelize),
     TaskColumn: TaskColumnFactory(sequelize),
     WorkType: WorkTypeFactory(sequelize),
+    Warehouse: WarehouseFactory(sequelize),
+    Item: ItemFactory(sequelize),
+    ItemMovement: ItemMovementFactory(sequelize),
     sequelize
   };
 
