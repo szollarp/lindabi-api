@@ -74,7 +74,7 @@ const getProjects = async (context: Context, employee: number, user: DecodedUser
 const create = async (context: Context, user: DecodedUser, body: Partial<Execution>): CreateResponse => {
   try {
     const invalidEmployeeDocuments = await checkUserDocuments(context, user.tenant, body.employeeId!);
-    if (invalidEmployeeDocuments.length > 0) {
+    if (!!invalidEmployeeDocuments && invalidEmployeeDocuments.length > 0) {
       return { invalidEmployeeDocuments: true };
     }
 
