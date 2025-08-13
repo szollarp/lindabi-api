@@ -1865,6 +1865,20 @@
 						"type": "string",
 						"nullable": true
 					},
+					"restraintAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"restraintDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"technicalInspector": {
+						"type": "string",
+						"nullable": true
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -5748,6 +5762,17 @@
 					},
 					"tigNotes": {
 						"type": "string"
+					},
+					"restraintAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"restraintDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"technicalInspector": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -5796,6 +5821,17 @@
 						"format": "date-time"
 					},
 					"tigNotes": {
+						"type": "string"
+					},
+					"restraintAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"restraintDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"technicalInspector": {
 						"type": "string"
 					},
 					"projectId": {

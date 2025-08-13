@@ -14,6 +14,9 @@ export interface Milestone {
   invoiceNumber?: string | null
   invoiceDate?: Date | null
   tigNotes?: string | null
+  restraintAmount?: number | null
+  restraintDate?: Date | null
+  technicalInspector?: string | null
   //
   projectId: Project["id"]
   project?: Project;

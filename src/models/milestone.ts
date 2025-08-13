@@ -26,6 +26,12 @@ export class MilestoneModel extends Model<Milestone, CreateMilestoneProperties> 
 
   public tigNotes?: string | null;
 
+  public restraintAmount?: number | null;
+
+  public restraintDate?: Date | null;
+
+  public technicalInspector?: string | null;
+
   public projectId!: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
@@ -96,6 +102,21 @@ export const MilestoneFactory = (sequelize: Sequelize): typeof MilestoneModel =>
         defaultValue: null
       },
       tigNotes: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
+      restraintAmount: {
+        type: DataTypes.DECIMAL,
+        allowNull: true,
+        defaultValue: null
+      },
+      restraintDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null
+      },
+      technicalInspector: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: null
