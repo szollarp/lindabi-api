@@ -1,4 +1,4 @@
-import { Op, Transaction } from "sequelize";
+import { Op, Transaction, QueryTypes, Sequelize } from "sequelize";
 import { v4 as uuidv4 } from 'uuid';
 import type { Context, DecodedUser } from "../types";
 import type { CreateTenderProperties, Tender } from "../models/interfaces/tender";
@@ -31,59 +31,74 @@ export interface TenderService {
   copyTenderItem: (context: Context, sourceId: number, targetId: number, user: DecodedUser) => Promise<{ success: boolean }>
 };
 
+const ALLOWED_STATUSES = [TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED];
+
 export const tenderService = (): TenderService => {
-  const generateTenderNumber = async (context: Context, user: DecodedUser, tender: Tender, force: boolean = false): Promise<string | null> => {
-    if (!force && tender.number && tender.number.length > 0) {
-      return tender.number;
+  const nextTenderSeq = async (sequelize: Sequelize, { tenantId, contractorId, year }: { tenantId: number, contractorId: number, year: number }): Promise<string> => {
+    const t = await sequelize.transaction();
+
+    try {
+      await sequelize.query(
+        `
+    INSERT INTO tender_number_counters (tenant_id, contractor_id, year, seq)
+    VALUES (:tenantId, :contractorId, :year, 0)
+    ON CONFLICT (tenant_id, contractor_id, year) DO NOTHING
+    `,
+        { type: QueryTypes.INSERT, transaction: t, replacements: { tenantId, contractorId, year } }
+      );
+
+      await sequelize.query(
+        `
+    UPDATE tender_number_counters
+    SET seq = seq + 1, updated_at = NOW()
+    WHERE tenant_id = :tenantId AND contractor_id = :contractorId AND year = :year
+    `,
+        { type: QueryTypes.UPDATE, transaction: t, replacements: { tenantId, contractorId, year } }
+      );
+
+      await t.commit();
+
+      const [result] = await sequelize.query(
+        `SELECT seq FROM tender_number_counters WHERE tenant_id = :tenantId AND contractor_id = :contractorId AND year = :year`,
+        { type: QueryTypes.SELECT, replacements: { tenantId, contractorId, year } }
+      );
+
+      return result["seq"];
+    } catch (error) {
+      await t.rollback();
+
+      throw error;
+    }
+  }
+
+  const generateTenderNumber = async (context: Context, user: DecodedUser, tender: Tender, force = false): Promise<string | null> => {
+    if (!force && tender.number) return tender.number;
+    if (!ALLOWED_STATUSES.includes(tender.status) || !tender.contractorId) return null;
+
+    const year = (tender.createdOn ? new Date(tender.createdOn) : new Date()).getUTCFullYear();
+    const contractor = await context.models.Company.findOne({
+      attributes: ['offerNum'],
+      where: { id: tender.contractorId, type: 'contractor', tenantId: tender.tenantId },
+    });
+
+    if (!contractor?.offerNum) {
+      return null;
     }
 
-    if ([TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED].includes(tender.status) && tender.contractorId) {
-      const year = tender.createdOn?.getFullYear() ?? new Date().getFullYear();
+    const { sequelize } = context.models;
 
-      const constructor = await context.models.Company.findOne({
-        attributes: ["offerNum"],
-        where: { id: tender.contractorId!, type: "contractor", },
-      });
+    const { tenantId, contractorId } = tender;
+    const seq = await nextTenderSeq(sequelize, { tenantId: tenantId!, contractorId, year });
 
-      if (!constructor) {
-        return null;
-      }
+    const number = `${contractor.offerNum}-${year}-${seq}`;
 
-      const latestTender = await context.models.Tender.findOne({
-        where: {
-          contractorId: tender.contractorId,
-          number: {
-            [Op.not]: null,
-            [Op.ne]: "",
-          },
-          createdOn: {
-            [Op.between]: [
-              new Date(`${year}-01-01`),
-              new Date(`${year}-12-31`)
-            ]
-          }
-        },
-        order: [['createdOn', 'DESC']]
-      });
+    await context.services.journey.addSimpleLog(
+      context, user,
+      { activity: 'The tender number has been successfully generated.', property: 'number', updated: number },
+      tender.id, 'tender'
+    );
 
-      if (latestTender?.number) {
-        const parts = latestTender.number.split("-");
-        const lastSegment = parts[parts.length - 1];
-        const lastNumber = parseInt(lastSegment, 10);
-
-        const number = `${constructor.offerNum}-${year}-${lastNumber + 1}`;
-
-        await context.services.journey.addSimpleLog(context, user, {
-          activity: `The tender number have been successfully generated.`,
-          property: "number",
-          updated: number
-        }, tender.id, "tender");
-
-        return number;
-      }
-    }
-
-    return null;
+    return number;
   }
 
   const getTenders = async (context: Context, tenantId: number): Promise<Array<Partial<Tender>>> => {
