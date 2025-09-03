@@ -1,11 +1,12 @@
 import { Op } from "sequelize";
 import type { Context, DecodedUser } from "../types";
+import { Tender } from "../models/interfaces/tender";
 
 const hasPermission = (user: DecodedUser, permission: string): boolean => {
   return user.isSystemAdmin || user.permissions!.includes(permission);
 }
 
-export const getRelatedProjectsByStatusReport = async (context: Context, user: DecodedUser): Promise<Array<{ id: number, name: string, reports: boolean, customer: string, number: string }>> => {
+export const getRelatedProjectsByStatusReport = async (context: Context, user: DecodedUser): Promise<Array<{ id: number, tender?: Tender, name: string, reports: boolean, customer: string, number: string }>> => {
   try {
     const projects = await context.models.Project.findAll({
       attributes: ["id", "number", "shortName", "type", "reports"],
@@ -14,6 +15,17 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
           model: context.models.Company,
           as: "customer",
           attributes: ["id", "name"]
+        },
+        {
+          model: context.models.Tender,
+          as: "tender",
+          attributes: ["id"],
+          required: false,
+          include: [{
+            model: context.models.Location,
+            as: "location",
+            attributes: ["id", "city", "address"]
+          }]
         },
         {
           model: context.models.Contact,
@@ -48,8 +60,8 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
     });
 
     return projects.map(project => {
-      const { id, shortName, type, reports, customer, number } = project;
-      return { id, name: shortName || type, reports, customer: customer!.name, number: number || "" };
+      const { id, shortName, type, reports, customer, number, tender } = project;
+      return { id, tender, name: shortName || type, reports, customer: customer!.name, number: number || "" };
     });
   } catch (error) {
     console.error("Error fetching projects:", error);

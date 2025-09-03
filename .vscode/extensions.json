@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    "ms-vscode.vscode-js-debug",
+    "ms-vscode.vscode-typescript-debug",
+    "ms-vscode.vscode-js-profile-flame",
+    "ms-vscode.vscode-js-profile-table",
+    "ms-vscode.vscode-js-profile-visualizer",
+    "ms-vscode.vscode-json-language-features",
+    "ms-vscode.vscode-markdown-language-features",
+    "ms-vscode.vscode-npm-script",
+    "ms-vscode.vscode-extension-auto-import",
+    "ms-vscode.vscode-extension-auto-rename-tag",
+    "ms-vscode.vscode-extension-auto-close-tag",
+    "ms-vscode.vscode-extension-auto-rename-tag",
+    "ms-vscode.vscode-extension-auto-close-tag",
+    "ms-vscode.vscode-extension-auto-rename-tag",
+    "ms-vscode.vscode-extension-auto-close-tag"
+  ]
+}

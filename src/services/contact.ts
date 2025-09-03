@@ -16,11 +16,23 @@ export interface ContactService {
 export const contactService = (): ContactService => {
   const getContacts = async (context: Context, tenantId: number): Promise<Array<Partial<Contact>>> => {
     try {
-      return await context.models.Contact.findAll({
+      const contacts = await context.models.Contact.findAll({
         attributes: ["id", "name", "email", "phoneNumber", "status", "notes", "userId"],
         where: { tenantId },
         order: [["name", "ASC"]],
+        include: [
+          {
+            model: context.models.Tender,
+            as: "tenders",
+            attributes: ["id"]
+          }
+        ]
       });
+
+      return contacts.map(contact => ({
+        ...contact.get(),
+        tenders: contact.tenders.length
+      }));
     } catch (error) {
       context.logger.error(error);
       throw error;

@@ -1,9 +1,10 @@
 import { Model, DataTypes } from "sequelize";
-import type { ForeignKey, NonAttribute, Sequelize } from "sequelize";
+import type { Association, ForeignKey, NonAttribute, Sequelize } from "sequelize";
 import type { Models } from ".";
 import type { CreateLocationProperties, Location } from "./interfaces/location";
 import type { Tenant } from "./interfaces/tenant";
 import { LOCATION_STATUS } from "../constants";
+import { TenderModel } from "./tender";
 
 export class LocationModel extends Model<Location, CreateLocationProperties> implements Location {
   public id!: number;
@@ -26,6 +27,10 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
 
   public notes!: string | null;
 
+  declare tenders: NonAttribute<TenderModel[]>;
+
+  declare tenderIds: ForeignKey<TenderModel["id"]>[];
+
   declare tenant: NonAttribute<Tenant>;
 
   declare tenantId: ForeignKey<Tenant["id"]>;
@@ -39,6 +44,10 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
   public readonly updatedBy!: number | null;
 
   public static associate: (models: Models) => void;
+
+  public static associations: {
+    tenders: Association<LocationModel, TenderModel>
+  };
 };
 
 export const LocationFactory = (sequelize: Sequelize): typeof LocationModel => {
@@ -123,6 +132,11 @@ export const LocationFactory = (sequelize: Sequelize): typeof LocationModel => {
     LocationModel.belongsToMany(models.Company, {
       foreignKey: "location_id",
       through: "company_locations"
+    });
+
+    LocationModel.hasMany(models.Tender, {
+      foreignKey: "location_id",
+      as: "tenders"
     });
   };
 

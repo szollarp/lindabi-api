@@ -11,13 +11,15 @@ import {
   Request,
   SuccessResponse,
   Tags,
-  Security
+  Security,
+  Query
 } from "tsoa";
 import type { ContextualRequest } from "../types";
 import type { Task, CreateTaskProperties } from "../models/interfaces/task";
 import type { CreateTaskCommentProperties, TaskComment } from "../models/interfaces/task-comment";
 import { TaskColumn } from "../models/interfaces/task-column";
 import { User } from "../models/interfaces/user";
+import { CSVExportOptions } from "../helpers/csv";
 
 @Route("tasks")
 export class TaskController extends Controller {
@@ -172,5 +174,50 @@ export class TaskController extends Controller {
   public async moveTask(@Request() request: ContextualRequest, @Body() body: { position: number[], column: number }): Promise<{ success: boolean }> {
     const { context, user } = request;
     return await context.services.task.moveTask(context, user, body);
+  }
+
+  @Tags("Task")
+  @SuccessResponse("200", "OK")
+  @Get("/export/csv")
+  @Security("authentication", ["Task:List"])
+  public async exportTasksToCSV(
+    @Request() request: ContextualRequest,
+    @Query() includeComments?: boolean,
+    @Query() includeAttachments?: boolean,
+    @Query() dateFormat?: string,
+    @Query() delimiter?: string,
+    @Query() columnId?: number,
+    @Query() priority?: string,
+    @Query() type?: string,
+    @Query() assigneeId?: number
+  ): Promise<{
+    csvContent: string;
+    filename: string;
+    buffer: Buffer;
+    mimeType: string;
+    totalTasks: number;
+    exportOptions: any;
+  }> {
+    const { context, user } = request;
+
+    const options: CSVExportOptions = {
+      includeComments: includeComments || false,
+      includeAttachments: includeAttachments || false,
+      dateFormat: dateFormat || 'YYYY-MM-DD',
+      delimiter: delimiter || ','
+    };
+
+    const result = await context.services.task.exportToCSV(context, user, options, {
+      columnId,
+      priority,
+      type,
+      assigneeId
+    });
+
+    return {
+      ...result,
+      totalTasks: result.tasks?.length || 0,
+      exportOptions: options
+    };
   }
 } 

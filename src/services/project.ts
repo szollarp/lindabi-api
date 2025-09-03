@@ -3,7 +3,7 @@ import type { Context, DecodedUser } from "../types";
 import type { Project } from "../models/interfaces/project";
 import type { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } from "../models/interfaces/document";
 import { PROJECT_COLORS, PROJECT_ITEM_STATUS, PROJECT_ITEM_TYPE, PROJECT_STATUS, TENDER_STATUS } from "../constants";
-import { getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
+import { getAmountByDiscount, getTotalNetAmount, getTotalVatAmount } from "../helpers/tender";
 import { Op } from "sequelize";
 import { CreateMilestoneProperties, Milestone } from "../models/interfaces/milestone";
 import { CreateProjectItemProperties, ProjectItem } from "../models/interfaces/project-item";
@@ -97,14 +97,14 @@ export const projectService = (): ProjectService => {
           quantity,
           unit,
           num,
-          materialNetAmount,
-          feeNetAmount,
+          materialNetAmount: getAmountByDiscount(tender, materialNetAmount),
+          feeNetAmount: getAmountByDiscount(tender, feeNetAmount),
           projectId: project.id,
           createdBy: user.id,
           type: PROJECT_ITEM_TYPE.ITEMIZED,
           status: PROJECT_ITEM_STATUS.OPEN,
-          netAmount: item.netAmount
-        } as any, { transaction: t });
+          netAmount: getAmountByDiscount(tender, item.netAmount!)
+        } as ProjectItem, { transaction: t });
       }
 
       if (files && files.length > 0) {

@@ -48,6 +48,13 @@ export const getTotalNetAmount = (tender: Tender) => {
   return (netAmount * surcharge * discount) - surveyFee;
 }
 
+export const getAmountByDiscount = (tender: Tender, amount: number): number => {
+  const discount = 1 - (Number(tender.discount) / 100);
+  const surcharge = 1 + (Number(tender.surcharge) / 100);
+
+  return amount * surcharge * discount;
+}
+
 export const getTotalVatAmount = (tender: Tender) => {
   const vatKey = Number(tender.vatKey) || 0;
   const netAmount = getTotalNetAmount(tender);

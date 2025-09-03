@@ -7,6 +7,7 @@ import type { Models } from ".";
 import { CompanyModel } from "./company";
 import { User } from "./interfaces/user";
 import { UserModel } from "./user";
+import { TenderModel } from "./tender";
 
 export class ContactModel extends Model<Contact, CreateContactProperties> implements Contact {
   public id!: number;
@@ -29,6 +30,10 @@ export class ContactModel extends Model<Contact, CreateContactProperties> implem
 
   declare userId: ForeignKey<User["id"]>;
 
+  declare tenders: NonAttribute<TenderModel[]>;
+
+  declare tenderIds: ForeignKey<TenderModel["id"]>[];
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date;
@@ -39,11 +44,12 @@ export class ContactModel extends Model<Contact, CreateContactProperties> implem
 
   public static associate: (models: Models) => void;
 
+  public getCompanies!: HasManyGetAssociationsMixin<CompanyModel[]>;
+
   public static associations: {
     user: Association<ContactModel, UserModel>
+    tenders: Association<ContactModel, TenderModel>
   };
-
-  public getCompanies!: HasManyGetAssociationsMixin<CompanyModel[]>;
 };
 
 export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
@@ -138,6 +144,11 @@ export const ContactFactory = (sequelize: Sequelize): typeof ContactModel => {
 
     ContactModel.belongsTo(models.User, {
       foreignKey: "user_id", as: "user"
+    });
+
+    ContactModel.hasMany(models.Tender, {
+      foreignKey: "contact_id",
+      as: "tenders"
     });
   };
 

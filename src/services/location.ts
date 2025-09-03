@@ -16,11 +16,23 @@ export interface LocationService {
 export const locationService = (): LocationService => {
   const getLocations = async (context: Context, tenantId: number): Promise<Array<Partial<Location>>> => {
     try {
-      return await context.models.Location.findAll({
+      const locations = await context.models.Location.findAll({
         attributes: ["id", "name", "country", "region", "city", "address", "zipCode", "status", "notes", "taxNumber"],
         where: { tenantId },
-        order: [["name", "ASC"]]
+        order: [["name", "ASC"]],
+        include: [
+          {
+            model: context.models.Tender,
+            as: "tenders",
+            attributes: ["id"]
+          }
+        ]
       });
+
+      return locations.map(location => ({
+        ...location.get(),
+        tenders: location.tenders.length
+      }));
     } catch (error) {
       context.logger.error(error);
       throw error;

@@ -5,6 +5,7 @@ import type { TaskComment, CreateTaskCommentProperties } from "../models/interfa
 import type { Context, DecodedUser } from "../types";
 import { User } from '../models/interfaces/user';
 import { Op } from 'sequelize';
+import { generateTasksCSV, generateCSVFilename, csvToBuffer, getCSVMimeType, CSVExportOptions } from '../helpers/csv';
 
 export interface TaskService {
   list: (context: Context, user: DecodedUser) => Promise<{ tasks: Task[], columns: TaskColumn[] }>;
@@ -23,6 +24,7 @@ export interface TaskService {
   deleteColumn: (context: Context, user: DecodedUser, id: number) => Promise<{ success: boolean }>;
   moveColumn: (context: Context, user: DecodedUser, data: { position: number[] }) => Promise<{ success: boolean }>;
   moveTask: (context: Context, user: DecodedUser, data: { position: number[], column: number }) => Promise<{ success: boolean }>;
+  exportToCSV: (context: Context, user: DecodedUser, options?: CSVExportOptions, filters?: { columnId?: number; priority?: string; type?: string; assigneeId?: number }) => Promise<{ csvContent: string; filename: string; buffer: Buffer; mimeType: string; tasks: Task[]; columns: TaskColumn[] }>;
 }
 
 const list = async (context: Context, user: DecodedUser): Promise<{ tasks: Task[], columns: TaskColumn[], ordered: string[] }> => {
@@ -310,6 +312,78 @@ const moveTask = async (context: Context, user: DecodedUser, data: { position: n
   return { success: true };
 }
 
+const exportToCSV = async (context: Context, user: DecodedUser, options?: CSVExportOptions, filters?: { columnId?: number; priority?: string; type?: string; assigneeId?: number }): Promise<{ csvContent: string; filename: string; buffer: Buffer; mimeType: string; tasks: Task[]; columns: TaskColumn[] }> => {
+  const whereClause: any = { tenantId: user.tenant };
+
+  if (filters?.columnId) {
+    whereClause.columnId = filters.columnId;
+  }
+
+  if (filters?.priority) {
+    whereClause.priority = filters.priority;
+  }
+
+  if (filters?.type) {
+    whereClause.type = filters.type;
+  }
+
+  const tasks = await context.models.Task.findAll({
+    where: whereClause,
+    include: [
+      {
+        model: context.models.TaskColumn,
+        as: 'column',
+        required: true,
+        attributes: ['name'],
+      },
+      {
+        model: context.models.User,
+        as: 'assignee',
+        required: false,
+        attributes: ['name'],
+        ...(filters?.assigneeId && { where: { id: filters.assigneeId } }),
+      },
+      {
+        model: context.models.User,
+        as: 'reporter',
+        required: true,
+        attributes: ['name'],
+      },
+      {
+        model: context.models.TaskComment,
+        as: 'comments',
+        required: false,
+        include: [
+          {
+            model: context.models.User,
+            as: 'creator',
+            required: true,
+            attributes: ['name'],
+          },
+        ],
+      },
+    ],
+    order: [
+      ['column', 'position'],
+      ['position', 'ASC'],
+    ],
+  });
+
+  const columns = await context.models.TaskColumn.findAll({
+    attributes: ['id', 'name', 'position'],
+    where: { tenantId: user.tenant },
+    order: [['position', 'ASC']]
+  });
+
+  const exportData = { tasks, columns };
+  const csvContent = generateTasksCSV(exportData, options);
+  const filename = generateCSVFilename('tasks');
+  const buffer = csvToBuffer(csvContent);
+  const mimeType = getCSVMimeType();
+
+  return { csvContent, filename, buffer, mimeType, tasks, columns };
+};
+
 export const taskService = (): TaskService => ({
   list,
   get,
@@ -326,5 +400,6 @@ export const taskService = (): TaskService => ({
   cleanupColumn,
   deleteTask,
   moveColumn,
-  moveTask
+  moveTask,
+  exportToCSV
 });

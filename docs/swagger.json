@@ -9728,6 +9728,50 @@
 				}
 			}
 		},
+		"/tenders/{id}/related-items": {
+			"get": {
+				"operationId": "GetItemsByTenderType",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_TenderItem_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves detailed information about a specific tender by their ID.\nThis endpoint is protected by JWT authentication, requiring \"Tender:Get\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/tenders/{sourceId}/items-copy/{targetId}": {
 			"put": {
 				"operationId": "CopyTenderItem",
@@ -11454,6 +11498,129 @@
 						}
 					}
 				}
+			}
+		},
+		"/tasks/export/csv": {
+			"get": {
+				"operationId": "ExportTasksToCSV",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"exportOptions": {},
+										"totalTasks": {
+											"type": "number",
+											"format": "double"
+										},
+										"mimeType": {
+											"type": "string"
+										},
+										"buffer": {
+											"type": "string",
+											"format": "byte"
+										},
+										"filename": {
+											"type": "string"
+										},
+										"csvContent": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"exportOptions",
+										"totalTasks",
+										"mimeType",
+										"buffer",
+										"filename",
+										"csvContent"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Task:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "includeComments",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "includeAttachments",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "dateFormat",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "delimiter",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "columnId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "priority",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "assigneeId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/status-reports": {

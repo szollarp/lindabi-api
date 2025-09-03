@@ -23,6 +23,7 @@ export interface TenderService {
   deleteTenders: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
   getTenderJourneys: (context: Context, id: number) => Promise<Partial<Journey>[] | []>
   getTenderItems: (context: Context, tenantId: number, id: number) => Promise<Partial<TenderItem>[]>
+  getItemsByTenderType: (context: Context, tenantId: number, id: number) => Promise<Partial<TenderItem>[]>
   createTenderItem: (context: Context, tenderId: number, user: DecodedUser, data: CreateTenderItemProperties) => Promise<TenderItem>
   updateTenderItem: (context: Context, tenderId: number, id: number, user: DecodedUser, data: Partial<TenderItem>) => Promise<Partial<TenderItem> | null>
   removeTenderItem: (context: Context, user: DecodedUser, tenderId: number, id: number) => Promise<{ success: boolean }>
@@ -266,6 +267,36 @@ export const tenderService = (): TenderService => {
             as: "tender",
             attributes: ["discount", "surcharge", "vatKey"],
             where: { tenantId },
+            required: true,
+          }
+        ]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  }
+
+  const getItemsByTenderType = async (context: Context, tenantId: number, id: number): Promise<Partial<TenderItem>[]> => {
+    try {
+      const tender = await context.models.Tender.findOne({
+        where: { tenantId, id },
+        attributes: ["type"]
+      });
+
+      if (!tender) {
+        return [];
+      }
+
+      return await context.models.TenderItem.findAll({
+        attributes: ["id", "name"],
+        order: [["num", "ASC"]],
+        include: [
+          {
+            model: context.models.Tender,
+            as: "tender",
+            attributes: ["type"],
+            where: { tenantId, type: tender.type },
             required: true,
           }
         ]
@@ -698,6 +729,7 @@ export const tenderService = (): TenderService => {
     removeTenderItem,
     copyTenderItem,
     copyTender,
-    sendTenderViaEmail
+    sendTenderViaEmail,
+    getItemsByTenderType
   }
 };

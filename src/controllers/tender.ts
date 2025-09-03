@@ -112,6 +112,23 @@ export class TenderController extends Controller {
   }
 
   /**
+   * Retrieves detailed information about a specific tender by their ID.
+   * This endpoint is protected by JWT authentication, requiring "Tender:Get" permission.
+   *
+   * @param id The unique identifier of the tender to retrieve.
+   * @returns A tender object containing partial information, or null if no tender is found. 
+   * Sensitive information is omitted.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Get("/{id}/related-items")
+  @Security("authentication", ["Tenant", "Tender:Get"])
+  public async getItemsByTenderType(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<TenderItem>[]> {
+    const { context, user } = request;
+    return await context.services.tender.getItemsByTenderType(context, user.tenant, id);
+  }
+
+  /**
     * Adds a new item to an existing tender identified by its ID. This operation is secured with JWT and requires "Tender:Get" permission.
     * Useful for modifying tender details dynamically during the tender process.
     *
