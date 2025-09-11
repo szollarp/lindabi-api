@@ -110,9 +110,11 @@ const approve = async (context: Context, user: DecodedUser, id: number, data: Ap
     });
 
     if (!orderForm) throw new Error("Order form not found");
-    if (orderForm.employeeId !== user.id) throw new Error("Unauthorized");
 
-    if (orderForm.approveCode !== data.approveCode) throw new Error("Invalid approve code");
+    if (!user.isSystemAdmin && !user.isManager) {
+      if (orderForm.employeeId !== user.id) throw new Error("Unauthorized");
+      if (orderForm.approveCode !== data.approveCode || user.isSystemAdmin) throw new Error("Invalid approve code");
+    }
 
     await orderForm.update({
       status: ORDER_FORM_STATUS.APPROVED,

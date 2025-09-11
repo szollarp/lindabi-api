@@ -7,6 +7,7 @@ import { Project } from "./interfaces/project";
 import { ItemModel } from "./item";
 import { Item } from "./interfaces/item";
 import { Tenant } from "./interfaces/tenant";
+import { User } from "./interfaces/user";
 
 export class ItemMovementModel extends Model<ItemMovement, CreateItemMovementProperties> implements ItemMovement {
   public id!: number;
@@ -16,6 +17,8 @@ export class ItemMovementModel extends Model<ItemMovement, CreateItemMovementPro
   public itemId!: ForeignKey<Item["id"]>;
 
   public quantity!: number;
+
+  public employeeId?: ForeignKey<User["id"]>;
 
   public source?: 'warehouse' | 'project';
 
@@ -71,6 +74,10 @@ export const ItemMovementFactory = (sequelize: Sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    employeeId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     source: {
       type: DataTypes.ENUM('warehouse', 'project'),
       allowNull: true,
@@ -121,38 +128,35 @@ export const ItemMovementFactory = (sequelize: Sequelize) => {
     ItemMovementModel.belongsTo(models.Warehouse, {
       as: 'sourceWarehouse',
       foreignKey: 'source_id',
-      scope: {
-        source: "warehouse"
-      }
+      constraints: false
     });
 
     ItemMovementModel.belongsTo(models.Project, {
       as: 'sourceProject',
       foreignKey: 'source_id',
-      scope: {
-        source: "project"
-      }
+      constraints: false
     });
 
     ItemMovementModel.belongsTo(models.Warehouse, {
       as: 'targetWarehouse',
       foreignKey: 'target_id',
-      scope: {
-        target: "warehouse"
-      }
+      constraints: false
     });
 
     ItemMovementModel.belongsTo(models.Project, {
       as: 'targetProject',
       foreignKey: 'target_id',
-      scope: {
-        target: "project"
-      }
+      constraints: false
     });
 
     ItemMovementModel.belongsTo(models.Item, {
       as: 'item',
       foreignKey: 'item_id'
+    });
+
+    ItemMovementModel.belongsTo(models.User, {
+      as: 'employee',
+      foreignKey: 'employee_id'
     });
   };
 

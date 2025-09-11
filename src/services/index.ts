@@ -27,6 +27,8 @@ import { type TaskService, taskService } from "./task"
 import { type WorkTypeService, workTypeService } from "./work-type";
 import { type WarehouseService, warehouseService } from "./warehouse";
 import { type ItemService, itemService } from "./item";
+import { type StockService, stockService } from "./stock";
+import { type ItemMovementService, itemMovementService } from "./item-movement";
 
 export interface Services {
   version: VersionService
@@ -58,6 +60,8 @@ export interface Services {
   workType: WorkTypeService
   warehouse: WarehouseService
   item: ItemService
+  stock: StockService
+  itemMovement: ItemMovementService
 }
 
 export default (): Services => ({
@@ -89,5 +93,7 @@ export default (): Services => ({
   task: taskService(),
   workType: workTypeService(),
   warehouse: warehouseService(),
-  item: itemService()
+  item: itemService(),
+  stock: stockService(),
+  itemMovement: itemMovementService()
 });

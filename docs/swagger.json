@@ -322,7 +322,7 @@
 				],
 				"type": "string"
 			},
-			"Notifications": {
+			"NotificationSettings": {
 				"properties": {
 					"userNew": {
 						"type": "boolean"
@@ -390,59 +390,62 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"NOTIFICATION_TYPE": {
+				"enum": [
+					"user_new",
+					"user_update",
+					"user_delete",
+					"user_update_role",
+					"tender_new",
+					"tender_approved",
+					"tender_status_change",
+					"tender_awaiting_approval",
+					"contact_new",
+					"contact_update",
+					"customer_new",
+					"customer_update",
+					"contractor_new",
+					"contractor_update",
+					"permission_matrix_update",
+					"project_new",
+					"project_update",
+					"project_status_change",
+					"task_new",
+					"task_update",
+					"task_assigned",
+					"task_completed",
+					"invoice_new",
+					"invoice_approved",
+					"invoice_paid",
+					"execution_new",
+					"execution_approved",
+					"system_maintenance",
+					"general"
+				],
+				"type": "string"
+			},
+			"NOTIFICATION_STATUS": {
+				"enum": [
+					"unread",
+					"read",
+					"archived"
+				],
+				"type": "string"
+			},
+			"NOTIFICATION_PRIORITY": {
+				"enum": [
+					"low",
+					"medium",
+					"high",
+					"urgent"
+				],
+				"type": "string"
+			},
 			"Record_string.unknown_": {
 				"properties": {},
 				"additionalProperties": {},
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
-			},
-			"UserBilling": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"country": {
-						"type": "string"
-					},
-					"region": {
-						"type": "string",
-						"nullable": true
-					},
-					"city": {
-						"type": "string"
-					},
-					"address": {
-						"type": "string"
-					},
-					"zipCode": {
-						"type": "string"
-					},
-					"taxNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"registrationNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"bankAccount": {
-						"type": "string",
-						"nullable": true
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					}
-				},
-				"required": [
-					"name",
-					"country",
-					"city",
-					"address",
-					"zipCode"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"User": {
 				"properties": {
@@ -511,7 +514,13 @@
 						"nullable": true
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
+						"$ref": "#/components/schemas/NotificationSettings"
+					},
+					"uiNotifications": {
+						"items": {
+							"$ref": "#/components/schemas/Notification"
+						},
+						"type": "array"
 					},
 					"entity": {
 						"type": "string"
@@ -727,6 +736,142 @@
 					"email",
 					"name",
 					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Notification": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"title": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"type": {
+						"$ref": "#/components/schemas/NOTIFICATION_TYPE"
+					},
+					"status": {
+						"$ref": "#/components/schemas/NOTIFICATION_STATUS"
+					},
+					"priority": {
+						"$ref": "#/components/schemas/NOTIFICATION_PRIORITY"
+					},
+					"data": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.unknown_"
+							}
+						],
+						"nullable": true
+					},
+					"readAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"archivedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"deletedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"deletedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"title",
+					"message",
+					"type",
+					"status",
+					"priority",
+					"createdOn"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserBilling": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"taxNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"registrationNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"bankAccount": {
+						"type": "string",
+						"nullable": true
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2832,7 +2977,13 @@
 						"format": "date-time"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
+						"$ref": "#/components/schemas/NotificationSettings"
+					},
+					"uiNotifications": {
+						"items": {
+							"$ref": "#/components/schemas/Notification"
+						},
+						"type": "array"
 					},
 					"entity": {
 						"type": "string"
@@ -3077,7 +3228,13 @@
 						"format": "date-time"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
+						"$ref": "#/components/schemas/NotificationSettings"
+					},
+					"uiNotifications": {
+						"items": {
+							"$ref": "#/components/schemas/Notification"
+						},
+						"type": "array"
 					},
 					"entity": {
 						"type": "string"
@@ -3280,7 +3437,13 @@
 						"type": "boolean"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
+						"$ref": "#/components/schemas/NotificationSettings"
+					},
+					"uiNotifications": {
+						"items": {
+							"$ref": "#/components/schemas/Notification"
+						},
+						"type": "array"
 					},
 					"entity": {
 						"type": "string"
@@ -3486,7 +3649,13 @@
 						"format": "date-time"
 					},
 					"notifications": {
-						"$ref": "#/components/schemas/Notifications"
+						"$ref": "#/components/schemas/NotificationSettings"
+					},
+					"uiNotifications": {
+						"items": {
+							"$ref": "#/components/schemas/Notification"
+						},
+						"type": "array"
 					},
 					"entity": {
 						"type": "string"
@@ -5011,6 +5180,351 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"Warehouse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"country": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string",
+						"nullable": true
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"country",
+					"city",
+					"address",
+					"zipCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Item": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"manufacturer": {
+						"type": "string",
+						"nullable": true
+					},
+					"vatKey": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"category": {
+						"type": "string",
+						"nullable": true
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"unit": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"vatKey"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"StockItem": {
+				"properties": {
+					"itemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"item": {
+						"$ref": "#/components/schemas/Item"
+					},
+					"currentStock": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalIssued": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalReturned": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalTransferredIn": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalTransferredOut": {
+						"type": "number",
+						"format": "double"
+					},
+					"lastTransactionDate": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"itemId",
+					"item",
+					"currentStock",
+					"totalIssued",
+					"totalReturned",
+					"totalTransferredIn",
+					"totalTransferredOut"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ItemMovement": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"issue",
+							"return",
+							"transfer"
+						]
+					},
+					"itemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"warehouse",
+							"project"
+						]
+					},
+					"sourceId": {
+						"type": "number",
+						"format": "double"
+					},
+					"target": {
+						"type": "string",
+						"enum": [
+							"warehouse",
+							"project"
+						]
+					},
+					"targetId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"item": {
+						"$ref": "#/components/schemas/Item"
+					},
+					"employee": {
+						"$ref": "#/components/schemas/User"
+					},
+					"sourceWarehouse": {
+						"$ref": "#/components/schemas/Warehouse"
+					},
+					"sourceProject": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"targetWarehouse": {
+						"$ref": "#/components/schemas/Warehouse"
+					},
+					"targetProject": {
+						"$ref": "#/components/schemas/Project"
+					}
+				},
+				"required": [
+					"id",
+					"type",
+					"itemId",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"StockReport": {
+				"properties": {
+					"entityType": {
+						"type": "string",
+						"enum": [
+							"warehouse",
+							"project"
+						]
+					},
+					"entityId": {
+						"type": "number",
+						"format": "double"
+					},
+					"entity": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Warehouse"
+							},
+							{
+								"$ref": "#/components/schemas/Project"
+							}
+						]
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/StockItem"
+						},
+						"type": "array"
+					},
+					"transactions": {
+						"items": {
+							"$ref": "#/components/schemas/ItemMovement"
+						},
+						"type": "array"
+					},
+					"totalItems": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalValue": {
+						"type": "number",
+						"format": "double"
+					},
+					"lastUpdated": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"entityType",
+					"entityId",
+					"entity",
+					"items",
+					"transactions",
+					"totalItems",
+					"lastUpdated"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"STATUS_REPORT_STATUS": {
 				"enum": [
@@ -6877,6 +7391,133 @@
 			},
 			"CreateItemProperties": {
 				"$ref": "#/components/schemas/Omit_Item.id-or-createdAt-or-updatedAt_"
+			},
+			"ItemMovementItem": {
+				"properties": {
+					"itemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"itemId",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateItemMovementProperties": {
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": [
+							"issue",
+							"return",
+							"transfer"
+						]
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"warehouse",
+							"project"
+						]
+					},
+					"sourceId": {
+						"type": "number",
+						"format": "double"
+					},
+					"target": {
+						"type": "string",
+						"enum": [
+							"warehouse",
+							"project"
+						]
+					},
+					"targetId": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/ItemMovementItem"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"type",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__": {
+				"properties": {
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"issue",
+							"return",
+							"transfer"
+						]
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"itemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"project",
+							"warehouse"
+						]
+					},
+					"sourceId": {
+						"type": "number",
+						"format": "double"
+					},
+					"target": {
+						"type": "string",
+						"enum": [
+							"project",
+							"warehouse"
+						]
+					},
+					"targetId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateItemMovementProperties": {
+				"$ref": "#/components/schemas/Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__"
 			},
 			"Pick_Invoice.Exclude_keyofInvoice.id-or-createdOn-or-updatedOn-or-approvedBy-or-approvedOn__": {
 				"properties": {
@@ -9183,7 +9824,7 @@
 								"schema": {
 									"allOf": [
 										{
-											"$ref": "#/components/schemas/Notifications"
+											"$ref": "#/components/schemas/NotificationSettings"
 										}
 									],
 									"nullable": true
@@ -9221,7 +9862,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Notifications",
+								"$ref": "#/components/schemas/NotificationSettings",
 								"description": "A record of settings indicating the types of notifications and whether they should be enabled or disabled."
 							}
 						}
@@ -11618,6 +12259,226 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/stock/report/{entityType}/{entityId}": {
+			"get": {
+				"operationId": "GetStockReport",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StockReport"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a comprehensive stock report for a specific warehouse or project.\nRequires a valid JWT token with \"InventoryTransaction:List\" permission.",
+				"tags": [
+					"Stock"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The type of entity (warehouse or project)",
+						"in": "path",
+						"name": "entityType",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "The ID of the warehouse or project",
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/stock/items/{entityType}/{entityId}": {
+			"get": {
+				"operationId": "GetStockItems",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/StockItem"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves stock items for a specific warehouse or project with optional filtering.\nRequires a valid JWT token with \"InventoryTransaction:List\" permission.",
+				"tags": [
+					"Stock"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The type of entity (warehouse or project)",
+						"in": "path",
+						"name": "entityType",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "The ID of the warehouse or project",
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Optional search keyword for filtering items",
+						"in": "query",
+						"name": "keyword",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Whether to include items with zero stock",
+						"in": "query",
+						"name": "showZeroStock",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Field to sort by (itemName, currentStock, lastTransaction)",
+						"in": "query",
+						"name": "sortBy",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"itemName",
+								"currentStock",
+								"lastTransaction"
+							]
+						}
+					},
+					{
+						"description": "Sort order (asc or desc)",
+						"in": "query",
+						"name": "sortOrder",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"asc",
+								"desc"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/stock/transactions/{entityType}/{entityId}": {
+			"get": {
+				"operationId": "GetStockTransactions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves inventory transactions for a specific warehouse or project.\nRequires a valid JWT token with \"InventoryTransaction:List\" permission.",
+				"tags": [
+					"Stock"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The type of entity (warehouse or project)",
+						"in": "path",
+						"name": "entityType",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "The ID of the warehouse or project",
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Optional search keyword for filtering transactions",
+						"in": "query",
+						"name": "keyword",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -14891,6 +15752,119 @@
 				"parameters": []
 			}
 		},
+		"/notifications": {
+			"get": {
+				"operationId": "GetNotifications",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Notification"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Notification"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Notification:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/notifications/{id}/read": {
+			"put": {
+				"operationId": "SetRead",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Notification"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Notification:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/notifications/all-read": {
+			"put": {
+				"operationId": "SetAllRead",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Notification"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Notification:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/locations": {
 			"get": {
 				"operationId": "GetLocations",
@@ -15594,6 +16568,457 @@
 						"name": "id",
 						"required": true,
 						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/item-movements": {
+			"get": {
+				"operationId": "GetItemMovements",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"limit": {
+											"type": "number",
+											"format": "double"
+										},
+										"page": {
+											"type": "number",
+											"format": "double"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/ItemMovement"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"limit",
+										"page",
+										"total",
+										"data"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of item movements for the authenticated user's tenant.\nRequires a valid JWT token with \"InventoryTransaction:List\" permission.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Page number for pagination (default: 1)",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Number of items per page (default: 10)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by movement type (issue, return, transfer)",
+						"in": "query",
+						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"issue",
+								"return",
+								"transfer"
+							]
+						}
+					},
+					{
+						"description": "Filter by specific item ID",
+						"in": "query",
+						"name": "itemId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by source type (warehouse, project)",
+						"in": "query",
+						"name": "source",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "Filter by target type (warehouse, project)",
+						"in": "query",
+						"name": "target",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "Filter by employee ID",
+						"in": "query",
+						"name": "employeeId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by start date (ISO string)",
+						"in": "query",
+						"name": "startDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by end date (ISO string)",
+						"in": "query",
+						"name": "endDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateItemMovements",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ItemMovement"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates item movements with the provided properties under the authenticated user's tenant.\nA valid JWT token with \"InventoryTransaction:Create\" permission is required.\nItems are always provided as an array, even for single item transactions.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "The properties to create item movements, with items as an array.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateItemMovementProperties",
+								"description": "The properties to create item movements, with items as an array."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/item-movements/{id}": {
+			"get": {
+				"operationId": "GetItemMovement",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ItemMovement"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Fetches detailed information about a specific item movement identified by its ID.\nRequires JWT authentication with \"InventoryTransaction:Get\" permission.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the item movement to retrieve.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateItemMovement",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ItemMovement"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates an existing item movement with the provided properties.\nRequires JWT authentication with \"InventoryTransaction:Update\" permission.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the item movement to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The properties to update the item movement.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateItemMovementProperties",
+								"description": "The properties to update the item movement."
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteItemMovement",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes an item movement by its ID.\nRequires JWT authentication with \"InventoryTransaction:Delete\" permission.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the item movement to delete.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/item-movements/entity/{entityType}/{entityId}": {
+			"get": {
+				"operationId": "GetItemMovementsByEntity",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"limit": {
+											"type": "number",
+											"format": "double"
+										},
+										"page": {
+											"type": "number",
+											"format": "double"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/ItemMovement"
+											},
+											"type": "array"
+										}
+									},
+									"required": [
+										"limit",
+										"page",
+										"total",
+										"data"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets item movements for a specific entity (warehouse or project).\nRequires JWT authentication with \"InventoryTransaction:List\" permission.",
+				"tags": [
+					"ItemMovement"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"InventoryTransaction:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The type of entity (warehouse or project)",
+						"in": "path",
+						"name": "entityType",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"warehouse",
+								"project"
+							]
+						}
+					},
+					{
+						"description": "The ID of the entity",
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Page number for pagination (default: 1)",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Number of items per page (default: 10)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
 							"format": "double",
 							"type": "number"
 						}

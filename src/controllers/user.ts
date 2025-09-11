@@ -1,5 +1,5 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete, UploadedFiles, Query } from "tsoa";
-import type { CreateUserProperties, Notifications, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
+import type { CreateUserProperties, NotificationSettings, UpdatePasswordProperties, UpdateUserProperties, User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties, DocumentType } from "../models/interfaces/document";
 import { USER_TYPE } from "../constants";
@@ -223,7 +223,7 @@ export class UserController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/notifications")
   @Security("authentication", ["Me:*"])
-  public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: Notifications): Promise<Notifications | null> {
+  public async updateNotifications(@Request() request: ContextualRequest, @Path() id: number, @Body() body: NotificationSettings): Promise<NotificationSettings | null> {
     const { context } = request;
     return await context.services.user.updateNotifications(context, id, body);
   }

@@ -26,6 +26,8 @@ export class ItemModel extends Model<Item, CreateItemProperties> implements Item
 
   public tenant?: NonAttribute<Tenant>;
 
+  public readonly itemMovements?: NonAttribute<any[]>;
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
@@ -96,6 +98,7 @@ export const ItemFactory = (sequelize: Sequelize): typeof ItemModel => {
 
   ItemModel.associate = (models) => {
     ItemModel.belongsTo(models.Tenant, { foreignKey: "tenantId", as: "tenant" });
+    ItemModel.hasMany(models.ItemMovement, { foreignKey: "itemId", as: "itemMovements" });
   };
 
   return ItemModel;

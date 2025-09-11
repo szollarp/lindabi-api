@@ -11,8 +11,9 @@ import type { Contact } from "./contact";
 import { Execution } from "./execution";
 import { Invoice } from "./invoice";
 import { Project } from "./project";
+import { Notification } from "./notification";
 
-export interface Notifications {
+export interface NotificationSettings {
   userNew: boolean
   tenderNew: boolean
   contactNew: boolean
@@ -59,7 +60,8 @@ export interface User {
   address?: string | null
   zipCode?: string | null
   lastLoggedIn?: Date | null
-  notifications?: Notifications
+  notifications?: NotificationSettings
+  uiNotifications?: Notification[];
   entity?: string;
   inSchedule?: boolean;
   enableLogin?: boolean;

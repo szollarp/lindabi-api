@@ -38,6 +38,7 @@ import { WorkTypeFactory, type WorkTypeModel } from "./work-type"
 import { ItemMovementFactory, ItemMovementModel } from "./item-movement";
 import { ItemFactory, type ItemModel } from "./item";
 import { WarehouseFactory, type WarehouseModel } from "./warehouse";
+import { NotificationFactory, type NotificationModel } from "./notification";
 
 import { AzureStorageService } from "../helpers/azure-storage";
 
@@ -82,6 +83,7 @@ export interface Models {
   ItemMovement: typeof ItemMovementModel
   Item: typeof ItemModel
   Warehouse: typeof WarehouseModel
+  Notification: typeof NotificationModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -127,6 +129,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Warehouse: WarehouseFactory(sequelize),
     Item: ItemFactory(sequelize),
     ItemMovement: ItemMovementFactory(sequelize),
+    Notification: NotificationFactory(sequelize),
     sequelize
   };
 

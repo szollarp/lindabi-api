@@ -10,7 +10,7 @@ import { USER_STATUS, USER_TYPE } from "../constants";
 import type { AccountVerifyTokenModel } from "./account-verify-token";
 import type { RefreshTokenModel } from "./refresh-token";
 import type { ForgottenPasswordTokenModel } from "./forgotten-password-token";
-import type { CreateUserProperties, Notifications, User, UserBilling } from "./interfaces/user";
+import type { CreateUserProperties, User, UserBilling, NotificationSettings } from "./interfaces/user";
 import type { Role } from "./interfaces/role";
 import type { AccountVerifyToken } from "./interfaces/account-verify-token";
 import type { ForgottenPasswordToken } from "./interfaces/forgotten-password-token";
@@ -33,6 +33,8 @@ import { Salary } from "./interfaces/salary";
 import { Invoice } from "./interfaces/invoice";
 import { Execution } from "./interfaces/execution";
 import { EmployeeSchedule } from "./interfaces/employee-schedule";
+import { Notification } from "./interfaces/notification";
+import { NotificationModel } from "./notification";
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -61,7 +63,7 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public address!: string | null;
 
-  public notifications?: Notifications | undefined;
+  public notifications?: NotificationSettings | undefined;
 
   public entity!: USER_TYPE.USER | USER_TYPE.EMPLOYEE;
 
@@ -211,6 +213,16 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   declare scheduleIds?: ForeignKey<EmployeeSchedule["id"][]>;
 
+  public createNotification!: HasManyCreateAssociationMixin<NotificationModel>;
+
+  public getNotifications!: HasManyGetAssociationsMixin<NotificationModel>;
+
+  declare uiNotifications?: NonAttribute<Notification[]>;
+
+  declare notificationIds?: ForeignKey<Notification["id"]>[];
+
+  declare itemMovements?: NonAttribute<any[]>;
+
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
     refreshToken: Association<UserModel, RefreshTokenModel>
@@ -222,6 +234,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
     executions: Association<UserModel, ExecutionModel>
     invoices: Association<UserModel, InvoiceModel>
     schedules: Association<UserModel, EmployeeScheduleModel>
+    notifications: Association<UserModel, NotificationModel>
+    itemMovements: Association<UserModel, any>
   };
 }
 
@@ -501,6 +515,16 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
       foreignKey: "user_id",
       through: "task_users",
       as: "tasks"
+    });
+
+    UserModel.hasMany(models.Notification, {
+      foreignKey: "user_id",
+      as: "uiNotifications"
+    });
+
+    UserModel.hasMany(models.ItemMovement, {
+      foreignKey: "employee_id",
+      as: "itemMovements"
     });
   };
 

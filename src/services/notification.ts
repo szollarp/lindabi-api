@@ -16,8 +16,8 @@ import getUpdateContractorTemplate from "../helpers/notification-template/update
 import getCreateOrderFormTemplate from "../helpers/notification-template/create-order-form";
 import getCreateTaskCommentTemplate from "../helpers/notification-template/create-task-comment";
 import getCreateTaskAssignTemplate from "../helpers/notification-template/create-task-assign";
-import { TENDER_STATUS, USER_STATUS } from "../constants";
-import type { Context } from "../types";
+import { NOTIFICATION_PRIORITY, NOTIFICATION_STATUS, NOTIFICATION_TYPE, TENDER_STATUS, USER_STATUS } from "../constants";
+import type { Context, DecodedUser } from "../types";
 import type { Tender } from "../models/interfaces/tender";
 import type { User } from "../models/interfaces/user";
 import type { Company } from "../models/interfaces/company";
@@ -25,6 +25,7 @@ import type { Contact } from "../models/interfaces/contact";
 import type { OrderForm } from "../models/interfaces/order-form";
 import { TaskComment } from "../models/interfaces/task-comment";
 import { Task } from "../models/interfaces/task";
+import { Notification } from "../models/interfaces/notification";
 
 export interface NotificationService {
   sendTenderCreatedNotification: (context: Context, tender: Partial<Tender>) => Promise<{ success: boolean }>
@@ -42,6 +43,9 @@ export interface NotificationService {
   sendOrderFormCreateNotification: (context: Context, orderForm: OrderForm) => Promise<{ success: boolean }>
   sendCreateTaskCommentNotification: (context: Context, comment: TaskComment) => Promise<{ success: boolean }>
   sendCreateTaskAssignNotification: (context: Context, task: Task, assignedUserId: number) => Promise<{ success: boolean }>
+  list: (context: Context, user: DecodedUser) => Promise<Notification[]>
+  setRead: (context: Context, user: DecodedUser, id: number) => Promise<{ success: boolean }>
+  setAllRead: (context: Context, user: DecodedUser) => Promise<{ success: boolean }>
 }
 
 export const notificationService = (): NotificationService => {
@@ -253,6 +257,20 @@ export const notificationService = (): NotificationService => {
       attributes: ["id", "name", "email"]
     });
 
+    await context.models.Notification.create({
+      userId: assignedUserId,
+      type: NOTIFICATION_TYPE.TASK_ASSIGNED,
+      title: "Feladat felelősnek jelöltek",
+      status: NOTIFICATION_STATUS.UNREAD,
+      priority: NOTIFICATION_PRIORITY.MEDIUM,
+      message: getCreateTaskAssignTemplate(task, createdBy!),
+      data: {
+        type: "task",
+        id: task.id
+      },
+      createdBy: task.createdBy
+    });
+
     return sendNotification(context, [assignedUser!], "Feladat felelősnek jelöltek", () =>
       getCreateTaskAssignTemplate(task, createdBy!));
   }
@@ -287,6 +305,33 @@ export const notificationService = (): NotificationService => {
       getCreateTaskCommentTemplate(comment, task!, createdBy!));
   }
 
+  const list = async (context: Context, user: DecodedUser): Promise<Notification[]> => {
+    return await context.models.Notification.findAll({
+      where: { userId: user.id },
+      order: [["createdOn", "DESC"]]
+    });
+  };
+
+  const setRead = async (context: Context, user: DecodedUser, id: number): Promise<{ success: boolean }> => {
+    await context.models.Notification.update({
+      status: NOTIFICATION_STATUS.READ,
+      updatedBy: user.id,
+      updatedOn: new Date()
+    }, { where: { id } });
+
+    return { success: true };
+  };
+
+  const setAllRead = async (context: Context, user: DecodedUser): Promise<{ success: boolean }> => {
+    await context.models.Notification.update({
+      status: NOTIFICATION_STATUS.READ,
+      updatedBy: user.id,
+      updatedOn: new Date()
+    }, { where: { userId: user.id } });
+
+    return { success: true };
+  };
+
   return {
     sendTenderCreatedNotification,
     sendTenderStatusChangedNotification,
@@ -302,6 +347,9 @@ export const notificationService = (): NotificationService => {
     sendContractorUpdateNotification,
     sendOrderFormCreateNotification,
     sendCreateTaskCommentNotification,
-    sendCreateTaskAssignNotification
+    sendCreateTaskAssignNotification,
+    list,
+    setRead,
+    setAllRead
   }
 }

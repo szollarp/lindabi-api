@@ -3,7 +3,7 @@ import { NotAcceptable, Unauthorized } from "http-errors";
 import { createRandomToken } from "../helpers/token";
 import { USER_STATUS, USER_TYPE } from "../constants";
 import type {
-  CreateUserProperties, Notifications, UpdatePasswordProperties, User
+  CreateUserProperties, NotificationSettings, UpdatePasswordProperties, User
 } from "../models/interfaces/user";
 import type { Context } from "../types";
 import { createAccountVerifyToken } from "../helpers/jwt";
@@ -17,7 +17,7 @@ export interface UserService {
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
   updatePassword: (context: Context, tenantId: number, id: number, body: UpdatePasswordProperties) => Promise<{ success: boolean }>
-  updateNotifications: (context: Context, id: number, body: Notifications) => Promise<Notifications | null>
+  updateNotifications: (context: Context, id: number, body: NotificationSettings) => Promise<NotificationSettings | null>
   resendVerificationEmail: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   generateTwoFactorAuthenticationConfig: (context: Context, tenantId: number | null, id: number) => Promise<{ success: boolean, qrCode: string }>
   enableTwoFactorAuthentication: (context: Context, tenantId: number | null, id: number, body: { code: string }) => Promise<{ success: boolean }>
@@ -245,7 +245,7 @@ export const userService = (): UserService => {
     }
   };
 
-  const updateNotifications = async (context: Context, id: number, body: Notifications): Promise<Notifications | null> => {
+  const updateNotifications = async (context: Context, id: number, body: NotificationSettings): Promise<NotificationSettings | null> => {
     try {
       const user = await context.models.User.findOne({
         where: { id }
