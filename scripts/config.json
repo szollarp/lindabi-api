@@ -1,0 +1,16 @@
+{
+  "host": "lindabi-production-db.postgres.database.azure.com",
+  "port": 5432,
+  "username": "lindabi",
+  "database": "lindabi",
+  "password": "juzbiq-fyhby7-megrYx",
+  "ssl": true,
+  "dialect": "postgres",
+  "dialectOptions": {
+    "encrypt": true,
+    "ssl": {
+      "require": true,
+      "rejectUnauthorized": false
+    }
+  }
+}

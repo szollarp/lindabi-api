@@ -7,6 +7,7 @@ import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
 import { TENDER_STATUS } from "../constants";
 import { calculateTenderItemAmounts } from "../helpers/tender";
+import { TenderDuplicateCleanup } from "../helpers/tender-duplicate-cleanup";
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
@@ -30,44 +31,60 @@ export interface TenderService {
   updateTenderItemOrder: (context: Context, tenderId: number, id: number, user: DecodedUser, data: { side: "up" | "down" }) => Promise<{ success: boolean }>
   copyTender: (context: Context, user: DecodedUser, id: number) => Promise<Partial<Tender> | null>
   copyTenderItem: (context: Context, sourceId: number, targetId: number, user: DecodedUser) => Promise<{ success: boolean }>
+  findDuplicateTenderNumbers: (context: Context, tenantId: number) => Promise<Array<{ number: string; count: number; tenderIds: number[] }>>
+  cleanupDuplicateTenderNumbers: (context: Context, tenantId: number) => Promise<{ cleaned: number; duplicates: Array<{ number: string; count: number; tenderIds: number[] }> }>
+  getTenderNumberStats: (context: Context, tenantId: number) => Promise<{ totalTenders: number; tendersWithNumbers: number; uniqueNumbers: number; duplicates: number }>
 };
 
 const ALLOWED_STATUSES = [TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED];
 
 export const tenderService = (): TenderService => {
+  const checkTenderNumberExists = async (context: Context, number: string, tenantId: number, excludeId?: number): Promise<boolean> => {
+    const whereClause: any = {
+      number,
+      tenantId
+    };
+
+    if (excludeId) {
+      whereClause.id = { [Op.ne]: excludeId };
+    }
+
+    const existingTender = await context.models.Tender.findOne({
+      where: whereClause,
+      attributes: ['id']
+    });
+
+    return !!existingTender;
+  };
+
   const nextTenderSeq = async (sequelize: Sequelize, { tenantId, contractorId, year }: { tenantId: number, contractorId: number, year: number }): Promise<string> => {
     const t = await sequelize.transaction();
 
     try {
-      await sequelize.query(
+      // Use a single atomic query to increment and return the sequence number
+      // This prevents race conditions by using PostgreSQL's RETURNING clause
+      const [result] = await sequelize.query(
         `
-    INSERT INTO tender_number_counters (tenant_id, contractor_id, year, seq)
-    VALUES (:tenantId, :contractorId, :year, 0)
-    ON CONFLICT (tenant_id, contractor_id, year) DO NOTHING
-    `,
-        { type: QueryTypes.INSERT, transaction: t, replacements: { tenantId, contractorId, year } }
-      );
-
-      await sequelize.query(
-        `
-    UPDATE tender_number_counters
-    SET seq = seq + 1, updated_at = NOW()
-    WHERE tenant_id = :tenantId AND contractor_id = :contractorId AND year = :year
-    `,
-        { type: QueryTypes.UPDATE, transaction: t, replacements: { tenantId, contractorId, year } }
+        INSERT INTO tender_number_counters (tenant_id, contractor_id, year, seq)
+        VALUES (:tenantId, :contractorId, :year, 1)
+        ON CONFLICT (tenant_id, contractor_id, year) 
+        DO UPDATE SET 
+          seq = tender_number_counters.seq + 1,
+          updated_at = NOW()
+        RETURNING seq
+        `,
+        {
+          type: QueryTypes.SELECT,
+          transaction: t,
+          replacements: { tenantId, contractorId, year }
+        }
       );
 
       await t.commit();
 
-      const [result] = await sequelize.query(
-        `SELECT seq FROM tender_number_counters WHERE tenant_id = :tenantId AND contractor_id = :contractorId AND year = :year`,
-        { type: QueryTypes.SELECT, replacements: { tenantId, contractorId, year } }
-      );
-
       return result["seq"];
     } catch (error) {
       await t.rollback();
-
       throw error;
     }
   }
@@ -87,19 +104,49 @@ export const tenderService = (): TenderService => {
     }
 
     const { sequelize } = context.models;
-
     const { tenantId, contractorId } = tender;
-    const seq = await nextTenderSeq(sequelize, { tenantId: tenantId!, contractorId, year });
 
-    const number = `${contractor.offerNum}-${year}-${seq}`;
+    // Retry mechanism to handle potential duplicates
+    const maxRetries = 3;
+    let retryCount = 0;
 
-    await context.services.journey.addSimpleLog(
-      context, user,
-      { activity: 'The tender number has been successfully generated.', property: 'number', updated: number },
-      tender.id, 'tender'
-    );
+    while (retryCount < maxRetries) {
+      try {
+        const seq = await nextTenderSeq(sequelize, { tenantId: tenantId!, contractorId, year });
+        const number = `${contractor.offerNum}-${year}-${seq}`;
 
-    return number;
+        // Check if this number already exists
+        const numberExists = await checkTenderNumberExists(context, number, tenantId!, tender.id);
+
+        if (!numberExists) {
+          // Number is unique, proceed
+          await context.services.journey.addSimpleLog(
+            context, user,
+            { activity: 'The tender number has been successfully generated.', property: 'number', updated: number },
+            tender.id, 'tender'
+          );
+
+          return number;
+        } else {
+          // Number already exists, retry
+          retryCount++;
+          context.logger.warn(`Tender number ${number} already exists, retrying... (attempt ${retryCount}/${maxRetries})`);
+
+          if (retryCount >= maxRetries) {
+            throw new Error(`Failed to generate unique tender number after ${maxRetries} attempts`);
+          }
+        }
+      } catch (error) {
+        retryCount++;
+        context.logger.error(`Error generating tender number (attempt ${retryCount}/${maxRetries}):`, error);
+
+        if (retryCount >= maxRetries) {
+          throw error;
+        }
+      }
+    }
+
+    return null;
   }
 
   const getTenders = async (context: Context, tenantId: number): Promise<Array<Partial<Tender>>> => {
@@ -494,7 +541,17 @@ export const tenderService = (): TenderService => {
       const updatedTender = updated[0];
       const tenderNumber = await generateTenderNumber(context, user, updatedTender);
       if (tenderNumber) {
-        await updatedTender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
+        try {
+          await updatedTender.update({ number: tenderNumber, updatedBy: user.id }, { transaction: t });
+        } catch (error: any) {
+          // Handle unique constraint violation
+          if (error.name === 'SequelizeUniqueConstraintError' && error.fields?.includes('number')) {
+            context.logger.warn(`Tender number ${tenderNumber} already exists, skipping number assignment`);
+            // Continue without updating the number - the tender will remain without a number
+          } else {
+            throw error;
+          }
+        }
       }
 
       if (data.vatKey || data.surcharge || data.discount) {
@@ -709,6 +766,33 @@ export const tenderService = (): TenderService => {
     }
   }
 
+  const findDuplicateTenderNumbers = async (context: Context, tenantId: number): Promise<Array<{ number: string; count: number; tenderIds: number[] }>> => {
+    try {
+      return await TenderDuplicateCleanup.findDuplicates(context, tenantId);
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
+  const cleanupDuplicateTenderNumbers = async (context: Context, tenantId: number): Promise<{ cleaned: number; duplicates: Array<{ number: string; count: number; tenderIds: number[] }> }> => {
+    try {
+      return await TenderDuplicateCleanup.cleanupDuplicates(context, tenantId);
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
+  const getTenderNumberStats = async (context: Context, tenantId: number): Promise<{ totalTenders: number; tendersWithNumbers: number; uniqueNumbers: number; duplicates: number }> => {
+    try {
+      return await TenderDuplicateCleanup.getTenderNumberStats(context, tenantId);
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
   return {
     getTenders,
     getTender,
@@ -730,6 +814,9 @@ export const tenderService = (): TenderService => {
     copyTenderItem,
     copyTender,
     sendTenderViaEmail,
-    getItemsByTenderType
+    getItemsByTenderType,
+    findDuplicateTenderNumbers,
+    cleanupDuplicateTenderNumbers,
+    getTenderNumberStats
   }
 };
