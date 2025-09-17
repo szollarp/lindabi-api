@@ -18,6 +18,10 @@ export class FinancialTransactionModel extends Model<FinancialTransaction, Creat
 
   public description!: string;
 
+  public type!: "salary" | "material";
+
+  public showOnPayroll!: boolean;
+
   public recipientId?: ForeignKey<User["id"]>;
 
   public recipient?: NonAttribute<User>;
@@ -80,6 +84,16 @@ export const FinancialTransactionFactory = (sequelize: Sequelize): typeof Financ
     description: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    type: {
+      type: DataTypes.ENUM("salary", "material"),
+      allowNull: false,
+      defaultValue: "material"
+    },
+    showOnPayroll: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     recipientId: {
       type: DataTypes.INTEGER,

@@ -47,7 +47,7 @@ export class ExecutionModel extends Model<Execution, CreateExecutionProperties> 
 
   public project?: NonAttribute<Project>;
 
-  public projectItemId!: ForeignKey<ProjectItem["id"]>;
+  public projectItemId?: ForeignKey<ProjectItem["id"]>;
 
   public projectItem?: NonAttribute<ProjectItem>;
 
@@ -149,7 +149,8 @@ export const ExecutionFactory = (sequelize: Sequelize): typeof ExecutionModel =>
     },
     projectItemId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     },
     employeeId: {
       type: DataTypes.INTEGER,

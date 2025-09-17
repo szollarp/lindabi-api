@@ -42,6 +42,7 @@ export interface ProjectService {
   removeProject: (context: Context, user: DecodedUser, projectId: number) => Promise<{ success: boolean }>
   removeProjects: (context: Context, user: DecodedUser, projectIds: number[]) => Promise<{ success: boolean }>
   getInvoices: (context: Context, tenantId: number, id: number) => Promise<Invoice[]>
+  getItemsByProjectType: (context: Context, tenantId: number, id: number) => Promise<Partial<ProjectItem>[]>
 }
 
 export const projectService = (): ProjectService => {
@@ -1121,6 +1122,36 @@ export const projectService = (): ProjectService => {
     }
   }
 
+  const getItemsByProjectType = async (context: Context, tenantId: number, id: number): Promise<Partial<ProjectItem>[]> => {
+    try {
+      const project = await context.models.Project.findOne({
+        where: { tenantId, id },
+        attributes: ["type"]
+      });
+
+      if (!project) {
+        return [];
+      }
+
+      return await context.models.ProjectItem.findAll({
+        attributes: ["id", "name"],
+        order: [["num", "ASC"]],
+        include: [
+          {
+            model: context.models.Project,
+            as: "project",
+            attributes: ["type"],
+            where: { tenantId, type: project.type },
+            required: true,
+          }
+        ]
+      });
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
   return {
     copyFromTender,
     getProjects,
@@ -1150,6 +1181,7 @@ export const projectService = (): ProjectService => {
     removeComment,
     removeProject,
     removeProjects,
-    getInvoices
+    getInvoices,
+    getItemsByProjectType
   };
 }

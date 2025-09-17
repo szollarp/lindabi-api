@@ -9,6 +9,8 @@ export interface FinancialTransaction {
   date: Date;
   amount: number;
   description: string;
+  type: "salary" | "material";
+  showOnPayroll: boolean;
   //
   recipientId?: number | null;
   recipient?: User;

@@ -28,7 +28,7 @@ export interface Execution {
   projectId: Project["id"]
   project?: Project
   //
-  projectItemId: ProjectItem["id"]
+  projectItemId?: ProjectItem["id"]
   projectItem?: ProjectItem
   //
   approvedBy?: User["id"] | null

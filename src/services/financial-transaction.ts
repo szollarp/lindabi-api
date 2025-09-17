@@ -24,7 +24,7 @@ const getFinancialTransactions = async (context: Context, user: DecodedUser): Pr
     return await context.models.FinancialTransaction.findAll({
       where,
       order: [["date", "DESC"]],
-      attributes: ["id", "date", "amount", "description", "payerType", "recipientType", "createdOn"],
+      attributes: ["id", "date", "amount", "description", "type", "showOnPayroll", "payerType", "recipientType", "createdOn"],
       include: [{
         model: context.models.User,
         as: "payer",

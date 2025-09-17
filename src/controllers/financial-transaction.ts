@@ -1,6 +1,6 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Body } from "tsoa";
 import { ContextualRequest } from "../types";
-import { FinancialTransaction } from "../models/interfaces/financial-transaction";
+import { FinancialTransaction, CreateFinancialTransactionProperties } from "../models/interfaces/financial-transaction";
 
 @Route("financial-transactions")
 export class FinancialTransactionController extends Controller {
@@ -31,7 +31,7 @@ export class FinancialTransactionController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/")
   @Security("authentication", ["PettyCash:Create", "Tenant"])
-  public async createTransaction(@Request() request: ContextualRequest, @Body() body: any): Promise<Partial<FinancialTransaction> | null> {
+  public async createTransaction(@Request() request: ContextualRequest, @Body() body: CreateFinancialTransactionProperties): Promise<Partial<FinancialTransaction> | null> {
     const { context, user } = request;
     return await context.services.financialTransaction.createFinancialTransactions(context, user.tenant, user.id, body);
   }

@@ -362,6 +362,24 @@ export class ProjectController extends Controller {
   }
 
   /**
+   * Retrieves project items from projects with the same type as the specified project.
+   * This endpoint is protected by JWT authentication, requiring "Project:Get" permission.
+   * Useful for autocomplete functionality when creating or editing project items.
+   *
+   * @param id The unique identifier of the project to get related items for.
+   * @returns An array of project items from projects with the same type, or empty array if no related items found.
+   * Only returns id and name attributes for autocomplete purposes.
+   */
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Get("/{id}/related-items")
+  @Security("authentication", ["Tenant", "Project:Get"])
+  public async getItemsByProjectType(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<ProjectItem>[]> {
+    const { context, user } = request;
+    return await context.services.project.getItemsByProjectType(context, user.tenant, id);
+  }
+
+  /**
    * Retrieves detailed information about a specific tender document by its document ID within a tender.
    * This endpoint is protected by JWT authentication, requiring "Project:GetDocuments" permission.
    *
