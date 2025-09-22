@@ -958,7 +958,8 @@
 					"completed",
 					"cancelled",
 					"paid",
-					"closed"
+					"closed",
+					"archived"
 				],
 				"type": "string"
 			},
@@ -1318,7 +1319,8 @@
 					"sent",
 					"ordered",
 					"invalid",
-					"under survey"
+					"under survey",
+					"archived"
 				],
 				"type": "string"
 			},
@@ -4473,6 +4475,78 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"TenderItemsSearchResult": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderItemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"unit": {
+						"type": "string",
+						"nullable": true
+					},
+					"defaultPriceNet": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"currency": {
+						"type": "string",
+						"nullable": true
+					},
+					"vatRate": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"usageCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"lastUsedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"aliasNames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"tags": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"similarity": {
+						"type": "number",
+						"format": "double"
+					},
+					"rank": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"tenderItemId",
+					"name",
+					"usageCount",
+					"aliasNames",
+					"tags"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"TENANT_STATUS": {
 				"enum": [
 					"active",
@@ -5689,6 +5763,227 @@
 			},
 			"CreateStatusReportProperties": {
 				"$ref": "#/components/schemas/Omit_StatusReport.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
+			},
+			"BasketValuesData": {
+				"properties": {
+					"orderedQuotes": {
+						"properties": {
+							"totalValue": {
+								"type": "number",
+								"format": "double"
+							},
+							"averageValue": {
+								"type": "number",
+								"format": "double"
+							},
+							"count": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"totalValue",
+							"averageValue",
+							"count"
+						],
+						"type": "object"
+					},
+					"orderedJobs": {
+						"properties": {
+							"totalValue": {
+								"type": "number",
+								"format": "double"
+							},
+							"averageValue": {
+								"type": "number",
+								"format": "double"
+							},
+							"count": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"totalValue",
+							"averageValue",
+							"count"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"orderedQuotes",
+					"orderedJobs"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BasketValuesAnalytics": {
+				"$ref": "#/components/schemas/BasketValuesData"
+			},
+			"QuoteSuccessRateData": {
+				"properties": {
+					"totalSent": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAccepted": {
+						"type": "number",
+						"format": "double"
+					},
+					"successRate": {
+						"type": "number",
+						"format": "double"
+					},
+					"pendingQuotes": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"totalSent",
+					"totalAccepted",
+					"successRate",
+					"pendingQuotes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"QuoteSuccessRateAnalytics": {
+				"$ref": "#/components/schemas/QuoteSuccessRateData"
+			},
+			"JobProfitabilityData": {
+				"properties": {
+					"totalJobs": {
+						"type": "number",
+						"format": "double"
+					},
+					"profitableJobs": {
+						"type": "number",
+						"format": "double"
+					},
+					"unprofitableJobs": {
+						"type": "number",
+						"format": "double"
+					},
+					"averageProfitMargin": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalRevenue": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalCosts": {
+						"type": "number",
+						"format": "double"
+					},
+					"netProfit": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"totalJobs",
+					"profitableJobs",
+					"unprofitableJobs",
+					"averageProfitMargin",
+					"totalRevenue",
+					"totalCosts",
+					"netProfit"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"JobProfitabilityAnalytics": {
+				"$ref": "#/components/schemas/JobProfitabilityData"
+			},
+			"QuoteDateAnalyticsData": {
+				"properties": {
+					"monthlyStats": {
+						"items": {
+							"properties": {
+								"totalValue": {
+									"type": "number",
+									"format": "double"
+								},
+								"successRate": {
+									"type": "number",
+									"format": "double"
+								},
+								"quotesAccepted": {
+									"type": "number",
+									"format": "double"
+								},
+								"quotesSent": {
+									"type": "number",
+									"format": "double"
+								},
+								"year": {
+									"type": "number",
+									"format": "double"
+								},
+								"month": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"totalValue",
+								"successRate",
+								"quotesAccepted",
+								"quotesSent",
+								"year",
+								"month"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"yearlyStats": {
+						"items": {
+							"properties": {
+								"totalValue": {
+									"type": "number",
+									"format": "double"
+								},
+								"successRate": {
+									"type": "number",
+									"format": "double"
+								},
+								"quotesAccepted": {
+									"type": "number",
+									"format": "double"
+								},
+								"quotesSent": {
+									"type": "number",
+									"format": "double"
+								},
+								"year": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"totalValue",
+								"successRate",
+								"quotesAccepted",
+								"quotesSent",
+								"year"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"monthlyStats",
+					"yearlyStats"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"QuoteDateAnalytics": {
+				"$ref": "#/components/schemas/QuoteDateAnalyticsData"
 			},
 			"FINANCIAL_SETTING_TYPE": {
 				"enum": [
@@ -11143,6 +11438,111 @@
 				]
 			}
 		},
+		"/tender-items-search": {
+			"get": {
+				"operationId": "SearchTenderItems",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/TenderItemsSearchResult"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Search for tender items using fuzzy search with ranking.\nRequires a valid JWT token with \"Tenant\" permission.",
+				"tags": [
+					"Tender Items Search"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "Search query (minimum 2 characters)",
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Maximum number of results to return (default: 20)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Number of results to skip for pagination (default: 0)",
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tender-items-search/backfill": {
+			"get": {
+				"operationId": "BackfillSearchTable",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"errors": {
+											"type": "number",
+											"format": "double"
+										},
+										"processed": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"errors",
+										"processed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Trigger a backfill/reconcile of the tender items search table.\nThis will rebuild the entire search table from the current items data.\nRequires a valid JWT token with \"Tenant\" permission.",
+				"tags": [
+					"Tender Items Search"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/tenants": {
 			"get": {
 				"operationId": "GetTenants",
@@ -13138,6 +13538,159 @@
 					}
 				},
 				"description": "Retrieves the statistics of the API. This method is used for monitoring\nand tracking the usage of the API.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/basket-values": {
+			"get": {
+				"operationId": "GetBasketValues",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BasketValuesAnalytics"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves basket values analytics showing average values of ordered quotes and jobs.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/quote-success-rate": {
+			"get": {
+				"operationId": "GetQuoteSuccessRate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/QuoteSuccessRateAnalytics"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves quote success rate analytics showing how many quotes were sent vs accepted.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/job-profitability": {
+			"get": {
+				"operationId": "GetJobProfitability",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/JobProfitabilityAnalytics"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves job profitability analytics showing revenue vs costs for completed jobs.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/quote-date-analytics": {
+			"get": {
+				"operationId": "GetQuoteDateAnalytics",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/QuoteDateAnalytics"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves quote date-based statistics showing trends over time.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/trigger-update": {
+			"get": {
+				"operationId": "TriggerAnalyticsUpdate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Manually triggers analytics update for the current tenant or all tenants.",
 				"tags": [
 					"Statistics"
 				],

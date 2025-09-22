@@ -621,12 +621,21 @@ export const tenderService = (): TenderService => {
         activity: "The tender item have been successfully created.",
       }, tenderId, "tender");
 
-      return await context.models.TenderItem.create({
+      const tenderItem = await context.models.TenderItem.create({
         ...data,
         tenderId,
         createdBy: user.id,
         num: max
       } as TenderItem);
+
+      // Sync to search table
+      try {
+        await context.services.tenderItemsSearch.syncTenderItem(context, tenderItem.id);
+      } catch (syncError) {
+        context.logger.warn(`Failed to sync tender item ${tenderItem.id} to search table:`, syncError);
+      }
+
+      return tenderItem;
 
     } catch (error) {
       context.logger.error(error);
@@ -651,6 +660,14 @@ export const tenderService = (): TenderService => {
       }, tenderId, "tender");
 
       await tenderItem.update({ ...data, updatedBy: user.id });
+
+      // Sync to search table
+      try {
+        await context.services.tenderItemsSearch.syncTenderItem(context, tenderItem.id);
+      } catch (syncError) {
+        context.logger.warn(`Failed to sync tender item ${tenderItem.id} to search table:`, syncError);
+      }
+
       return tenderItem;
     } catch (error) {
       context.logger.error(error);
@@ -716,6 +733,13 @@ export const tenderService = (): TenderService => {
     try {
       await context.models.TenderItem.destroy({ where: { id, tenderId } });
       await renumberTenderItems(context, tenderId);
+
+      // Remove from search table
+      try {
+        await context.services.tenderItemsSearch.deleteTenderItem(context, id);
+      } catch (syncError) {
+        context.logger.warn(`Failed to remove tender item ${id} from search table:`, syncError);
+      }
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender item have been successfully removed.",

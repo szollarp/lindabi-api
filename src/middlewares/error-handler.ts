@@ -7,7 +7,8 @@ const errorMiddleware = (error: Error, request: Request, response: Response, nex
   if (error instanceof ValidateError) {
     response.statusCode = 422;
     response.json({
-      message: "Validation Failed. Please review the provided data and try again."
+      message: "Validation Failed. Please review the provided data and try again.",
+      errors: error.fields
     });
   }
 

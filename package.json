@@ -26,7 +26,9 @@
     "db:seed": "sequelize --options-path sequalizerc.js db:seed:all",
     "seed": "sequelize --options-path sequalizerc.js db:seed",
     "migrate": "npm run db:migrate",
-    "test:milestone-notifications": "npm run build && node lib/scripts/test-milestone-notifications.js"
+    "test:milestone-notifications": "npm run build && node lib/scripts/test-milestone-notifications.js",
+    "backfill:search": "npm run build && node lib/scripts/backfill-tender-items-search.js",
+    "check:orphaned": "npm run build && node lib/scripts/check-orphaned-records.js"
   },
   "keywords": [],
   "author": "",

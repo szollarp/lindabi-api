@@ -45,7 +45,8 @@ export enum TENDER_STATUS {
   SENT = "sent",
   ORDERED = "ordered",
   INVALID = "invalid",
-  UNDER_SURVEY = "under survey"
+  UNDER_SURVEY = "under survey",
+  ARCHIVED = "archived"
 };
 
 export enum PROJECT_STATUS {
@@ -55,7 +56,8 @@ export enum PROJECT_STATUS {
   COMPLETED = "completed",
   CANCELLED = "cancelled",
   PAID = "paid",
-  CLOSED = "closed"
+  CLOSED = "closed",
+  ARCHIVED = "archived"
 };
 
 export enum PROJECT_ITEM_STATUS {

@@ -30,6 +30,7 @@ import { type ItemService, itemService } from "./item";
 import { type StockService, stockService } from "./stock";
 import { type ItemMovementService, itemMovementService } from "./item-movement";
 import { type SchedulerService, schedulerService } from "./scheduler";
+import { type TenderItemsSearchService, tenderItemsSearchService } from "./tender-items-search";
 
 export interface Services {
   version: VersionService
@@ -64,6 +65,7 @@ export interface Services {
   stock: StockService
   itemMovement: ItemMovementService
   scheduler: SchedulerService
+  tenderItemsSearch: TenderItemsSearchService
 }
 
 export default (): Services => ({
@@ -98,5 +100,6 @@ export default (): Services => ({
   item: itemService(),
   stock: stockService(),
   itemMovement: itemMovementService(),
-  scheduler: schedulerService()
+  scheduler: schedulerService(),
+  tenderItemsSearch: tenderItemsSearchService()
 });

@@ -39,6 +39,8 @@ import { ItemMovementFactory, ItemMovementModel } from "./item-movement";
 import { ItemFactory, type ItemModel } from "./item";
 import { WarehouseFactory, type WarehouseModel } from "./warehouse";
 import { NotificationFactory, type NotificationModel } from "./notification";
+import { AnalyticsFactory, type AnalyticsModel } from "./analytics";
+import { TenderItemsSearchFactory, type TenderItemsSearchModel } from "./tender-items-search";
 
 import { AzureStorageService } from "../helpers/azure-storage";
 
@@ -84,6 +86,8 @@ export interface Models {
   Item: typeof ItemModel
   Warehouse: typeof WarehouseModel
   Notification: typeof NotificationModel
+  Analytics: typeof AnalyticsModel
+  TenderItemsSearch: typeof TenderItemsSearchModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -130,6 +134,8 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Item: ItemFactory(sequelize),
     ItemMovement: ItemMovementFactory(sequelize),
     Notification: NotificationFactory(sequelize),
+    Analytics: AnalyticsFactory(sequelize),
+    TenderItemsSearch: TenderItemsSearchFactory(sequelize),
     sequelize
   };
 
