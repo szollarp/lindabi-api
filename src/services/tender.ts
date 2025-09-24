@@ -239,34 +239,68 @@ export const tenderService = (): TenderService => {
 
       const fullIncludes = [
         {
+          model: context.models.Task,
+          as: "tasks",
+          attributes: ["title"],
+          include: [
+            {
+              model: context.models.TaskColumn,
+              as: "column",
+              where: {
+                finished: false,
+              },
+              required: true
+            },
+            {
+              model: context.models.User,
+              as: "assignee",
+              attributes: ["name"],
+              include: [
+                {
+                  model: context.models.Document,
+                  attributes: ["id", "name", "mimeType", "type", "stored"],
+                  as: 'documents',
+                  required: false,
+                  where: {
+                    type: 'avatar',
+                  }
+                }
+              ],
+            }
+          ]
+        },
+        {
           model: context.models.Contact,
           as: "contact",
-          attributes: ["name", "email", "phoneNumber"],
-          required: false
+          attributes: ["name", "email"]
         },
         {
           model: context.models.Location,
           as: "location",
-          attributes: ["id", "city", "country", "zipCode", "address"],
-          required: false
+          attributes: ["id", "city", "country", "zipCode", "address"]
         },
         {
           model: context.models.Company,
           as: "customer",
           attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-          required: false
         },
         {
           model: context.models.Company,
           as: "contractor",
           attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-          required: false
+          include: [
+            {
+              model: context.models.Document,
+              as: "documents",
+              attributes: ["id", "name", "type", "mimeType", "stored"]
+            }
+          ]
         },
         {
           model: context.models.TenderItem,
           as: "items",
-          attributes: ["id", "name"],
-          required: false
+          required: false,
+          order: [["num", "ASC"]]
         }
       ];
 
