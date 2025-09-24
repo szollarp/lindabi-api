@@ -212,6 +212,18 @@ export const tenderService = (): TenderService => {
       // Define includes for queries
       const baseIncludes = [
         {
+          model: context.models.Location,
+          as: "location",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.Task,
+          as: "tasks",
+          attributes: [],
+          required: false
+        },
+        {
           model: context.models.Contact,
           as: "contact",
           attributes: [],
@@ -327,7 +339,7 @@ export const tenderService = (): TenderService => {
           id: { [Op.in]: paginatedIds },
           tenantId
         },
-        include: fullIncludes,
+        include: fullIncludes as any,
         order: [["createdOn", "DESC"]],
         subQuery: false
       });
@@ -380,7 +392,6 @@ export const tenderService = (): TenderService => {
             model: context.models.TenderItem,
             as: "items",
             required: false,
-            order: [["num", "ASC"]]
           }
         ],
       });
