@@ -1,6 +1,6 @@
 import config from "config";
 import { type Options } from "sequelize";
-import createServices from "./services";
+import { createServices } from "./services";
 import logger from "./helpers/logger";
 import { AzureServiceBus } from "./helpers/messages";
 import { PostmarkService } from "./helpers/postmark";

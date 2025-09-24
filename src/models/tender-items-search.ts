@@ -117,13 +117,13 @@ export const TenderItemsSearchFactory = (sequelize: Sequelize): typeof TenderIte
         field: 'last_used_at',
       },
       aliasNames: {
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: true,
         defaultValue: [],
         field: 'alias_names',
       },
       tags: {
-        type: DataTypes.JSON,
+        type: DataTypes.JSONB,
         allowNull: true,
         defaultValue: [],
       },

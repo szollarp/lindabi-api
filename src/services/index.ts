@@ -68,7 +68,7 @@ export interface Services {
   tenderItemsSearch: TenderItemsSearchService
 }
 
-export default (): Services => ({
+const createServices = (): Services => ({
   version: versionService(),
   authentication: authenticationService(),
   user: userService(),
@@ -103,3 +103,5 @@ export default (): Services => ({
   scheduler: schedulerService(),
   tenderItemsSearch: tenderItemsSearchService()
 });
+
+export { createServices };

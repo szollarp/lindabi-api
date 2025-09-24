@@ -4222,6 +4222,15 @@
 			"CreateTenderProperties": {
 				"$ref": "#/components/schemas/Omit_Tender.id-or-updatedBy-or-updatedOn_"
 			},
+			"Record_string.number_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "number",
+					"format": "double"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
 			"Partial_TenderItem_": {
 				"properties": {
 					"id": {
@@ -10417,16 +10426,39 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_Tender_"
+									"properties": {
+										"limit": {
+											"type": "number",
+											"format": "double"
+										},
+										"page": {
+											"type": "number",
+											"format": "double"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/Partial_Tender_"
+											},
+											"type": "array"
+										}
 									},
-									"type": "array"
+									"required": [
+										"limit",
+										"page",
+										"total",
+										"data"
+									],
+									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"description": "Retrieves a list of all tenders within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Tender:List\" permission.",
+				"description": "Retrieves a paginated list of all tenders within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Tender:List\" permission.",
 				"tags": [
 					"Tender"
 				],
@@ -10438,7 +10470,106 @@
 						]
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"description": "Page number for pagination (default: 1)",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Number of items per page (default: 25)",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 25,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by tender status",
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by customer ID",
+						"in": "query",
+						"name": "customerId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by contractor ID",
+						"in": "query",
+						"name": "contractorId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by location ID",
+						"in": "query",
+						"name": "locationId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by contact ID",
+						"in": "query",
+						"name": "contactId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by start date (ISO string)",
+						"in": "query",
+						"name": "startDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by end date (ISO string)",
+						"in": "query",
+						"name": "endDate",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Search keyword for tender fields",
+						"in": "query",
+						"name": "keyword",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			},
 			"delete": {
 				"operationId": "DeleteTenders",
@@ -10617,6 +10748,36 @@
 						}
 					}
 				}
+			}
+		},
+		"/tenders/status-counts": {
+			"get": {
+				"operationId": "GetTenderStatusCounts",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Record_string.number_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves tender status counts for the dashboard analytics.\nThis endpoint requires authentication and is protected by JWT tokens with the \"Tender:List\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Tender:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/tenders/{id}": {

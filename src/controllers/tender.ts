@@ -63,18 +63,65 @@ export class TenderController extends Controller {
   }
 
   /**
-   * Retrieves a list of all tenders within the system. This endpoint requires
+   * Retrieves a paginated list of all tenders within the system. This endpoint requires
    * authentication and is protected by JWT tokens with the "Tender:List" permission.
    *
-   * @returns An array of tender objects with partial details to protect sensitive information.
+   * @param page Page number for pagination (default: 1)
+   * @param limit Number of items per page (default: 25)
+   * @param status Filter by tender status
+   * @param customerId Filter by customer ID
+   * @param contractorId Filter by contractor ID
+   * @param locationId Filter by location ID
+   * @param contactId Filter by contact ID
+   * @param startDate Filter by start date (ISO string)
+   * @param endDate Filter by end date (ISO string)
+   * @param keyword Search keyword for tender fields
+   * @returns A paginated list of tender objects with partial details to protect sensitive information.
    */
   @Tags("Tender")
   @SuccessResponse("200", "OK")
   @Get("/")
   @Security("authentication", ["Tenant", "Tender:List"])
-  public async getTenders(@Request() request: ContextualRequest): Promise<Partial<Tender>[]> {
+  public async getTenders(
+    @Request() request: ContextualRequest,
+    @Query() page: number = 1,
+    @Query() limit: number = 25,
+    @Query() status?: string,
+    @Query() customerId?: number,
+    @Query() contractorId?: number,
+    @Query() locationId?: number,
+    @Query() contactId?: number,
+    @Query() startDate?: string,
+    @Query() endDate?: string,
+    @Query() keyword?: string
+  ): Promise<{ data: Partial<Tender>[], total: number, page: number, limit: number }> {
     const { context, user } = request;
-    return await context.services.tender.getTenders(context, user.tenant);
+    const filters = {
+      status: status as any,
+      customerId,
+      contractorId,
+      locationId,
+      contactId,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      keyword
+    };
+    return await context.services.tender.getTenders(context, user.tenant, page, limit, filters);
+  }
+
+  /**
+   * Retrieves tender status counts for the dashboard analytics.
+   * This endpoint requires authentication and is protected by JWT tokens with the "Tender:List" permission.
+   *
+   * @returns An object containing counts for each tender status.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Get("/status-counts")
+  @Security("authentication", ["Tenant", "Tender:List"])
+  public async getTenderStatusCounts(@Request() request: ContextualRequest): Promise<Record<string, number>> {
+    const { context, user } = request;
+    return await context.services.tender.getTenderStatusCounts(context, user.tenant);
   }
 
   /**

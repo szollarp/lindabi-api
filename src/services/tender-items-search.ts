@@ -78,8 +78,8 @@ export const tenderItemsSearchService = (): TenderItemsSearchService => {
           active: true,
           [Op.or]: [
             { normalizedName: { [Op.iLike]: searchPattern } },
-            { aliasNames: { [Op.contains]: [normalizedQuery] } },
-            { tags: { [Op.contains]: [normalizedQuery] } }
+            literal(`alias_names @> '["${normalizedQuery}"]'`),
+            literal(`tags @> '["${normalizedQuery}"]'`)
           ]
         },
         order: [
@@ -122,7 +122,7 @@ export const tenderItemsSearchService = (): TenderItemsSearchService => {
           {
             model: context.models.Tender,
             as: 'tender',
-            include: [{ model: context.models.Tenant, as: 'tenant' }]
+            include: [{ model: context.models.Tenant, as: 'tenant', attributes: ['id'] }]
           }
         ]
       });
@@ -154,9 +154,11 @@ export const tenderItemsSearchService = (): TenderItemsSearchService => {
         vatRate: null, // This would need to be calculated from tender vatKey
         usageCount: existingSearchRecord?.usageCount || 0,
         lastUsedAt: existingSearchRecord?.lastUsedAt || null,
-        aliasNames: [], // This would need to be populated from a separate table
-        tags: [] // Tender items don't have categories, but could be added
+        aliasNames: [] as string[], // This would need to be populated from a separate table
+        tags: [] as string[] // Tender items don't have categories, but could be added
       };
+
+      console.log({ searchData });
 
       if (existingSearchRecord) {
         await existingSearchRecord.update(searchData);
@@ -199,11 +201,10 @@ export const tenderItemsSearchService = (): TenderItemsSearchService => {
             as: 'tender',
             include: [{ model: context.models.Tenant, as: 'tenant' }]
           }
-        ],
-        where: {
-          '$tender.tenantId$': { [Op.ne]: null }
-        }
+        ]
       });
+
+      console.log({ tenderItems });
 
       for (const tenderItem of tenderItems) {
         try {

@@ -9,8 +9,19 @@ import { TENDER_STATUS } from "../constants";
 import { calculateTenderItemAmounts } from "../helpers/tender";
 import { TenderDuplicateCleanup } from "../helpers/tender-duplicate-cleanup";
 
+export interface TenderFilters {
+  status?: TENDER_STATUS;
+  customerId?: number;
+  contractorId?: number;
+  locationId?: number;
+  contactId?: number;
+  startDate?: Date;
+  endDate?: Date;
+  keyword?: string;
+}
+
 export interface TenderService {
-  getTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
+  getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderFilters) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
   getTender: (context: Context, tenantId: number, id: number) => Promise<Partial<Tender> | null>
   getTenderDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
   sendTenderViaEmail: (context: Context, user: DecodedUser, id: number, message: string, content: Blob) => Promise<{ success: boolean }>
@@ -34,6 +45,7 @@ export interface TenderService {
   findDuplicateTenderNumbers: (context: Context, tenantId: number) => Promise<Array<{ number: string; count: number; tenderIds: number[] }>>
   cleanupDuplicateTenderNumbers: (context: Context, tenantId: number) => Promise<{ cleaned: number; duplicates: Array<{ number: string; count: number; tenderIds: number[] }> }>
   getTenderNumberStats: (context: Context, tenantId: number) => Promise<{ totalTenders: number; tendersWithNumbers: number; uniqueNumbers: number; duplicates: number }>
+  getTenderStatusCounts: (context: Context, tenantId: number) => Promise<Record<string, number>>
 };
 
 const ALLOWED_STATUSES = [TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED];
@@ -149,78 +161,149 @@ export const tenderService = (): TenderService => {
     return null;
   }
 
-  const getTenders = async (context: Context, tenantId: number): Promise<Array<Partial<Tender>>> => {
+  const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderFilters = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
     try {
-      return await context.models.Tender.findAll({
-        include: [
-          {
-            model: context.models.Task,
-            as: "tasks",
-            attributes: ["title"],
-            include: [
-              {
-                model: context.models.TaskColumn,
-                as: "column",
-                where: {
-                  finished: false,
-                },
-                required: true
-              },
-              {
-                model: context.models.User,
-                as: "assignee",
-                attributes: ["name"],
-                include: [
-                  {
-                    model: context.models.Document,
-                    attributes: ["id", "name", "mimeType", "type", "stored"],
-                    as: 'documents',
-                    required: false,
-                    where: {
-                      type: 'avatar',
-                    }
-                  }
-                ],
-              }
-            ]
-          },
-          {
-            model: context.models.Contact,
-            as: "contact",
-            attributes: ["name", "email"]
-          },
-          {
-            model: context.models.Location,
-            as: "location",
-            attributes: ["id", "city", "country", "zipCode", "address"]
-          },
-          {
-            model: context.models.Company,
-            as: "customer",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-          },
-          {
-            model: context.models.Company,
-            as: "contractor",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-            include: [
-              {
-                model: context.models.Document,
-                as: "documents",
-                attributes: ["id", "name", "type", "mimeType", "stored"]
-              }
-            ]
-          },
-          {
-            model: context.models.TenderItem,
-            as: "items",
-            required: false,
-            order: [["num", "ASC"]]
-          }
-        ],
-        where: { tenantId },
-        order: [["updatedOn", "DESC"]]
+      // Build base where clause
+      const whereClause: any = { tenantId };
+
+      // Apply basic filters
+      if (filters.status) whereClause.status = filters.status;
+      if (filters.customerId) whereClause.customerId = filters.customerId;
+      if (filters.contractorId) whereClause.contractorId = filters.contractorId;
+      if (filters.locationId) whereClause.locationId = filters.locationId;
+      if (filters.contactId) whereClause.contactId = filters.contactId;
+
+      // Apply date filters
+      if (filters.startDate || filters.endDate) {
+        whereClause.createdOn = {};
+        if (filters.startDate) whereClause.createdOn[Op.gte] = filters.startDate;
+        if (filters.endDate) whereClause.createdOn[Op.lte] = filters.endDate;
+      }
+
+      // Apply keyword search
+      if (filters.keyword) {
+        const keyword = `%${filters.keyword}%`;
+        whereClause[Op.or] = [
+          // Direct tender fields
+          { shortName: { [Op.iLike]: keyword } },
+          { number: { [Op.iLike]: keyword } },
+          { type: { [Op.iLike]: keyword } },
+          { notes: { [Op.iLike]: keyword } },
+          { inquiry: { [Op.iLike]: keyword } },
+          { survey: { [Op.iLike]: keyword } },
+          { locationDescription: { [Op.iLike]: keyword } },
+          { toolRequirements: { [Op.iLike]: keyword } },
+          { otherComment: { [Op.iLike]: keyword } },
+          // Related fields
+          { '$customer.name$': { [Op.iLike]: keyword } },
+          { '$customer.address$': { [Op.iLike]: keyword } },
+          { '$customer.city$': { [Op.iLike]: keyword } },
+          { '$customer.zipCode$': { [Op.iLike]: keyword } },
+          { '$customer.taxNumber$': { [Op.iLike]: keyword } },
+          { '$contact.name$': { [Op.iLike]: keyword } },
+          { '$contact.email$': { [Op.iLike]: keyword } },
+          { '$contact.phoneNumber$': { [Op.iLike]: keyword } },
+          { '$items.name$': { [Op.iLike]: keyword } }
+        ];
+      }
+
+      const offset = (page - 1) * limit;
+
+      // Define includes for queries
+      const baseIncludes = [
+        {
+          model: context.models.Contact,
+          as: "contact",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "customer",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "contractor",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.TenderItem,
+          as: "items",
+          attributes: [],
+          required: false
+        }
+      ];
+
+      const fullIncludes = [
+        {
+          model: context.models.Contact,
+          as: "contact",
+          attributes: ["name", "email", "phoneNumber"],
+          required: false
+        },
+        {
+          model: context.models.Location,
+          as: "location",
+          attributes: ["id", "city", "country", "zipCode", "address"],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "customer",
+          attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "contractor",
+          attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          required: false
+        },
+        {
+          model: context.models.TenderItem,
+          as: "items",
+          attributes: ["id", "name"],
+          required: false
+        }
+      ];
+
+      // Use a consistent approach for both count and data
+      // First get all matching tender IDs to ensure consistency
+      const allMatchingTenders = await context.models.Tender.findAll({
+        where: whereClause,
+        include: baseIncludes,
+        attributes: ['id'],
+        order: [["createdOn", "DESC"]],
+        subQuery: false
       });
+
+      // Get unique tender IDs and total count
+      const uniqueTenderIds = [...new Set(allMatchingTenders.map(t => t.id))];
+      const total = uniqueTenderIds.length;
+
+      // Apply pagination to the unique IDs
+      const paginatedIds = uniqueTenderIds.slice(offset, offset + limit);
+
+      // Get full data for the paginated IDs
+      const data = await context.models.Tender.findAll({
+        where: {
+          id: { [Op.in]: paginatedIds },
+          tenantId
+        },
+        include: fullIncludes,
+        order: [["createdOn", "DESC"]],
+        subQuery: false
+      });
+
+      return {
+        data: data as any,
+        total,
+        page,
+        limit
+      };
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -817,6 +900,30 @@ export const tenderService = (): TenderService => {
     }
   };
 
+  const getTenderStatusCounts = async (context: Context, tenantId: number): Promise<Record<string, number>> => {
+    try {
+      const counts = await context.models.Tender.findAll({
+        attributes: [
+          'status',
+          [context.models.sequelize.fn('COUNT', context.models.sequelize.col('id')), 'count']
+        ],
+        where: { tenantId },
+        group: ['status'],
+        raw: true
+      });
+
+      const statusCounts: Record<string, number> = {};
+      counts.forEach((item: any) => {
+        statusCounts[item.status] = parseInt(item.count);
+      });
+
+      return statusCounts;
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
   return {
     getTenders,
     getTender,
@@ -841,6 +948,7 @@ export const tenderService = (): TenderService => {
     getItemsByTenderType,
     findDuplicateTenderNumbers,
     cleanupDuplicateTenderNumbers,
-    getTenderNumberStats
+    getTenderNumberStats,
+    getTenderStatusCounts
   }
 };
