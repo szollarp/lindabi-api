@@ -185,24 +185,24 @@ export const tenderService = (): TenderService => {
         const keyword = `%${filters.keyword}%`;
         whereClause[Op.or] = [
           // Direct tender fields
-          { shortName: { [Op.iLike]: keyword } },
+          { short_name: { [Op.iLike]: keyword } },
           { number: { [Op.iLike]: keyword } },
           { type: { [Op.iLike]: keyword } },
           { notes: { [Op.iLike]: keyword } },
           { inquiry: { [Op.iLike]: keyword } },
           { survey: { [Op.iLike]: keyword } },
-          { locationDescription: { [Op.iLike]: keyword } },
-          { toolRequirements: { [Op.iLike]: keyword } },
-          { otherComment: { [Op.iLike]: keyword } },
+          { location_description: { [Op.iLike]: keyword } },
+          { tool_requirements: { [Op.iLike]: keyword } },
+          { other_comment: { [Op.iLike]: keyword } },
           // Related fields
           { '$customer.name$': { [Op.iLike]: keyword } },
           { '$customer.address$': { [Op.iLike]: keyword } },
           { '$customer.city$': { [Op.iLike]: keyword } },
-          { '$customer.zipCode$': { [Op.iLike]: keyword } },
-          { '$customer.taxNumber$': { [Op.iLike]: keyword } },
+          { '$customer.zip_code$': { [Op.iLike]: keyword } },
+          { '$customer.tax_number$': { [Op.iLike]: keyword } },
           { '$contact.name$': { [Op.iLike]: keyword } },
           { '$contact.email$': { [Op.iLike]: keyword } },
-          { '$contact.phoneNumber$': { [Op.iLike]: keyword } },
+          { '$contact.phone_number$': { [Op.iLike]: keyword } },
           { '$items.name$': { [Op.iLike]: keyword } }
         ];
       }
