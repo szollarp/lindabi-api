@@ -10750,6 +10750,39 @@
 				}
 			}
 		},
+		"/tenders/basic": {
+			"get": {
+				"operationId": "GetBasicTenders",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Tender_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all tenders within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Tender:List\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Tender:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/tenders/status-counts": {
 			"get": {
 				"operationId": "GetTenderStatusCounts",
@@ -14882,6 +14915,39 @@
 						}
 					}
 				}
+			}
+		},
+		"/projects/basic": {
+			"get": {
+				"operationId": "GetBasicProjects",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Partial_Project_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.\nSupports server-side pagination and filtering.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Project:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/projects/status-counts": {

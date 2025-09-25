@@ -104,6 +104,35 @@ export class ProjectController extends Controller {
   }
 
   /**
+   * Retrieves a list of all projects within the system. This endpoint requires
+   * authentication and is protected by JWT tokens with the "Project:List" permission.
+   * Supports server-side pagination and filtering.
+   *
+   * @param page Page number (1-based)
+   * @param limit Number of items per page
+   * @param status Filter by project status
+   * @param customerId Filter by customer ID
+   * @param contractorId Filter by contractor ID
+   * @param locationId Filter by location ID
+   * @param contactId Filter by contact ID
+   * @param startDate Filter by start date
+   * @param endDate Filter by end date
+   * @param keyword Search keyword
+   * @returns A paginated response with project data
+   */
+  @Tags("Project")
+  @SuccessResponse("200", "OK")
+  @Get("/basic")
+  @Security("authentication", ["Tenant", "Project:List"])
+  public async getBasicProjects(
+    @Request() request: ContextualRequest,
+  ): Promise<Partial<Project>[]> {
+    const { context, user } = request;
+
+    return await context.services.project.getBasicProjects(context, user.tenant);
+  }
+
+  /**
    * Retrieves project status counts for analytics and filtering.
    * This endpoint requires authentication and "Project:List" permission.
    *

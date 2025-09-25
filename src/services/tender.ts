@@ -22,6 +22,7 @@ export interface TenderFilters {
 
 export interface TenderService {
   getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderFilters) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
+  getBasicTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
   getTender: (context: Context, tenantId: number, id: number) => Promise<Partial<Tender> | null>
   getTenderDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
   sendTenderViaEmail: (context: Context, user: DecodedUser, id: number, message: string, content: Blob) => Promise<{ success: boolean }>
@@ -350,6 +351,26 @@ export const tenderService = (): TenderService => {
         page,
         limit
       };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
+  const getBasicTenders = async (context: Context, tenantId: number): Promise<Array<Partial<Tender>>> => {
+    try {
+      return await context.models.Tender.findAll({
+        where: { tenantId },
+        attributes: ["id", "shortName", "number", "type", "status"],
+        include: [
+          {
+            model: context.models.Company,
+            as: "customer",
+            attributes: ["id", "name"]
+          }
+        ],
+        order: [["type", "DESC"]]
+      });
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -971,6 +992,7 @@ export const tenderService = (): TenderService => {
 
   return {
     getTenders,
+    getBasicTenders,
     getTender,
     getTenderDocuments,
     uploadTenderDocuments,

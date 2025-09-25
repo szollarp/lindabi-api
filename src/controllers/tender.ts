@@ -110,6 +110,21 @@ export class TenderController extends Controller {
   }
 
   /**
+   * Retrieves a list of all tenders within the system. This endpoint requires
+   * authentication and is protected by JWT tokens with the "Tender:List" permission.
+   *
+   * @returns An array of tender objects with partial details to protect sensitive information.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Get("/basic")
+  @Security("authentication", ["Tenant", "Tender:List"])
+  public async getBasicTenders(@Request() request: ContextualRequest): Promise<Array<Partial<Tender>>> {
+    const { context, user } = request;
+    return await context.services.tender.getBasicTenders(context, user.tenant);
+  }
+
+  /**
    * Retrieves tender status counts for the dashboard analytics.
    * This endpoint requires authentication and is protected by JWT tokens with the "Tender:List" permission.
    *

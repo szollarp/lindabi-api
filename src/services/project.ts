@@ -27,6 +27,7 @@ export interface ProjectService {
   copyFromTender: (context: Context, user: DecodedUser, tenderId: number, contractOption: string, files: Express.Multer.File[]) => Promise<{ id: number }>
   updateProject: (context: Context, id: number, data: Partial<Project>, user: DecodedUser) => Promise<{ updated: boolean }>
   getProjects: (context: Context, tenantId: number, page?: number, limit?: number, filters?: ProjectFilters) => Promise<{ data: Array<Partial<Project>>, total: number, page: number, limit: number }>
+  getBasicProjects: (context: Context, tenantId: number) => Promise<Partial<Project>[]>
   getProjectStatusCounts: (context: Context, tenantId: number) => Promise<Record<string, number>>
   getProject: (context: Context, tenantId: number, id: number) => Promise<Partial<Project> | null>
   updateProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number, body: { canShow: boolean, userContact: boolean }) => Promise<void>
@@ -365,6 +366,25 @@ export const projectService = (): ProjectService => {
         page,
         limit
       };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getBasicProjects = async (context: Context, tenantId: number): Promise<Array<Partial<Project>>> => {
+    try {
+      return await context.models.Project.findAll({
+        where: { tenantId },
+        attributes: ["id", "name", "status", "number", "type"],
+        include: [
+          {
+            model: context.models.Company,
+            as: "customer",
+            attributes: ["id", "name"]
+          }
+        ],
+        order: [["name", "DESC"]]
+      });
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -1298,6 +1318,7 @@ export const projectService = (): ProjectService => {
   return {
     copyFromTender,
     getProjects,
+    getBasicProjects,
     getProject,
     updateProjectContact,
     addProjectContact,
