@@ -323,7 +323,7 @@ export const tenderService = (): TenderService => {
         where: whereClause,
         include: baseIncludes,
         attributes: ['id'],
-        order: [["createdOn", "DESC"]],
+        order: [["updatedOn", "DESC"]],
         subQuery: false
       });
 
@@ -341,7 +341,7 @@ export const tenderService = (): TenderService => {
           tenantId
         },
         include: fullIncludes as any,
-        order: [["createdOn", "DESC"]],
+        order: [["updatedOn", "DESC"]],
         subQuery: false
       });
 
