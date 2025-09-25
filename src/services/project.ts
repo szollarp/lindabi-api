@@ -12,10 +12,22 @@ import { getUserProjectIds } from "../helpers/project";
 import { ProjectComment } from "../models/interfaces/project-comment";
 import { Invoice } from "../models/interfaces/invoice";
 
+export interface ProjectFilters {
+  status?: PROJECT_STATUS;
+  customerId?: number;
+  contractorId?: number;
+  locationId?: number;
+  contactId?: number;
+  startDate?: Date;
+  endDate?: Date;
+  keyword?: string;
+}
+
 export interface ProjectService {
   copyFromTender: (context: Context, user: DecodedUser, tenderId: number, contractOption: string, files: Express.Multer.File[]) => Promise<{ id: number }>
   updateProject: (context: Context, id: number, data: Partial<Project>, user: DecodedUser) => Promise<{ updated: boolean }>
-  getProjects: (context: Context, user: DecodedUser) => Promise<Array<Partial<Project>>>
+  getProjects: (context: Context, tenantId: number, page?: number, limit?: number, filters?: ProjectFilters) => Promise<{ data: Array<Partial<Project>>, total: number, page: number, limit: number }>
+  getProjectStatusCounts: (context: Context, tenantId: number) => Promise<Record<string, number>>
   getProject: (context: Context, tenantId: number, id: number) => Promise<Partial<Project> | null>
   updateProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number, body: { canShow: boolean, userContact: boolean }) => Promise<void>
   addProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
@@ -164,88 +176,219 @@ export const projectService = (): ProjectService => {
     }
   }
 
-  const getProjects = async (context: Context, user: DecodedUser): Promise<Array<Partial<Project>>> => {
+  const getProjects = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: ProjectFilters = {}): Promise<{ data: Array<Partial<Project>>, total: number, page: number, limit: number }> => {
     try {
-      const userProjectIds = await getUserProjectIds(context, user);
+      // Build base where clause
+      const whereClause: any = { tenantId };
 
-      return await context.models.Project.findAll({
-        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "itemsTotalAmount", "inSchedule", "scheduleColor", "vatKey"],
-        include: [
-          {
-            model: context.models.Task,
-            as: "tasks",
-            attributes: ["title"],
-            include: [
-              {
-                model: context.models.User,
-                as: "assignee",
-                attributes: ["name"],
-                include: [
-                  {
-                    model: context.models.Document,
-                    attributes: ["id", "name", "mimeType", "type", "stored"],
-                    as: 'documents',
-                    required: false,
-                    where: {
-                      type: 'avatar',
-                    }
+      // Apply basic filters
+      if (filters.status) whereClause.status = filters.status;
+      if (filters.customerId) whereClause.customerId = filters.customerId;
+      if (filters.contractorId) whereClause.contractorId = filters.contractorId;
+      if (filters.locationId) whereClause.locationId = filters.locationId;
+      if (filters.contactId) whereClause.contactId = filters.contactId;
+
+      // Apply date filters
+      if (filters.startDate || filters.endDate) {
+        whereClause.createdOn = {};
+        if (filters.startDate) whereClause.createdOn[Op.gte] = filters.startDate;
+        if (filters.endDate) whereClause.createdOn[Op.lte] = filters.endDate;
+      }
+
+      // Apply keyword search
+      if (filters.keyword) {
+        const keyword = `%${filters.keyword}%`;
+        whereClause[Op.or] = [
+          // Direct project fields
+          { name: { [Op.iLike]: keyword } },
+          { number: { [Op.iLike]: keyword } },
+          { type: { [Op.iLike]: keyword } },
+          { notes: { [Op.iLike]: keyword } },
+          { location_description: { [Op.iLike]: keyword } },
+          { tool_requirements: { [Op.iLike]: keyword } },
+          { other_comment: { [Op.iLike]: keyword } },
+          // Related fields
+          { '$customer.name$': { [Op.iLike]: keyword } },
+          { '$customer.address$': { [Op.iLike]: keyword } },
+          { '$customer.city$': { [Op.iLike]: keyword } },
+          { '$customer.zip_code$': { [Op.iLike]: keyword } },
+          { '$customer.tax_number$': { [Op.iLike]: keyword } },
+          { '$supervisors.name$': { [Op.iLike]: keyword } },
+          { '$supervisors.email$': { [Op.iLike]: keyword } },
+          { '$supervisors.phone_number$': { [Op.iLike]: keyword } },
+          { '$items.name$': { [Op.iLike]: keyword } }
+        ];
+      }
+
+      const offset = (page - 1) * limit;
+
+      // Define includes for queries
+      const baseIncludes = [
+        {
+          model: context.models.Contact,
+          as: "supervisors",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "customer",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "contractor",
+          attributes: [],
+          required: false
+        },
+        {
+          model: context.models.ProjectItem,
+          as: "items",
+          attributes: [],
+          required: false
+        }
+      ];
+
+      const fullIncludes = [
+        {
+          model: context.models.Task,
+          as: "tasks",
+          attributes: ["title"],
+          include: [
+            {
+              model: context.models.User,
+              as: "assignee",
+              attributes: ["name"],
+              include: [
+                {
+                  model: context.models.Document,
+                  attributes: ["id", "name", "mimeType", "type", "stored"],
+                  as: 'documents',
+                  required: false,
+                  where: {
+                    type: 'avatar',
                   }
-                ],
+                }
+              ],
+            },
+            {
+              model: context.models.TaskColumn,
+              as: "column",
+              where: {
+                finished: false,
               },
-              {
-                model: context.models.TaskColumn,
-                as: "column",
-                where: {
-                  finished: false,
-                },
-                required: true
-              }
-            ]
-          },
-          {
-            model: context.models.Location,
-            as: "location",
-            attributes: ["id", "city", "country", "zipCode", "address"]
-          },
-          {
-            model: context.models.Company,
-            as: "customer",
-            attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-          },
-          {
-            model: context.models.Company,
-            as: "contractor",
-            attributes: ["id", "name"],
-          },
-          {
-            model: context.models.Contact,
-            as: "supervisors",
-            attributes: ["id", "name"],
-          },
-          {
-            model: context.models.Milestone,
-            as: "milestones",
-            attributes: ["id", "name", "status"],
-          },
-          {
-            model: context.models.ProjectItem,
-            as: "items",
-            attributes: ["id", "netAmount"],
-          },
-          {
-            model: context.models.Tender,
-            as: "tender",
-            required: true,
-            include: [{
-              model: context.models.TenderItem,
-              as: "items",
               required: true
-            }]
-          }
-        ],
-        where: { id: { [Op.in]: userProjectIds } },
-        order: [["updatedOn", "DESC"]]
+            }
+          ]
+        },
+        {
+          model: context.models.Location,
+          as: "location",
+          attributes: ["id", "city", "country", "zipCode", "address"],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "customer",
+          attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          required: false
+        },
+        {
+          model: context.models.Company,
+          as: "contractor",
+          attributes: ["id", "name"],
+          required: false
+        },
+        {
+          model: context.models.Contact,
+          as: "supervisors",
+          attributes: ["id", "name"],
+          required: false
+        },
+        {
+          model: context.models.Milestone,
+          as: "milestones",
+          attributes: ["id", "name", "status"],
+          required: false
+        },
+        {
+          model: context.models.ProjectItem,
+          as: "items",
+          attributes: ["id", "netAmount"],
+          required: false
+        },
+        {
+          model: context.models.Tender,
+          as: "tender",
+          required: false,
+          include: [{
+            model: context.models.TenderItem,
+            as: "items",
+            required: false
+          }]
+        }
+      ];
+
+      // Use a consistent approach for both count and data
+      // First get all matching project IDs to ensure consistency
+      const allMatchingProjects = await context.models.Project.findAll({
+        where: whereClause,
+        include: baseIncludes,
+        attributes: ['id'],
+        order: [["updatedOn", "DESC"]],
+        subQuery: false
       });
+
+      // Get unique project IDs and total count
+      const uniqueProjectIds = [...new Set(allMatchingProjects.map(p => p.id))];
+      const total = uniqueProjectIds.length;
+
+      // Apply pagination to the unique IDs
+      const paginatedIds = uniqueProjectIds.slice(offset, offset + limit);
+
+      // Get full data for the paginated IDs
+      const data = await context.models.Project.findAll({
+        where: {
+          id: { [Op.in]: paginatedIds },
+          tenantId
+        },
+        attributes: ["id", "number", "status", "name", "createdOn", "updatedOn", "type", "dueDate", "itemsNetAmount", "itemsVatAmount", "itemsTotalAmount", "inSchedule", "scheduleColor", "vatKey"],
+        include: fullIncludes,
+        order: [["updatedOn", "DESC"]],
+        subQuery: false
+      });
+
+      return {
+        data: data as any,
+        total,
+        page,
+        limit
+      };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
+  const getProjectStatusCounts = async (context: Context, tenantId: number): Promise<Record<string, number>> => {
+    try {
+      const counts = await context.models.Project.findAll({
+        attributes: [
+          'status',
+          [context.models.sequelize.fn('COUNT', context.models.sequelize.col('id')), 'count']
+        ],
+        where: { tenantId },
+        group: ['status'],
+        raw: true
+      });
+
+      const statusCounts: Record<string, number> = {};
+      counts.forEach((item: any) => {
+        statusCounts[item.status] = parseInt(item.count);
+      });
+
+      return statusCounts;
     } catch (error) {
       context.logger.error(error);
       throw error;
@@ -558,7 +701,7 @@ export const projectService = (): ProjectService => {
         activity: `The milestone have been successfully added.`,
         property: "Milestone",
         updated: milestone.name
-      }, projectId, "project");
+      }, projectId, "project", t);
 
       if (documents && documents.length) {
         const remainingDocuments = documents.filter(document => !document.id);
@@ -578,7 +721,7 @@ export const projectService = (): ProjectService => {
             activity: `The milestone document have been successfully uploaded.`,
             property: "Document",
             updated: document.name
-          }, projectId, "project");
+          }, projectId, "project", t);
         }
       }
 
@@ -633,7 +776,7 @@ export const projectService = (): ProjectService => {
             activity: `The milestone document have been successfully uploaded.`,
             property: "Document",
             updated: document.name
-          }, projectId, "project");
+          }, projectId, "project", t);
         }
       }
 
@@ -1182,6 +1325,7 @@ export const projectService = (): ProjectService => {
     removeProject,
     removeProjects,
     getInvoices,
-    getItemsByProjectType
+    getItemsByProjectType,
+    getProjectStatusCounts
   };
 }

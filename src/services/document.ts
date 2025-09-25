@@ -163,7 +163,7 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
         activity: `Document have been successfully uploaded.`,
         property: `Document`,
         updated: document.name
-      }, ownerId, ownerType as string);
+      }, ownerId, ownerType as string, t);
     }
 
     if (mimeType.startsWith('image/')) {
@@ -174,6 +174,8 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
     return document;
   }
   catch (error) {
+    console.error(error);
+    console.log((error as Error).stack);
     await t.rollback();
     throw error;
   }
@@ -216,7 +218,7 @@ async function upload(context: Context, user: DecodedUser, ownerId: number, owne
         activity: `Document have been successfully uploaded.`,
         property: `Document`,
         updated: document.name
-      }, ownerId, ownerType as string);
+      }, ownerId, ownerType as string, t);
 
       if (mimeType.startsWith('image/')) {
         const { sizes }: { sizes: ImageSizes } = context.config.get("upload.image");

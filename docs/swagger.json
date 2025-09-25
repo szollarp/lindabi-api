@@ -14678,16 +14678,39 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Partial_Project_"
+									"properties": {
+										"limit": {
+											"type": "number",
+											"format": "double"
+										},
+										"page": {
+											"type": "number",
+											"format": "double"
+										},
+										"total": {
+											"type": "number",
+											"format": "double"
+										},
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/Partial_Project_"
+											},
+											"type": "array"
+										}
 									},
-									"type": "array"
+									"required": [
+										"limit",
+										"page",
+										"total",
+										"data"
+									],
+									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.",
+				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.\nSupports server-side pagination and filtering.",
 				"tags": [
 					"Project"
 				],
@@ -14699,7 +14722,106 @@
 						]
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"description": "Page number (1-based)",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Number of items per page",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by project status",
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by customer ID",
+						"in": "query",
+						"name": "customerId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by contractor ID",
+						"in": "query",
+						"name": "contractorId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by location ID",
+						"in": "query",
+						"name": "locationId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by contact ID",
+						"in": "query",
+						"name": "contactId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Filter by start date",
+						"in": "query",
+						"name": "startDate",
+						"required": false,
+						"schema": {
+							"format": "date-time",
+							"type": "string"
+						}
+					},
+					{
+						"description": "Filter by end date",
+						"in": "query",
+						"name": "endDate",
+						"required": false,
+						"schema": {
+							"format": "date-time",
+							"type": "string"
+						}
+					},
+					{
+						"description": "Search keyword",
+						"in": "query",
+						"name": "keyword",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			},
 			"delete": {
 				"operationId": "DeleteProject",
@@ -14760,6 +14882,36 @@
 						}
 					}
 				}
+			}
+		},
+		"/projects/status-counts": {
+			"get": {
+				"operationId": "GetProjectStatusCounts",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Record_string.number_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves project status counts for analytics and filtering.\nThis endpoint requires authentication and \"Project:List\" permission.",
+				"tags": [
+					"Project"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Project:List"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/projects/{id}/contacts/{cid}": {

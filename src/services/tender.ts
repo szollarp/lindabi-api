@@ -528,7 +528,7 @@ export const tenderService = (): TenderService => {
           activity: `Document have been successfully uploaded.`,
           property: `Document`,
           updated: document.name
-        }, id, "tender");
+        }, id, "tender", t);
       };
 
       await t.commit();
