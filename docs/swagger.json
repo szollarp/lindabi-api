@@ -10568,6 +10568,24 @@
 						"schema": {
 							"type": "string"
 						}
+					},
+					{
+						"description": "Field to sort by (default: 'updatedOn')",
+						"in": "query",
+						"name": "orderBy",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Sort order: 'asc' or 'desc' (default: 'desc')",
+						"in": "query",
+						"name": "order",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
 					}
 				]
 			},
@@ -14743,7 +14761,7 @@
 						}
 					}
 				},
-				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.\nSupports server-side pagination and filtering.",
+				"description": "Retrieves a list of all projects within the system. This endpoint requires\nauthentication and is protected by JWT tokens with the \"Project:List\" permission.\nSupports server-side pagination, filtering, and sorting.",
 				"tags": [
 					"Project"
 				],
@@ -14849,6 +14867,24 @@
 						"description": "Search keyword",
 						"in": "query",
 						"name": "keyword",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Field to sort by (default: 'updatedOn')",
+						"in": "query",
+						"name": "orderBy",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Sort order: 'asc' or 'desc' (default: 'desc')",
+						"in": "query",
+						"name": "order",
 						"required": false,
 						"schema": {
 							"type": "string"

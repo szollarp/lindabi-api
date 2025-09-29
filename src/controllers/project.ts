@@ -56,7 +56,7 @@ export class ProjectController extends Controller {
   /**
    * Retrieves a list of all projects within the system. This endpoint requires
    * authentication and is protected by JWT tokens with the "Project:List" permission.
-   * Supports server-side pagination and filtering.
+   * Supports server-side pagination, filtering, and sorting.
    *
    * @param page Page number (1-based)
    * @param limit Number of items per page
@@ -68,6 +68,8 @@ export class ProjectController extends Controller {
    * @param startDate Filter by start date
    * @param endDate Filter by end date
    * @param keyword Search keyword
+   * @param orderBy Field to sort by (default: 'updatedOn')
+   * @param order Sort order: 'asc' or 'desc' (default: 'desc')
    * @returns A paginated response with project data
    */
   @Tags("Project")
@@ -85,7 +87,9 @@ export class ProjectController extends Controller {
     @Query() contactId?: number,
     @Query() startDate?: Date,
     @Query() endDate?: Date,
-    @Query() keyword?: string
+    @Query() keyword?: string,
+    @Query() orderBy?: string,
+    @Query() order?: string
   ): Promise<{ data: Partial<Project>[], total: number, page: number, limit: number }> {
     const { context, user } = request;
 
@@ -100,7 +104,12 @@ export class ProjectController extends Controller {
       keyword
     };
 
-    return await context.services.project.getProjects(context, user.tenant, page, limit, filters);
+    const sortOptions = {
+      orderBy: orderBy || 'updatedOn',
+      order: (order === 'asc' || order === 'desc') ? order : 'desc' as 'asc' | 'desc'
+    };
+
+    return await context.services.project.getProjects(context, user.tenant, page, limit, filters, sortOptions);
   }
 
   /**

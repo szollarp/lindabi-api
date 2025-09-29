@@ -76,6 +76,8 @@ export class TenderController extends Controller {
    * @param startDate Filter by start date (ISO string)
    * @param endDate Filter by end date (ISO string)
    * @param keyword Search keyword for tender fields
+   * @param orderBy Field to sort by (default: 'updatedOn')
+   * @param order Sort order: 'asc' or 'desc' (default: 'desc')
    * @returns A paginated list of tender objects with partial details to protect sensitive information.
    */
   @Tags("Tender")
@@ -93,7 +95,9 @@ export class TenderController extends Controller {
     @Query() contactId?: number,
     @Query() startDate?: string,
     @Query() endDate?: string,
-    @Query() keyword?: string
+    @Query() keyword?: string,
+    @Query() orderBy?: string,
+    @Query() order?: string
   ): Promise<{ data: Partial<Tender>[], total: number, page: number, limit: number }> {
     const { context, user } = request;
     const filters = {
@@ -106,7 +110,13 @@ export class TenderController extends Controller {
       endDate: endDate ? new Date(endDate) : undefined,
       keyword
     };
-    return await context.services.tender.getTenders(context, user.tenant, page, limit, filters);
+
+    const sortOptions = {
+      orderBy: orderBy || 'updatedOn',
+      order: (order === 'asc' || order === 'desc') ? order : 'desc' as 'asc' | 'desc'
+    };
+
+    return await context.services.tender.getTenders(context, user.tenant, page, limit, filters, sortOptions);
   }
 
   /**

@@ -20,8 +20,13 @@ export interface TenderFilters {
   keyword?: string;
 }
 
+export interface TenderSortOptions {
+  orderBy?: string;
+  order?: 'asc' | 'desc';
+}
+
 export interface TenderService {
-  getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderFilters) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
+  getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderFilters, sortOptions?: TenderSortOptions) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
   getBasicTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
   getTender: (context: Context, tenantId: number, id: number) => Promise<Partial<Tender> | null>
   getTenderDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
@@ -162,7 +167,7 @@ export const tenderService = (): TenderService => {
     return null;
   }
 
-  const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderFilters = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
+  const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderFilters = {}, sortOptions: TenderSortOptions = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
     try {
       // Build base where clause
       const whereClause: any = { tenantId };
@@ -183,32 +188,118 @@ export const tenderService = (): TenderService => {
 
       // Apply keyword search
       if (filters.keyword) {
-        const keyword = `%${filters.keyword}%`;
+        // Create multiple search patterns for accent-insensitive search
+        const createSearchPatterns = (text: string): string[] => {
+          const patterns: string[] = [];
+          const normalized = text.toLowerCase();
+
+          // Original text
+          patterns.push(`%${normalized}%`);
+
+          // Common accent variations for Hungarian
+          const accentMap: { [key: string]: string[] } = {
+            'a': ['á'],
+            'e': ['é'],
+            'i': ['í'],
+            'o': ['ó', 'ö', 'ő'],
+            'u': ['ú', 'ü', 'ű'],
+          };
+
+          // Generate patterns with common accent variations
+          // Create all possible combinations of accent variations
+          const generateVariations = (text: string, baseIndex: number = 0): string[] => {
+            if (baseIndex >= Object.keys(accentMap).length) {
+              return [text];
+            }
+
+            const base = Object.keys(accentMap)[baseIndex];
+            const accents = accentMap[base];
+            const variations: string[] = [];
+
+            if (text.includes(base)) {
+              // Generate variations for this base character
+              for (const accent of accents) {
+                const variant = text.replace(new RegExp(base, 'g'), accent);
+                variations.push(...generateVariations(variant, baseIndex + 1));
+              }
+              // Also keep the original for other base characters
+              variations.push(...generateVariations(text, baseIndex + 1));
+            } else {
+              // No this base character, continue with next
+              variations.push(...generateVariations(text, baseIndex + 1));
+            }
+
+            return variations;
+          };
+
+          const variations = generateVariations(normalized);
+          patterns.push(...variations.map(v => `%${v}%`));
+
+          return patterns;
+        };
+
+        const searchPatterns = createSearchPatterns(filters.keyword);
+
         whereClause[Op.or] = [
           // Direct tender fields
-          { short_name: { [Op.iLike]: keyword } },
-          { number: { [Op.iLike]: keyword } },
-          { type: { [Op.iLike]: keyword } },
-          { notes: { [Op.iLike]: keyword } },
-          { inquiry: { [Op.iLike]: keyword } },
-          { survey: { [Op.iLike]: keyword } },
-          { location_description: { [Op.iLike]: keyword } },
-          { tool_requirements: { [Op.iLike]: keyword } },
-          { other_comment: { [Op.iLike]: keyword } },
+          { short_name: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { number: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { type: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { notes: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { inquiry: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { survey: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { location_description: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { tool_requirements: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { other_comment: { [Op.iLike]: { [Op.any]: searchPatterns } } },
           // Related fields
-          { '$customer.name$': { [Op.iLike]: keyword } },
-          { '$customer.address$': { [Op.iLike]: keyword } },
-          { '$customer.city$': { [Op.iLike]: keyword } },
-          { '$customer.zip_code$': { [Op.iLike]: keyword } },
-          { '$customer.tax_number$': { [Op.iLike]: keyword } },
-          { '$contact.name$': { [Op.iLike]: keyword } },
-          { '$contact.email$': { [Op.iLike]: keyword } },
-          { '$contact.phone_number$': { [Op.iLike]: keyword } },
-          { '$items.name$': { [Op.iLike]: keyword } }
+          { '$customer.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$customer.address$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$customer.city$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$customer.zip_code$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$customer.tax_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$contact.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$contact.email$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$contact.phone_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+          { '$items.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } }
         ];
       }
 
       const offset = (page - 1) * limit;
+
+      // Build sorting options
+      const orderBy = sortOptions.orderBy || 'updatedOn';
+      const order = sortOptions.order || 'desc';
+
+      // Map frontend field names to database field names
+      const fieldMapping: { [key: string]: string } = {
+        'customer.name': '$customer.name$',
+        'type': 'type',
+        'createdOn': 'createdOn',
+        'dueDate': 'dueDate',
+        'status': 'status',
+        'updatedOn': 'updatedOn',
+        'shortName': 'short_name',
+        'netAmount': 'netAmount',
+        'totalAmount': 'totalAmount'
+      };
+
+      const dbField = fieldMapping[orderBy] || orderBy;
+      const sortOrder = order.toUpperCase() as 'ASC' | 'DESC';
+
+      // Handle virtual fields that need special sorting
+      let orderClause: any;
+      if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
+        // For virtual fields, we need to sort by the calculated amount
+        // This requires a more complex query with subqueries
+        orderClause = [['updatedOn', sortOrder]]; // Fallback to updatedOn for now
+      } else if (fieldMapping[orderBy]) {
+        // Use mapped field if it exists
+        orderClause = [[dbField, sortOrder]];
+      } else {
+        // Fallback to updatedOn for unknown fields
+        context.logger.warn(`Unknown sort field: ${orderBy}, falling back to updatedOn`);
+        orderClause = [['updatedOn', sortOrder]];
+      }
 
       // Define includes for queries
       const baseIncludes = [
@@ -323,7 +414,7 @@ export const tenderService = (): TenderService => {
         where: whereClause,
         include: baseIncludes,
         attributes: ['id'],
-        order: [["updatedOn", "DESC"]],
+        order: orderClause,
         subQuery: false
       });
 
@@ -341,7 +432,7 @@ export const tenderService = (): TenderService => {
           tenantId
         },
         include: fullIncludes as any,
-        order: [["updatedOn", "DESC"]],
+        order: orderClause,
         subQuery: false
       });
 
@@ -353,6 +444,9 @@ export const tenderService = (): TenderService => {
       };
     } catch (error) {
       context.logger.error(error);
+      if (error instanceof Error) {
+        context.logger.error(error.stack);
+      }
       throw error;
     }
   };
