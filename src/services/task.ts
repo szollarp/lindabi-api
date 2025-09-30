@@ -425,6 +425,28 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
       ]
     });
 
+    // Count total unassigned tasks (tasks that don't have assignees)
+    const totalUnassignedTasks = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { '$assignee.id$': { [Op.is]: null } }
+            ]
+          }
+        ]
+      },
+      include: [
+        {
+          model: context.models.User,
+          as: 'assignee',
+          required: false,
+          attributes: []
+        }
+      ]
+    });
+
     // Count tasks in progress (tasks in non-finished columns that have assignees)
     const tasksInProgress = await context.models.Task.count({
       where: {
@@ -520,6 +542,7 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
 
     return {
       totalAssignedTasks,
+      totalUnassignedTasks,
       tasksInProgress,
       overdueTasks,
       overdueTasksByUser: overdueTasksByUserArray

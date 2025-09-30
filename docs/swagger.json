@@ -4985,6 +4985,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"totalUnassignedTasks": {
+						"type": "number",
+						"format": "double"
+					},
 					"tasksInProgress": {
 						"type": "number",
 						"format": "double"
@@ -5020,6 +5024,7 @@
 				},
 				"required": [
 					"totalAssignedTasks",
+					"totalUnassignedTasks",
 					"tasksInProgress",
 					"overdueTasks",
 					"overdueTasksByUser"
