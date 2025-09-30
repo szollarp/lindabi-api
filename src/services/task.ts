@@ -423,8 +423,7 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
           attributes: []
         }
       ],
-      distinct: true,
-      col: 'Task.id'
+      distinct: true
     });
 
     // Count total unassigned tasks (tasks that don't have assignees)
@@ -447,8 +446,7 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
           attributes: []
         }
       ],
-      distinct: true,
-      col: 'Task.id'
+      distinct: true
     });
 
     // Count tasks in progress (ALL tasks in non-finished columns, with or without assignees)
