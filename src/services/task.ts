@@ -403,7 +403,7 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
       .filter(column => !column.finished)
       .map(column => column.id);
 
-    // Count total assigned tasks (tasks that have assignees)
+    // Count total assigned tasks (tasks that have assignees) - using DISTINCT to avoid counting duplicates
     const totalAssignedTasks = await context.models.Task.count({
       where: {
         tenantId: user.tenant,
@@ -422,7 +422,9 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
           required: true,
           attributes: []
         }
-      ]
+      ],
+      distinct: true,
+      col: 'Task.id'
     });
 
     // Count total unassigned tasks (tasks that don't have assignees)
@@ -444,58 +446,29 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
           required: false,
           attributes: []
         }
-      ]
+      ],
+      distinct: true,
+      col: 'Task.id'
     });
 
-    // Count tasks in progress (tasks in non-finished columns that have assignees)
+    // Count tasks in progress (ALL tasks in non-finished columns, with or without assignees)
     const tasksInProgress = await context.models.Task.count({
       where: {
         tenantId: user.tenant,
-        columnId: { [Op.in]: inProgressColumnIds },
-        [Op.and]: [
-          {
-            [Op.or]: [
-              { '$assignee.id$': { [Op.ne]: null } }
-            ]
-          }
-        ]
-      },
-      include: [
-        {
-          model: context.models.User,
-          as: 'assignee',
-          required: true,
-          attributes: []
-        }
-      ]
+        columnId: { [Op.in]: inProgressColumnIds }
+      }
     });
 
-    // Count overdue tasks (tasks that are ready to be completed but deadline has passed)
-    // These are tasks in non-finished columns with assignees where dueDate < now
+    // Count overdue tasks (ALL tasks in non-finished columns that are past their due date, with or without assignees)
     const overdueTasks = await context.models.Task.count({
       where: {
         tenantId: user.tenant,
         columnId: { [Op.in]: inProgressColumnIds },
-        dueDate: { [Op.lt]: now },
-        [Op.and]: [
-          {
-            [Op.or]: [
-              { '$assignee.id$': { [Op.ne]: null } }
-            ]
-          }
-        ]
-      },
-      include: [
-        {
-          model: context.models.User,
-          as: 'assignee',
-          required: true,
-          attributes: []
-        }
-      ]
+        dueDate: { [Op.lt]: now }
+      }
     });
 
-    // Get overdue tasks by user
+    // Get overdue tasks by user (only tasks that have assignees)
     const overdueTasksByUser = await context.models.Task.findAll({
       where: {
         tenantId: user.tenant,
