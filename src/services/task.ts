@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Task, CreateTaskProperties } from "../models/interfaces/task";
+import type { Task, CreateTaskProperties, TaskStatistics } from "../models/interfaces/task";
 import { TaskColumn } from "../models/interfaces/task-column";
 import type { TaskComment, CreateTaskCommentProperties } from "../models/interfaces/task-comment";
 import type { Context, DecodedUser } from "../types";
@@ -25,6 +25,7 @@ export interface TaskService {
   moveColumn: (context: Context, user: DecodedUser, data: { position: number[] }) => Promise<{ success: boolean }>;
   moveTask: (context: Context, user: DecodedUser, data: { position: number[], column: number }) => Promise<{ success: boolean }>;
   exportToCSV: (context: Context, user: DecodedUser, options?: CSVExportOptions, filters?: { columnId?: number; priority?: string; type?: string; assigneeId?: number }) => Promise<{ csvContent: string; filename: string; buffer: Buffer; mimeType: string; tasks: Task[]; columns: TaskColumn[] }>;
+  getTaskStatistics: (context: Context, user: DecodedUser) => Promise<TaskStatistics>;
 }
 
 const list = async (context: Context, user: DecodedUser): Promise<{ tasks: Task[], columns: TaskColumn[], ordered: string[] }> => {
@@ -384,6 +385,151 @@ const exportToCSV = async (context: Context, user: DecodedUser, options?: CSVExp
   return { csvContent, filename, buffer, mimeType, tasks, columns };
 };
 
+const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<TaskStatistics> => {
+  try {
+    const now = new Date();
+
+    // Get all task columns to understand which ones are "finished" (completed)
+    const columns = await context.models.TaskColumn.findAll({
+      where: { tenantId: user.tenant },
+      attributes: ['id', 'finished']
+    });
+
+    const finishedColumnIds = columns
+      .filter(column => column.finished)
+      .map(column => column.id);
+
+    const inProgressColumnIds = columns
+      .filter(column => !column.finished)
+      .map(column => column.id);
+
+    // Count total assigned tasks (tasks that have assignees)
+    const totalAssignedTasks = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { '$assignee.id$': { [Op.ne]: null } }
+            ]
+          }
+        ]
+      },
+      include: [
+        {
+          model: context.models.User,
+          as: 'assignee',
+          required: true,
+          attributes: []
+        }
+      ]
+    });
+
+    // Count tasks in progress (tasks in non-finished columns that have assignees)
+    const tasksInProgress = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        columnId: { [Op.in]: inProgressColumnIds },
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { '$assignee.id$': { [Op.ne]: null } }
+            ]
+          }
+        ]
+      },
+      include: [
+        {
+          model: context.models.User,
+          as: 'assignee',
+          required: true,
+          attributes: []
+        }
+      ]
+    });
+
+    // Count overdue tasks (tasks that are ready to be completed but deadline has passed)
+    // These are tasks in non-finished columns with assignees where dueDate < now
+    const overdueTasks = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        columnId: { [Op.in]: inProgressColumnIds },
+        dueDate: { [Op.lt]: now },
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { '$assignee.id$': { [Op.ne]: null } }
+            ]
+          }
+        ]
+      },
+      include: [
+        {
+          model: context.models.User,
+          as: 'assignee',
+          required: true,
+          attributes: []
+        }
+      ]
+    });
+
+    // Get overdue tasks by user
+    const overdueTasksByUser = await context.models.Task.findAll({
+      where: {
+        tenantId: user.tenant,
+        columnId: { [Op.in]: inProgressColumnIds },
+        dueDate: { [Op.lt]: now },
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { '$assignee.id$': { [Op.ne]: null } }
+            ]
+          }
+        ]
+      },
+      include: [
+        {
+          model: context.models.User,
+          as: 'assignee',
+          required: true,
+          attributes: ['id', 'name']
+        }
+      ],
+      attributes: ['id']
+    });
+
+    // Group overdue tasks by user
+    const userOverdueMap = new Map<number, { userId: number; userName: string; overdueCount: number }>();
+
+    overdueTasksByUser.forEach(task => {
+      task.assignee?.forEach(assignee => {
+        const existing = userOverdueMap.get(assignee.id);
+        if (existing) {
+          existing.overdueCount += 1;
+        } else {
+          userOverdueMap.set(assignee.id, {
+            userId: assignee.id,
+            userName: assignee.name,
+            overdueCount: 1
+          });
+        }
+      });
+    });
+
+    const overdueTasksByUserArray = Array.from(userOverdueMap.values());
+
+    return {
+      totalAssignedTasks,
+      tasksInProgress,
+      overdueTasks,
+      overdueTasksByUser: overdueTasksByUserArray
+    };
+  } catch (error) {
+    console.error("Error fetching task statistics:", error);
+    throw new Error("Failed to fetch task statistics");
+  }
+};
+
 export const taskService = (): TaskService => ({
   list,
   get,
@@ -401,5 +547,6 @@ export const taskService = (): TaskService => ({
   deleteTask,
   moveColumn,
   moveTask,
-  exportToCSV
+  exportToCSV,
+  getTaskStatistics
 });

@@ -4979,6 +4979,54 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"TaskStatistics": {
+				"properties": {
+					"totalAssignedTasks": {
+						"type": "number",
+						"format": "double"
+					},
+					"tasksInProgress": {
+						"type": "number",
+						"format": "double"
+					},
+					"overdueTasks": {
+						"type": "number",
+						"format": "double"
+					},
+					"overdueTasksByUser": {
+						"items": {
+							"properties": {
+								"overdueCount": {
+									"type": "number",
+									"format": "double"
+								},
+								"userName": {
+									"type": "string"
+								},
+								"userId": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"overdueCount",
+								"userName",
+								"userId"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"totalAssignedTasks",
+					"tasksInProgress",
+					"overdueTasks",
+					"overdueTasksByUser"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_Task.Exclude_keyofTask.id-or-uid-or-description-or-projectId-or-tenderId-or-assignedIds-or-createdAt-or-updatedAt-or-dueDate-or-startDate-or-position__": {
 				"properties": {
 					"tenant": {
@@ -12262,6 +12310,34 @@
 										"tasks"
 									],
 									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Task"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Task:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/tasks/statistics": {
+			"get": {
+				"operationId": "GetTaskStatistics",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TaskStatistics"
 								}
 							}
 						}

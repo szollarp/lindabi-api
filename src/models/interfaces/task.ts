@@ -52,3 +52,14 @@ export interface Task {
 }
 
 export type CreateTaskProperties = Omit<Task, 'id' | 'uid' | 'description' | 'projectId' | 'tenderId' | 'assignedIds' | 'createdAt' | 'updatedAt' | 'dueDate' | 'startDate' | 'position'>;
+
+export interface TaskStatistics {
+  totalAssignedTasks: number;
+  tasksInProgress: number;
+  overdueTasks: number;
+  overdueTasksByUser: Array<{
+    userId: number;
+    userName: string;
+    overdueCount: number;
+  }>;
+}

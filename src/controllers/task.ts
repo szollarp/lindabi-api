@@ -15,7 +15,7 @@ import {
   Query
 } from "tsoa";
 import type { ContextualRequest } from "../types";
-import type { Task, CreateTaskProperties } from "../models/interfaces/task";
+import type { Task, CreateTaskProperties, TaskStatistics } from "../models/interfaces/task";
 import type { CreateTaskCommentProperties, TaskComment } from "../models/interfaces/task-comment";
 import { TaskColumn } from "../models/interfaces/task-column";
 import { User } from "../models/interfaces/user";
@@ -48,6 +48,15 @@ export class TaskController extends Controller {
   public async getMyTasks(@Request() request: ContextualRequest): Promise<{ tasks: Task[], columns: TaskColumn[] }> {
     const { context, user } = request;
     return await context.services.task.getMyTasks(context, user);
+  }
+
+  @Tags("Task")
+  @SuccessResponse("200", "OK")
+  @Get("/statistics")
+  @Security("authentication", ["Task:List"])
+  public async getTaskStatistics(@Request() request: ContextualRequest): Promise<TaskStatistics> {
+    const { context, user } = request;
+    return await context.services.task.getTaskStatistics(context, user);
   }
 
   @Tags("Task")
