@@ -58,6 +58,7 @@ export interface TaskStatistics {
   totalUnassignedTasks: number;
   tasksInProgress: number;
   overdueTasks: number;
+  finishedTasks: number;
   overdueTasksByUser: Array<{
     userId: number;
     userName: string;

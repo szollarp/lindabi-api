@@ -4997,6 +4997,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"finishedTasks": {
+						"type": "number",
+						"format": "double"
+					},
 					"overdueTasksByUser": {
 						"items": {
 							"properties": {
@@ -5027,6 +5031,7 @@
 					"totalUnassignedTasks",
 					"tasksInProgress",
 					"overdueTasks",
+					"finishedTasks",
 					"overdueTasksByUser"
 				],
 				"type": "object",

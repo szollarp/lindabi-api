@@ -12,7 +12,7 @@ createContext()
     return context;
   })
   .then(runServer)
-  // .then(initConsumers)
+  .then(initConsumers)
   .catch((error) => {
     logger.error(error.stack);
     logger.info("------------ EXIT ------------");

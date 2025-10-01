@@ -37,7 +37,7 @@
     "level": "debug"
   },
   "serviceBus": {
-    "namespace": "api-test-peti.servicebus.windows.net"
+    "namespace": "lindabi.servicebus.windows.net"
   },
   "postmark": {
     "from": "noreply@lindabi.com",

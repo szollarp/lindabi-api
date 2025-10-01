@@ -466,6 +466,14 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
       }
     });
 
+    // Count finished tasks (ALL tasks in finished columns)
+    const finishedTasks = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        columnId: { [Op.in]: finishedColumnIds }
+      }
+    });
+
     // Get overdue tasks by user (only tasks that have assignees)
     const overdueTasksByUser = await context.models.Task.findAll({
       where: {
@@ -516,6 +524,7 @@ const getTaskStatistics = async (context: Context, user: DecodedUser): Promise<T
       totalUnassignedTasks,
       tasksInProgress,
       overdueTasks,
+      finishedTasks,
       overdueTasksByUser: overdueTasksByUserArray
     };
   } catch (error) {
