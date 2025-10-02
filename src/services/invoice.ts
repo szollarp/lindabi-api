@@ -145,13 +145,13 @@ const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => 
 };
 
 const get = async (context: Context, user: DecodedUser, id: number): Promise<Invoice | null> => {
-  const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:List"))) ? { id, tenantId: user.tenant } : {
+  const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:Get"))) ? { id, tenantId: user.tenant } : {
     id,
     tenantId: user.tenant,
-    [Op.or]: [
-      { "$employee.id$": user.id },
-      { "$creator.id$": user.id }
-    ]
+    // [Op.or]: [
+    //   { "$employee.id$": user.id },
+    //   { "$creator.id$": user.id }
+    // ]
   };
 
   try {
