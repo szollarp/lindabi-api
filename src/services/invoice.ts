@@ -96,16 +96,10 @@ const update = async (context: Context, user: DecodedUser, id: number, data: Par
 
 const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => {
   try {
-    const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:List"))) ? { tenantId: user.tenant } : {
-      tenantId: user.tenant,
-      [Op.or]: [
-        { "$employee.id$": user.id },
-        { "$creator.id$": user.id }
-      ]
-    };
-
     return await context.models.Invoice.findAll({
-      where,
+      where: {
+        tenantId: user.tenant
+      },
       attributes: ["id", "invoiceNumber", "type", "netAmount", "vatAmount", "status", "createdOn", "completionDate", "issueDate"],
       include: [{
         model: context.models.Document,
@@ -145,18 +139,12 @@ const list = async (context: Context, user: DecodedUser): Promise<Invoice[]> => 
 };
 
 const get = async (context: Context, user: DecodedUser, id: number): Promise<Invoice | null> => {
-  const where = (user.isSystemAdmin || (user.isManager && user.permissions!.includes("Invoice:Get"))) ? { id, tenantId: user.tenant } : {
-    id,
-    tenantId: user.tenant,
-    // [Op.or]: [
-    //   { "$employee.id$": user.id },
-    //   { "$creator.id$": user.id }
-    // ]
-  };
-
   try {
     return await context.models.Invoice.findOne({
-      where,
+      where: {
+        id,
+        tenantId: user.tenant
+      },
       include: [{
         model: context.models.Document,
         as: "documents"
