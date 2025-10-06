@@ -4,7 +4,6 @@ import fs from "fs";
 import sharp from 'sharp';
 import mime from 'mime-types';
 import { COMPANY_TYPE } from "../constants";
-import { isEmployeeDocumentInvalid } from "../helpers/document";
 import { Document, DocumentOwnerType, DocumentProperties, DocumentType } from "../models/interfaces/document";
 import type { Context, DecodedUser } from "../types";
 import moment from "moment";
