@@ -467,7 +467,7 @@ export const projectService = (): ProjectService => {
     try {
       return await context.models.Project.findAll({
         where: { tenantId },
-        attributes: ["id", "name", "status", "number", "type"],
+        attributes: ["id", "name", "status", "number", "type", 'inSchedule', 'scheduleColor'],
         include: [
           {
             model: context.models.Company,
