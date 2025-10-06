@@ -2,7 +2,7 @@ import moment from "moment";
 import { Document, DocumentProperties } from "../models/interfaces/document";
 import { Company } from "../models/interfaces/company";
 
-export const isEmployeeDocumentInvalid = (type: string, documents: Document[] | undefined, properties: DocumentProperties, company?: Partial<Company>): { document: string, company?: string | null, approved?: boolean } | null => {
+export const isEmployeeDocumentInvalid = (type: string, documents: Document[] | undefined, company?: Partial<Company>): { document: string, company?: string | null, approved?: boolean } | null => {
   const propertyKey = `${type}-${company?.id || "null"}`;
   if (!(propertyKey in properties)) {
     return { document: type, company: company?.name || null };

@@ -12,7 +12,7 @@ import { generateQR, generateSecret, verifyOtpToken } from "../helpers/two-facto
 import { Invoice } from "../models/interfaces/invoice";
 
 export interface UserService {
-  list: (context: Context, tenantId: number, entity: USER_TYPE, flat?: boolean) => Promise<Array<Partial<User>>>
+  list: (context: Context, tenantId: number, entity: USER_TYPE, flat?: boolean, containsSystemUser?: boolean) => Promise<Array<Partial<User>>>
   get: (context: Context, tenantId: number | null, id: number) => Promise<Partial<User> | null>
   create: (context: Context, tenantId: number, body: CreateUserProperties, createdBy: number) => Promise<Partial<User>>
   update: (context: Context, tenantId: number | null, id: number, body: Partial<User>, updatedBy: number) => Promise<Partial<User>>
@@ -35,7 +35,7 @@ const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "countr
 const USER_ATTRIBUTES_FLAT = ["id", "name", "email", "inSchedule"];
 
 export const userService = (): UserService => {
-  const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER, flat: boolean = false): Promise<Array<Partial<User>>> => {
+  const list = async (context: Context, tenantId: number, entity: USER_TYPE = USER_TYPE.USER, flat: boolean = false, containsSystemUser: boolean = false): Promise<Array<Partial<User>>> => {
     try {
       const where = entity === USER_TYPE.USER ? { tenantId } : { tenantId, entity };
       const attributes = flat ? USER_ATTRIBUTES_FLAT : USER_ATTRIBUTES;

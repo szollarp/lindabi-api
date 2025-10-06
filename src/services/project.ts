@@ -473,7 +473,19 @@ export const projectService = (): ProjectService => {
             model: context.models.Company,
             as: "customer",
             attributes: ["id", "name"]
-          }
+          },
+          {
+            model: context.models.Company,
+            as: "customer",
+            attributes: ["id", "name"],
+            required: false
+          },
+          {
+            model: context.models.Company,
+            as: "contractor",
+            attributes: ["id", "name"],
+            required: false
+          },
         ],
         order: [["name", "DESC"]]
       });

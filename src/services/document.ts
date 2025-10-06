@@ -7,6 +7,7 @@ import { COMPANY_TYPE } from "../constants";
 import { isEmployeeDocumentInvalid } from "../helpers/document";
 import { Document, DocumentOwnerType, DocumentProperties, DocumentType } from "../models/interfaces/document";
 import type { Context, DecodedUser } from "../types";
+import moment from "moment";
 
 const CHUNK_DIR = "tmp/chunks";
 
@@ -33,6 +34,14 @@ type DocumentUploadProperties = DocumentProperties & {
   approved?: boolean
 };
 
+// Document validation types
+interface DocumentValidationResult {
+  document: string;
+  company?: string | null;
+  approved?: boolean;
+  reason: 'missing' | 'not_approved' | 'expired' | 'valid' | 'skipped';
+}
+
 export interface DocumentService {
   upload(context: Context, user: DecodedUser, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, files: Express.Multer.File[], properties: DocumentUploadProperties, unique?: boolean): Promise<{ uploaded: boolean }>
   merge(context: Context, user: DecodedUser, tmpPath: string, chunkSize: number, ownerType: DocumentOwnerType, type: DocumentType, properties: DocumentUploadProperties, ownerId?: number, temporary?: boolean, unique?: boolean): Promise<Document>
@@ -42,7 +51,7 @@ export interface DocumentService {
   removeDocument: (context: Context, id: number) => Promise<{ removed: boolean }>
   removeDocuments: (context: Context, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType) => Promise<{ removed: boolean }>
   update: (context: Context, ownerId: number, id: number, ownerType: DocumentOwnerType, data: Partial<Document>) => Promise<Document>
-  checkUserDocuments: (context: Context, tenantId: number, id: number) => void
+  checkUserDocuments: (context: Context, tenantId: number, id: number) => Promise<DocumentValidationResult[]>
 }
 
 export const documentService = (): DocumentService => {
@@ -180,6 +189,7 @@ async function merge(context: Context, user: DecodedUser, fileName: string, chun
     throw error;
   }
 }
+
 
 // Function to upload a document, optionally ensuring it's unique within the specified context.
 async function upload(context: Context, user: DecodedUser, ownerId: number, ownerType: DocumentOwnerType, type: DocumentType, files: Express.Multer.File[], properties: DocumentUploadProperties = {}, unique: boolean = false): Promise<{ uploaded: boolean }> {
@@ -354,27 +364,135 @@ async function update(context: Context, ownerId: number, id: number, ownerType: 
   }
 }
 
+interface DocumentValidationContext {
+  user: any;
+  document: any;
+  documentType: string;
+  companyName?: string | null;
+  isSkipped: boolean;
+}
+
+/**
+ * Validates a single document and returns its validation result
+ */
+function validateDocument({ user, document, documentType, companyName, isSkipped }: DocumentValidationContext): DocumentValidationResult {
+  if (!document) {
+    if (!isSkipped) {
+      return {
+        document: documentType,
+        company: companyName,
+        reason: "missing"
+      };
+    }
+    // If skipped, include it in the results with skipped reason
+    return {
+      document: documentType,
+      company: companyName,
+      reason: "skipped"
+    };
+  }
+
+  if (!document.approved) {
+    return {
+      document: documentType,
+      company: companyName,
+      approved: false,
+      reason: "not_approved"
+    };
+  }
+
+  if (document.properties?.endOfValidity && moment(document.properties.endOfValidity).isBefore(moment())) {
+    return {
+      document: documentType,
+      company: companyName,
+      reason: "expired"
+    };
+  }
+
+  return {
+    document: documentType,
+    company: companyName,
+    reason: "valid"
+  };
+}
+
+/**
+ * Validates main documents for a user
+ */
+function validateMainDocuments(user: any): DocumentValidationResult[] {
+  const userMainDocuments = user.documents?.filter((doc: any) => !doc.companyId) ?? [];
+  const results: DocumentValidationResult[] = [];
+
+  for (const mainDocType of MAIN_DOCUMENTS) {
+    const document = userMainDocuments.find((doc: any) => doc.type === mainDocType);
+    const isSkipped = user?.properties?.[`${mainDocType}-null`] as boolean ?? false;
+
+    const result = validateDocument({
+      user,
+      document,
+      documentType: mainDocType,
+      companyName: null,
+      isSkipped
+    });
+
+    // Always include the result (valid, missing, expired, not_approved, or skipped)
+    results.push(result);
+  }
+
+  return results;
+}
+
+/**
+ * Validates company documents for a user across all contractors
+ */
+async function validateCompanyDocuments(context: Context, tenantId: number, user: any): Promise<DocumentValidationResult[]> {
+  const contractors = await context.services.company.getCompanies(context, tenantId, COMPANY_TYPE.CONTRACTOR);
+  const results: DocumentValidationResult[] = [];
+
+  for (const contractor of contractors) {
+    const userCompanyDocuments = user.documents?.filter((doc: any) => doc.companyId === contractor.id) ?? [];
+
+    for (const companyDocType of COMPANY_DOCUMENTS) {
+      const document = userCompanyDocuments.find((doc: any) => doc.type === companyDocType);
+      const isSkipped = user?.properties?.[`${companyDocType}-${contractor.id}`] as boolean ?? false;
+
+      const result = validateDocument({
+        user,
+        document,
+        documentType: companyDocType,
+        companyName: contractor.name || `Company ${contractor.id}`,
+        isSkipped
+      });
+
+      // Always include the result (valid, missing, expired, not_approved, or skipped)
+      results.push(result);
+    }
+  }
+
+  return results;
+}
+
 /**
  * Checks the validity of user documents based on predefined rules.
+ * Returns an array of document validation results for both main documents and company documents.
  */
-export async function checkUserDocuments(context: Context, tenantId: number, id: number) {
+export async function checkUserDocuments(context: Context, tenantId: number, id: number): Promise<DocumentValidationResult[]> {
   try {
     const user = await context.services.user.get(context, tenantId, id);
 
-    if (!user || !user.properties) {
-      return;
+    if (!user) {
+      throw new Error("User not found");
     }
 
-    let invalidDocuments = MAIN_DOCUMENTS.map(type => isEmployeeDocumentInvalid(type, user.documents, user.properties!));
+    // Validate main documents and company documents in parallel
+    const [mainDocumentResults, companyDocumentResults] = await Promise.all([
+      Promise.resolve(validateMainDocuments(user)),
+      validateCompanyDocuments(context, tenantId, user)
+    ]);
 
-    const contractors = await context.services.company.getCompanies(context, tenantId, COMPANY_TYPE.CONTRACTOR);
-    contractors.forEach(contractor => {
-      invalidDocuments = [...COMPANY_DOCUMENTS.map(type => isEmployeeDocumentInvalid(type, user.documents, user.properties!, contractor)), ...invalidDocuments];
-    });
-
-    return invalidDocuments.filter(n => n);
+    return [...mainDocumentResults, ...companyDocumentResults];
   } catch (error) {
-    context.logger.error(error);
+    context.logger.error('Error checking user documents:', error);
     throw error;
   }
 }
