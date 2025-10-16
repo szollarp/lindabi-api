@@ -153,6 +153,8 @@ export const projectService = (): ProjectService => {
       await t.commit();
       return { id: project.id };
     } catch (error) {
+      console.log(error);
+      console.log(error.stack);
       await t.rollback();
       throw error;
     }
