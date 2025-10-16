@@ -95,7 +95,7 @@ export const projectService = (): ProjectService => {
 
       const netAmount = getTotalNetAmount(tender);
       const vatAmount = getTotalVatAmount(tender);
-      const { items, customer, shortName, ...attributes } = tender.toJSON();
+      const { id, items, customer, shortName, ...attributes } = tender.toJSON();
 
       const project = await context.models.Project.create({
         ...attributes,
