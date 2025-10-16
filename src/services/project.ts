@@ -154,7 +154,7 @@ export const projectService = (): ProjectService => {
       return { id: project.id };
     } catch (error) {
       console.log(error);
-      console.log(error.stack);
+      console.log((error as any).stack);
       await t.rollback();
       throw error;
     }
