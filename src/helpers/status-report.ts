@@ -89,7 +89,8 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
         model: context.models.Role,
         as: "role",
         attributes: ["id", "name"]
-      }]
+      }],
+      required: false
     }, {
       model: context.models.Project,
       attributes: ["id", "type", "number"],
@@ -114,6 +115,7 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
           as: "user",
           attributes: ["id"]
         }],
+        required: false
       }, {
         model: context.models.Contact,
         as: "contacts",
@@ -123,6 +125,7 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
           as: "user",
           attributes: ["id"],
         }],
+        required: false
       }],
     }],
     where
