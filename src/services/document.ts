@@ -523,6 +523,8 @@ export async function checkUserDocuments(context: Context, tenantId: number, id:
 
     return [...mainDocumentResults, ...companyDocumentResults];
   } catch (error) {
+    console.log(error);
+    console.log((error as any).stack);
     context.logger.error('Error checking user documents:', error);
     throw error;
   }
