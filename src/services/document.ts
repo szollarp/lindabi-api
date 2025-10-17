@@ -423,7 +423,14 @@ function validateMainDocuments(user: any): DocumentValidationResult[] {
   const results: DocumentValidationResult[] = [];
 
   for (const mainDocType of MAIN_DOCUMENTS) {
-    const document = userMainDocuments.find((doc: any) => doc.type === mainDocType);
+    // Filter documents by type and select the one with the highest ID (newest)
+    const matchingDocuments = userMainDocuments.filter((doc: any) => doc.type === mainDocType);
+    const document = matchingDocuments.length > 0
+      ? matchingDocuments.reduce((newest: any, current: any) =>
+        current.id > newest.id ? current : newest
+      )
+      : undefined;
+
     const isSkipped = user?.properties?.[`${mainDocType}-null`] as boolean ?? false;
 
     const result = validateDocument({
@@ -452,7 +459,14 @@ async function validateCompanyDocuments(context: Context, tenantId: number, user
     const userCompanyDocuments = user.documents?.filter((doc: any) => doc.companyId === contractor.id) ?? [];
 
     for (const companyDocType of COMPANY_DOCUMENTS) {
-      const document = userCompanyDocuments.find((doc: any) => doc.type === companyDocType);
+      // Filter documents by type and select the one with the highest ID (newest)
+      const matchingDocuments = userCompanyDocuments.filter((doc: any) => doc.type === companyDocType);
+      const document = matchingDocuments.length > 0
+        ? matchingDocuments.reduce((newest: any, current: any) =>
+          current.id > newest.id ? current : newest
+        )
+        : undefined;
+
       const isSkipped = user?.properties?.[`${companyDocType}-${contractor.id}`] as boolean ?? false;
 
       const result = validateDocument({
