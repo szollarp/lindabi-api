@@ -103,7 +103,7 @@ export class TenderController extends Controller {
   ): Promise<{ data: Partial<Tender>[], total: number, page: number, limit: number }> {
     const { context, user } = request;
 
-    const whereStatus = !status || status === "all" ? { [Op.ne]: TENDER_STATUS.ARCHIVED } : status;
+    const whereStatus = !status || status === "all" ? { [Op.ne]: TENDER_STATUS.ARCHIVED } : status as TENDER_STATUS;
 
     const filters = {
       status: whereStatus,

@@ -10,7 +10,7 @@ import { calculateTenderItemAmounts } from "../helpers/tender";
 import { TenderDuplicateCleanup } from "../helpers/tender-duplicate-cleanup";
 
 export interface TenderFilters {
-  status?: TENDER_STATUS;
+  status?: TENDER_STATUS | { [Op.ne]: TENDER_STATUS };
   customerId?: number;
   contractorId?: number;
   locationId?: number;
