@@ -70,7 +70,7 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
 };
 
 export const getRelatedStatusReports = async (context: Context, user: DecodedUser) => {
-  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "StatusReport:List"))) ? { tenantId: user.tenant } : {
+  const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "Report:List"))) ? { tenantId: user.tenant } : {
     tenantId: user.tenant,
     [Op.or]: [
       { "$project.supervisors.user.id$": user.id },
