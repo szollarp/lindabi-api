@@ -375,21 +375,21 @@ interface DocumentValidationContext {
  * Validates a single document and returns its validation result
  */
 function validateDocument({ user, document, documentType, companyName, isSkipped }: DocumentValidationContext): DocumentValidationResult {
-  // if (!document) {
-  //   if (!isSkipped) {
-  //     return {
-  //       document: documentType,
-  //       company: companyName,
-  //       reason: "missing"
-  //     };
-  //   }
-  //   // If skipped, include it in the results with skipped reason
-  //   return {
-  //     document: documentType,
-  //     company: companyName,
-  //     reason: "skipped"
-  //   };
-  // }
+  if (!document) {
+    if (!isSkipped) {
+      return {
+        document: documentType,
+        company: companyName,
+        reason: "missing"
+      };
+    }
+    // If skipped, include it in the results with skipped reason
+    return {
+      document: documentType,
+      company: companyName,
+      reason: "skipped"
+    };
+  }
 
   if (!document.approved) {
     return {
@@ -523,8 +523,6 @@ export async function checkUserDocuments(context: Context, tenantId: number, id:
 
     return [...mainDocumentResults, ...companyDocumentResults];
   } catch (error) {
-    console.log(error);
-    console.log((error as any).stack);
     context.logger.error('Error checking user documents:', error);
     throw error;
   }
