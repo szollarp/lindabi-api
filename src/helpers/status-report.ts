@@ -79,8 +79,11 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
     ]
   };
 
+  console.log({ where });
+
   return await context.models.StatusReport.findAll({
     attributes: ["id", "dueDate", "status", "notes"],
+    where,
     include: [{
       model: context.models.User,
       as: "creator",
@@ -96,7 +99,7 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
       attributes: ["id", "type", "number"],
       as: "project",
       where: { tenantId: user.tenant },
-      required: true,
+      required: false,
       include: [{
         model: context.models.Company,
         as: "contractor",
@@ -128,6 +131,5 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
         required: false
       }],
     }],
-    where
   });
 }
