@@ -547,7 +547,7 @@ export const projectService = (): ProjectService => {
           {
             model: context.models.Location,
             as: "location",
-            attributes: ["id", "city", "country", "zipCode", "address"]
+            attributes: ["id", "city", "country", "zipCode", "address", "name"]
           },
           {
             model: context.models.Company,
