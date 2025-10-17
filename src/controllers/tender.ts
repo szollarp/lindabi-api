@@ -4,6 +4,8 @@ import type { CreateTenderProperties, Tender } from "../models/interfaces/tender
 import { DocumentType } from "../models/interfaces/document";
 import { Journey } from "../models/interfaces/journey";
 import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/tender-item";
+import { Op } from "sequelize";
+import { TENDER_STATUS } from "../constants";
 
 @Route("tenders")
 export class TenderController extends Controller {
@@ -100,8 +102,11 @@ export class TenderController extends Controller {
     @Query() order?: string
   ): Promise<{ data: Partial<Tender>[], total: number, page: number, limit: number }> {
     const { context, user } = request;
+
+    const whereStatus = !status || status === "all" ? { [Op.ne]: TENDER_STATUS.ARCHIVED } : status;
+
     const filters = {
-      status: status as any,
+      status: whereStatus,
       customerId,
       contractorId,
       locationId,

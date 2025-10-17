@@ -4556,13 +4556,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"TENANT_STATUS": {
-				"enum": [
-					"active",
-					"inactive"
-				],
-				"type": "string"
-			},
 			"Partial_Tenant_": {
 				"properties": {
 					"id": {
@@ -4591,7 +4584,14 @@
 						"type": "string"
 					},
 					"status": {
-						"$ref": "#/components/schemas/TENANT_STATUS"
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.INACTIVE"
+							}
+						]
 					},
 					"taxNumber": {
 						"type": "string"
@@ -4659,7 +4659,14 @@
 						"type": "string"
 					},
 					"status": {
-						"$ref": "#/components/schemas/TENANT_STATUS"
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/TENANT_STATUS.INACTIVE"
+							}
+						]
 					},
 					"documentIds": {
 						"items": {

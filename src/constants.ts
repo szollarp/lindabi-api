@@ -13,6 +13,7 @@ export enum USER_TYPE {
 export enum TENANT_STATUS {
   ACTIVE = "active",
   INACTIVE = "inactive",
+  ARCHIVED = "archived"
 };
 
 export enum LOCATION_STATUS {
