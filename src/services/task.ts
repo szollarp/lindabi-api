@@ -206,25 +206,31 @@ const getMyTasks = async (context: Context, user: DecodedUser): Promise<{ tasks:
 };
 
 const create = async (context: Context, user: DecodedUser, data: CreateTaskProperties): Promise<Task> => {
-  const tomorrow = new Date();
-  tomorrow.setDate(new Date().getDate() + 1);
+  try {
+    const tomorrow = new Date();
+    tomorrow.setDate(new Date().getDate() + 1);
 
-  const numOfTasks = await context.models.Task.count({
-    where: {
+    const numOfTasks = await context.models.Task.count({
+      where: {
+        tenantId: user.tenant,
+        columnId: data.columnId
+      }
+    });
+
+    return context.models.Task.create({
+      uid: uuidv4(),
+      ...data,
+      dueDate: tomorrow,
+      startDate: new Date(),
+      createdBy: user.id,
       tenantId: user.tenant,
-      columnId: data.columnId
-    }
-  });
-
-  return context.models.Task.create({
-    uid: uuidv4(),
-    ...data,
-    dueDate: tomorrow,
-    startDate: new Date(),
-    createdBy: user.id,
-    tenantId: user.tenant,
-    position: numOfTasks + 1,
-  } as Task);
+      position: numOfTasks + 1,
+    } as Task);
+  }
+  catch (error) {
+    console.error("Error creating task:", error);
+    throw new Error("Failed to fetch my tasks");
+  }
 };
 
 const update = async (context: Context, user: DecodedUser, id: number, data: Partial<CreateTaskProperties>): Promise<Task> => {
