@@ -12515,15 +12515,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"success"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/Task"
 								}
 							}
 						}

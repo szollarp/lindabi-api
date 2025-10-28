@@ -99,7 +99,7 @@ export class TaskController extends Controller {
   @SuccessResponse("200", "OK")
   @Patch("/{id}/assign")
   @Security("authentication", ["Task:Update"])
-  public async assignTask(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { userId: User["id"] }): Promise<{ success: boolean }> {
+  public async assignTask(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { userId: User["id"] }): Promise<Task> {
     const { context, user } = request;
     return context.services.task.assign(context, user, id, body);
   }

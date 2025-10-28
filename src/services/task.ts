@@ -14,7 +14,7 @@ export interface TaskService {
   update: (context: Context, user: DecodedUser, id: number, data: Partial<CreateTaskProperties>) => Promise<Task>;
   deleteTask: (context: Context, user: DecodedUser, id: number) => Promise<{ success: boolean }>;
   getMyTasks: (context: Context, user: DecodedUser) => Promise<{ tasks: Task[], columns: TaskColumn[] }>;
-  assign: (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }) => Promise<{ success: boolean }>;
+  assign: (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }) => Promise<Task>;
   unassign: (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }) => Promise<{ success: boolean }>;
   addComment: (context: Context, user: DecodedUser, taskId: number, data: CreateTaskCommentProperties) => Promise<TaskComment>;
   deleteComment: (context: Context, user: DecodedUser, commentId: number) => Promise<{ success: boolean }>;
@@ -28,6 +28,79 @@ export interface TaskService {
   getTaskStatistics: (context: Context, user: DecodedUser) => Promise<TaskStatistics>;
 }
 
+// Helper function to get task includes (used in list, create, assign, etc.)
+const getTaskIncludes = (context: Context) => [
+  {
+    model: context.models.TaskColumn,
+    as: 'column',
+    required: true
+  },
+  {
+    model: context.models.TaskComment,
+    as: 'comments',
+    required: false,
+    include: [
+      {
+        model: context.models.User,
+        as: 'creator',
+        required: true,
+        attributes: ['id', 'name'],
+        include: [
+          {
+            model: context.models.Document,
+            attributes: ["id", "name", "mimeType", "type", "stored"],
+            as: 'documents',
+            required: false,
+            where: {
+              type: 'avatar',
+            }
+          }
+        ],
+      }
+    ]
+  },
+  {
+    model: context.models.User,
+    as: 'assignee',
+    required: false,
+    attributes: ['id', 'name'],
+    include: [
+      {
+        model: context.models.Document,
+        attributes: ["id", "name", "mimeType", "type", "stored"],
+        as: 'documents',
+        required: false,
+        where: {
+          type: 'avatar',
+        }
+      }
+    ],
+  },
+  {
+    model: context.models.User,
+    as: 'reporter',
+    required: true,
+    attributes: ['id', 'name'],
+    include: [
+      {
+        model: context.models.Document,
+        attributes: ["id", "name", "mimeType", "type", "stored"],
+        as: 'documents',
+        required: false,
+        where: {
+          type: 'avatar',
+        }
+      }
+    ],
+  },
+  {
+    model: context.models.Document,
+    attributes: ["id", "name", "mimeType", "type", "stored"],
+    as: 'attachments',
+    required: false
+  }
+];
+
 const list = async (context: Context, user: DecodedUser): Promise<{ tasks: Task[], columns: TaskColumn[], ordered: string[] }> => {
   try {
     const tasks = await context.models.Task.findAll({
@@ -35,77 +108,7 @@ const list = async (context: Context, user: DecodedUser): Promise<{ tasks: Task[
       where: {
         tenantId: user.tenant
       },
-      include: [
-        {
-          model: context.models.TaskColumn,
-          as: 'column',
-          required: true
-        },
-        {
-          model: context.models.TaskComment,
-          as: 'comments',
-          required: false,
-          include: [
-            {
-              model: context.models.User,
-              as: 'creator',
-              required: true,
-              attributes: ['id', 'name'],
-              include: [
-                {
-                  model: context.models.Document,
-                  attributes: ["id", "name", "mimeType", "type", "stored"],
-                  as: 'documents',
-                  required: false,
-                  where: {
-                    type: 'avatar',
-                  }
-                }
-              ],
-            }
-          ]
-        },
-        {
-          model: context.models.User,
-          as: 'assignee',
-          required: false,
-          attributes: ['id', 'name'],
-          include: [
-            {
-              model: context.models.Document,
-              attributes: ["id", "name", "mimeType", "type", "stored"],
-              as: 'documents',
-              required: false,
-              where: {
-                type: 'avatar',
-              }
-            }
-          ],
-        },
-        {
-          model: context.models.User,
-          as: 'reporter',
-          required: true,
-          attributes: ['id', 'name'],
-          include: [
-            {
-              model: context.models.Document,
-              attributes: ["id", "name", "mimeType", "type", "stored"],
-              as: 'documents',
-              required: false,
-              where: {
-                type: 'avatar',
-              }
-            }
-          ],
-        },
-        {
-          model: context.models.Document,
-          attributes: ["id", "name", "mimeType", "type", "stored"],
-          as: 'attachments',
-          required: false
-        }
-      ]
+      include: getTaskIncludes(context)
     });
 
     const columns = await context.models.TaskColumn.findAll({
@@ -217,7 +220,7 @@ const create = async (context: Context, user: DecodedUser, data: CreateTaskPrope
       }
     });
 
-    return context.models.Task.create({
+    const createdTask = await context.models.Task.create({
       uid: uuidv4(),
       ...data,
       dueDate: tomorrow,
@@ -226,10 +229,22 @@ const create = async (context: Context, user: DecodedUser, data: CreateTaskPrope
       tenantId: user.tenant,
       position: numOfTasks + 1,
     } as Task);
+
+    // Reload task with all includes to match the list response format
+    const taskWithIncludes = await context.models.Task.findOne({
+      where: { id: createdTask.id, tenantId: user.tenant },
+      include: getTaskIncludes(context)
+    });
+
+    if (!taskWithIncludes) {
+      throw new Error("Task not found after creation");
+    }
+
+    return taskWithIncludes;
   }
   catch (error) {
     console.error("Error creating task:", error);
-    throw new Error("Failed to fetch my tasks");
+    throw new Error("Failed to create task");
   }
 };
 
@@ -245,14 +260,24 @@ const deleteTask = async (context: Context, user: DecodedUser, id: number): Prom
   return { success: deleted > 0 };
 };
 
-const assign = async (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }): Promise<{ success: boolean }> => {
+const assign = async (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }): Promise<Task> => {
   const task = await context.models.Task.findOne({ where: { id, tenantId: user.tenant } });
   if (!task) throw new Error("Task not found");
 
   await task.addAssignee(data.userId);
-  await context.services.notification.sendCreateTaskAssignNotification(context, task, data.userId);
+  context.services.notification.sendCreateTaskAssignNotification(context, task, data.userId);
 
-  return { success: true };
+  // Reload task with all includes to match the list response format
+  const taskWithIncludes = await context.models.Task.findOne({
+    where: { id, tenantId: user.tenant },
+    include: getTaskIncludes(context)
+  });
+
+  if (!taskWithIncludes) {
+    throw new Error("Task not found after assignment");
+  }
+
+  return taskWithIncludes;
 }
 
 const unassign = async (context: Context, user: DecodedUser, id: number, data: { userId: User["id"] }): Promise<{ success: boolean }> => {
@@ -267,7 +292,7 @@ const unassign = async (context: Context, user: DecodedUser, id: number, data: {
 const addComment = async (context: Context, user: DecodedUser, taskId: number, data: CreateTaskCommentProperties): Promise<TaskComment> => {
   const comment = await context.models.TaskComment.create({ ...data, taskId, createdBy: user.id, tenantId: user.tenant } as TaskComment);
   if (comment) {
-    await context.services.notification.sendCreateTaskCommentNotification(context, comment);
+    context.services.notification.sendCreateTaskCommentNotification(context, comment);
   }
 
   return comment;
