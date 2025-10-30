@@ -102,7 +102,7 @@ const handleSendTender = async (context: Context, tenderId: number, htmlBody: st
   const attachment = Buffer.concat(chunks);
   const message: SendEmailOptions = {
     to: tender!.contact!.email as string,
-    subject: "Új ajánlata megérkezett.",
+    subject: "Új ajánlata megérkezett. Helyszín: " + tender!.location!.zipCode + " " + tender!.location!.city + ", " + tender!.location!.address,
     htmlBody,
     attachments: [{
       "Name": fileName,
