@@ -24,6 +24,7 @@ export interface Invoice {
   asEmail?: boolean
   pattyCash?: boolean
   inSalary?: boolean
+  paymentSource?: string | null
   //
   projectId?: Project["id"] | null
   project?: Project

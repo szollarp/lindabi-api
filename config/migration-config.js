@@ -1,10 +1,10 @@
 module.exports = {
   local: {
-    username: 'peterszollar',
-    password: '0516szollarP',
-    database: 'api',
+    "username": "lindabi",
+    "database": "development",
+    "password": "juzbiq-fyhby7-megrYx",
     port: 5432,
-    host: 'development-pq.postgres.database.azure.com',
+    host: 'lindabi-production-db.postgres.database.azure.com',
     dialect: 'postgres',
     dialectOptions: {
       encrypt: true,

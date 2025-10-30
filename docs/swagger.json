@@ -2284,6 +2284,10 @@
 					"inSalary": {
 						"type": "boolean"
 					},
+					"paymentSource": {
+						"type": "string",
+						"nullable": true
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double",
@@ -7103,6 +7107,9 @@
 					"inSalary": {
 						"type": "boolean"
 					},
+					"paymentSource": {
+						"type": "string"
+					},
 					"projectId": {
 						"type": "number",
 						"format": "double"
@@ -8008,6 +8015,9 @@
 					},
 					"inSalary": {
 						"type": "boolean"
+					},
+					"paymentSource": {
+						"type": "string"
 					},
 					"milestoneId": {
 						"type": "number",

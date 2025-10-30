@@ -43,6 +43,8 @@ export class InvoiceModel extends Model<Invoice, CreateInvoiceProperties> implem
 
   public inSalary!: boolean;
 
+  public paymentSource!: string | null;
+
   public projectId?: ForeignKey<Project["id"]>;
 
   public project?: NonAttribute<Project>;
@@ -170,6 +172,11 @@ export const InvoiceFactory = (sequelize: Sequelize): typeof InvoiceModel => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+      },
+      paymentSource: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "company"
       },
       projectId: {
         type: DataTypes.INTEGER,
