@@ -488,6 +488,12 @@ export const projectService = (): ProjectService => {
             attributes: ["id", "name"],
             required: false
           },
+          {
+            model: context.models.Location,
+            as: "location",
+            attributes: ["id", "city", "country", "zipCode", "address"],
+            required: false
+          },
         ],
         order: [["name", "DESC"]]
       });
