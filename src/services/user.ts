@@ -32,7 +32,7 @@ const USER_ATTRIBUTES = ["id", "name", "email", "status", "phoneNumber", "countr
   "notifications", "entity", "employeeType", "notes", "identifier", "birthName", "motherName", "placeOfBirth", "dateOfBirth",
   "socialSecurityNumber", "taxIdentificationNumber", "personalIdentificationNumber", "licensePlateNumber", "enableLogin", "properties", "billing", "inSchedule"];
 
-const USER_ATTRIBUTES_FLAT = ["id", "name", "email", "inSchedule"];
+const USER_ATTRIBUTES_FLAT = ["id", "name", "email", "inSchedule", "entity"];
 
 export const userService = (): UserService => {
   const list = async (context: Context, tenantId: number, entity: USER_TYPE | "all" = USER_TYPE.USER, flat: boolean = false, containsSystemUser: boolean = false): Promise<Array<Partial<User>>> => {
