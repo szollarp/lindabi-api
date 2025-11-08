@@ -82,7 +82,7 @@ export class ScheduleController extends Controller {
   @Security("authentication", ["Schedule:Create", "Tenant"])
   public async getEmployees(@Request() request: ContextualRequest): Promise<Partial<User>[]> {
     const { context, user } = request;
-    return await context.services.user.list(context, user.tenant, USER_TYPE.EMPLOYEE, true, true);
+    return await context.services.user.list(context, user.tenant, "all", true, true);
   }
 
   /**
