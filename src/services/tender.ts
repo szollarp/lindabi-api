@@ -820,6 +820,32 @@ export const tenderService = (): TenderService => {
         updated: data
       }, tender.id, "tender", t);
 
+      // Sync startDate and endDate to related project if exists
+      if (data.startDate !== undefined || data.endDate !== undefined) {
+        const project = await context.models.Project.findOne({
+          where: { tenderId: id }
+        });
+
+        if (project) {
+          const projectUpdateData: any = {};
+          if (data.startDate !== undefined) {
+            projectUpdateData.startDate = data.startDate;
+          }
+          if (data.endDate !== undefined) {
+            projectUpdateData.endDate = data.endDate;
+          }
+
+          if (Object.keys(projectUpdateData).length > 0) {
+            projectUpdateData.updatedBy = user.id;
+            await project.update(projectUpdateData, { transaction: t });
+
+            await context.services.journey.addSimpleLog(context, user, {
+              activity: "Project dates synced from tender.",
+            }, project.id, "project", t);
+          }
+        }
+      }
+
       await t.commit();
 
       return {

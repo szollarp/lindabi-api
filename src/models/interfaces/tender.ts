@@ -24,6 +24,7 @@ export interface Tender {
   dueDate?: Date | null
   openDate?: Date | null
   startDate?: Date | null
+  endDate?: Date | null
   notes?: string | null
   inquiry?: string | null
   survey?: string | null

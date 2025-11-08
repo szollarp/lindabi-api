@@ -26,6 +26,7 @@ export interface Project {
   vatAmount: number;
   status: PROJECT_STATUS
   startDate?: Date | null
+  endDate?: Date | null
   dueDate?: Date | null
   inquiry?: string | null
   survey?: string | null

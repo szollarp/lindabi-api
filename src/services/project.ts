@@ -71,7 +71,7 @@ export const projectService = (): ProjectService => {
       const tender = await context.models.Tender.findOne({
         where: { id: tenderId },
         attributes: ["id", "type", "number", "locationId", "customerId", "contractorId", "notes", "survey", "locationDescription",
-          "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount", "shortName"],
+          "toolRequirements", "otherComment", "inquiry", "vatKey", "tenantId", "surcharge", "discount", "shortName", "startDate", "endDate"],
         include: [{
           model: context.models.TenderItem,
           as: "items",
@@ -161,12 +161,15 @@ export const projectService = (): ProjectService => {
   };
 
   const updateProject = async (context: Context, id: number, data: Partial<Project>, user: DecodedUser): Promise<{ updated: boolean }> => {
+    const t = await context.models.sequelize.transaction();
+
     try {
       const project = await context.models.Project.findOne({
         where: { id }
       });
 
       if (!project) {
+        await t.rollback();
         return { updated: false };
       }
 
@@ -174,11 +177,40 @@ export const projectService = (): ProjectService => {
         activity: `The project have been successfully updated.`,
         existed: project,
         updated: data
-      }, project.id, "project");
+      }, project.id, "project", t);
 
-      await project.update({ ...data, updatedBy: user.id });
+      await project.update({ ...data, updatedBy: user.id }, { transaction: t });
+
+      // Sync startDate and endDate to related tender if exists
+      if (data.startDate !== undefined || data.endDate !== undefined) {
+        if (project.tenderId) {
+          const tender = await context.models.Tender.findByPk(project.tenderId);
+
+          if (tender) {
+            const tenderUpdateData: any = {};
+            if (data.startDate !== undefined) {
+              tenderUpdateData.startDate = data.startDate;
+            }
+            if (data.endDate !== undefined) {
+              tenderUpdateData.endDate = data.endDate;
+            }
+
+            if (Object.keys(tenderUpdateData).length > 0) {
+              tenderUpdateData.updatedBy = user.id;
+              await tender.update(tenderUpdateData, { transaction: t });
+
+              await context.services.journey.addSimpleLog(context, user, {
+                activity: "Tender dates synced from project.",
+              }, tender.id, "tender", t);
+            }
+          }
+        }
+      }
+
+      await t.commit();
       return { updated: true };
     } catch (error) {
+      await t.rollback();
       context.logger.error(error);
       throw error;
     }

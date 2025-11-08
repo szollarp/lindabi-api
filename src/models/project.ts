@@ -57,6 +57,8 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public startDate?: Date | null;
 
+  public endDate?: Date | null;
+
   public netAmount!: number;
 
   public vatAmount!: number;
@@ -232,6 +234,11 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       defaultValue: null
     },
     startDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null
+    },
+    endDate: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null

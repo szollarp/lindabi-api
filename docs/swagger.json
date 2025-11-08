@@ -1396,6 +1396,11 @@
 						"format": "date-time",
 						"nullable": true
 					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
 					"notes": {
 						"type": "string",
 						"nullable": true
@@ -1690,6 +1695,11 @@
 						"$ref": "#/components/schemas/PROJECT_STATUS"
 					},
 					"startDate": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"endDate": {
 						"type": "string",
 						"format": "date-time",
 						"nullable": true
@@ -3947,6 +3957,10 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					},
 					"notes": {
 						"type": "string"
 					},
@@ -4147,6 +4161,10 @@
 						"format": "date-time"
 					},
 					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
 						"type": "string",
 						"format": "date-time"
 					},
@@ -6282,13 +6300,13 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
 					"endDate": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
 					},
 					"employeeId": {
 						"anyOf": [
@@ -6478,6 +6496,10 @@
 						"$ref": "#/components/schemas/PROJECT_STATUS"
 					},
 					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
 						"type": "string",
 						"format": "date-time"
 					},

@@ -54,6 +54,8 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public startDate?: Date | null;
 
+  public endDate?: Date | null;
+
   public notes!: string | null;
 
   public inquiry!: string | null;
@@ -219,6 +221,11 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
       defaultValue: null
     },
     startDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null
+    },
+    endDate: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null
