@@ -1,6 +1,7 @@
 import * as cron from "node-cron";
 import type { Context } from "../types";
 import { milestoneNotificationJob } from "../jobs/milestone-notification-job";
+import { AnalyticsUpdateJob } from "../jobs/analytics-update-job";
 
 export interface SchedulerService {
   start: (context: Context) => void;
@@ -40,6 +41,12 @@ export const schedulerService = (): SchedulerService => {
     milestoneJob.start();
 
     context.logger.info("Scheduled milestone notification job to run daily at 7:00 AM");
+
+    // Add Analytics Update Job
+    const analyticsJob = new AnalyticsUpdateJob(context);
+    analyticsJob.start();
+    context.logger.info("Analytics update job initialized and scheduled");
+
     isRunning = true;
   };
 

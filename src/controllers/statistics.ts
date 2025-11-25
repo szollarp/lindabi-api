@@ -4,7 +4,9 @@ import type {
   BasketValuesAnalytics,
   QuoteSuccessRateAnalytics,
   JobProfitabilityAnalytics,
-  QuoteDateAnalytics
+  QuoteDateAnalytics,
+  AllAnalytics,
+  TenderCountSummary
 } from "../services/statistics";
 
 @Route("statistics")
@@ -21,6 +23,32 @@ export class StatisticsController extends Controller {
   public get(@Request() request: ContextualRequest): Promise<{ userNum: number, tenderNum: number, invoiceNum: number }> {
     const { context } = request;
     return context.services.statistics.getOverview(context);
+  }
+
+  /**
+   * Retrieves all analytics data in a single request.
+   * @returns Combined analytics data including basket values, success rate, profitability, and date analytics
+   */
+  @Tags("Statistics")
+  @SuccessResponse("200", "OK")
+  @Get("all")
+  @Security("authentication", ["Tenant:List"])
+  public async getAllAnalytics(@Request() request: ContextualRequest): Promise<AllAnalytics> {
+    const { context, user } = request;
+    return context.services.statistics.getAllAnalytics(context, user.tenant);
+  }
+
+  /**
+   * Retrieves tender counts grouped by status.
+   * @returns Summary of tender counts by status
+   */
+  @Tags("Statistics")
+  @SuccessResponse("200", "OK")
+  @Get("tender-counts")
+  @Security("authentication", ["Tenant:List"])
+  public async getTenderCounts(@Request() request: ContextualRequest): Promise<TenderCountSummary> {
+    const { context, user } = request;
+    return context.services.statistics.getTenderCounts(context, user.tenant);
   }
 
   /**

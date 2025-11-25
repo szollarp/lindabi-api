@@ -5,7 +5,6 @@ import { Execution } from "../models/interfaces/execution";
 import { getRelatedExecutions, getRelatedProjectsByExecution } from "../helpers/execution";
 import { Project } from "../models/interfaces/project";
 import { EXECUTION_STATUS } from "../constants";
-import { checkUserDocuments } from "./document";
 
 export type CreateResponse = Promise<Partial<Execution> | { invalidEmployeeDocuments?: boolean, exists?: boolean, missingStatusReport?: boolean }>;
 
@@ -73,8 +72,9 @@ const getProjects = async (context: Context, employee: number, user: DecodedUser
 
 const create = async (context: Context, user: DecodedUser, body: Partial<Execution>): CreateResponse => {
   try {
-    const invalidEmployeeDocuments = await checkUserDocuments(context, user.tenant, body.employeeId!);
-    if (!!invalidEmployeeDocuments && invalidEmployeeDocuments.length > 0) {
+    const employeeDocs = await context.services.document.checkUserDocuments(context, user.tenant, body.employeeId!);
+    const invalidEmployeeDocuments = employeeDocs.filter(doc => doc.reason !== 'valid' && doc.reason !== 'skipped');
+    if (invalidEmployeeDocuments.length > 0) {
       return { invalidEmployeeDocuments: true };
     }
 

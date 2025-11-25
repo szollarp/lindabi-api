@@ -6081,6 +6081,68 @@
 			"QuoteDateAnalytics": {
 				"$ref": "#/components/schemas/QuoteDateAnalyticsData"
 			},
+			"AllAnalytics": {
+				"properties": {
+					"basketValues": {
+						"$ref": "#/components/schemas/BasketValuesAnalytics"
+					},
+					"successRate": {
+						"$ref": "#/components/schemas/QuoteSuccessRateAnalytics"
+					},
+					"profitability": {
+						"$ref": "#/components/schemas/JobProfitabilityAnalytics"
+					},
+					"dateAnalytics": {
+						"$ref": "#/components/schemas/QuoteDateAnalytics"
+					}
+				},
+				"required": [
+					"basketValues",
+					"successRate",
+					"profitability",
+					"dateAnalytics"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TenderCountSummary": {
+				"properties": {
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"byStatus": {
+						"items": {
+							"properties": {
+								"percentage": {
+									"type": "number",
+									"format": "double"
+								},
+								"count": {
+									"type": "number",
+									"format": "double"
+								},
+								"status": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"percentage",
+								"count",
+								"status"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"total",
+					"byStatus"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"FINANCIAL_SETTING_TYPE": {
 				"enum": [
 					"supervisor bonus",
@@ -13867,6 +13929,64 @@
 					}
 				},
 				"description": "Retrieves the statistics of the API. This method is used for monitoring\nand tracking the usage of the API.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/all": {
+			"get": {
+				"operationId": "GetAllAnalytics",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AllAnalytics"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves all analytics data in a single request.",
+				"tags": [
+					"Statistics"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant:List"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/statistics/tender-counts": {
+			"get": {
+				"operationId": "GetTenderCounts",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TenderCountSummary"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves tender counts grouped by status.",
 				"tags": [
 					"Statistics"
 				],

@@ -14,12 +14,32 @@ export type QuoteSuccessRateAnalytics = QuoteSuccessRateData;
 export type JobProfitabilityAnalytics = JobProfitabilityData;
 export type QuoteDateAnalytics = QuoteDateAnalyticsData;
 
+// Combined analytics type
+export interface AllAnalytics {
+  basketValues: BasketValuesAnalytics;
+  successRate: QuoteSuccessRateAnalytics;
+  profitability: JobProfitabilityAnalytics;
+  dateAnalytics: QuoteDateAnalytics;
+}
+
+// Tender count summary type
+export interface TenderCountSummary {
+  total: number;
+  byStatus: Array<{
+    status: string;
+    count: number;
+    percentage: number;
+  }>;
+}
+
 export interface StatisticsService {
   getOverview: (context: Context) => Promise<{ userNum: number, tenderNum: number, invoiceNum: number }>;
   getBasketValues: (context: Context, tenantId: number, forceRecalculate?: boolean) => Promise<BasketValuesAnalytics>;
   getQuoteSuccessRate: (context: Context, tenantId: number, forceRecalculate?: boolean) => Promise<QuoteSuccessRateAnalytics>;
   getJobProfitability: (context: Context, tenantId: number, forceRecalculate?: boolean) => Promise<JobProfitabilityAnalytics>;
   getQuoteDateAnalytics: (context: Context, tenantId: number, forceRecalculate?: boolean) => Promise<QuoteDateAnalytics>;
+  getAllAnalytics: (context: Context, tenantId: number, forceRecalculate?: boolean) => Promise<AllAnalytics>;
+  getTenderCounts: (context: Context, tenantId: number) => Promise<TenderCountSummary>;
   triggerAnalyticsUpdate: (context: Context, tenantId: number, userId: number) => Promise<void>;
 }
 
@@ -226,12 +246,73 @@ export const statisticsService = (): StatisticsService => {
     }
   }
 
+  const getAllAnalytics = async (context: Context, tenantId: number, forceRecalculate: boolean = false): Promise<AllAnalytics> => {
+    try {
+      // Fetch all analytics in parallel for better performance
+      const [basketValues, successRate, profitability, dateAnalytics] = await Promise.all([
+        getBasketValues(context, tenantId, forceRecalculate),
+        getQuoteSuccessRate(context, tenantId, forceRecalculate),
+        getJobProfitability(context, tenantId, forceRecalculate),
+        getQuoteDateAnalytics(context, tenantId, forceRecalculate)
+      ]);
+
+      return {
+        basketValues,
+        successRate,
+        profitability,
+        dateAnalytics
+      };
+    } catch (error) {
+      context.logger.error('Failed to get all analytics:', error);
+      throw error;
+    }
+  }
+
+  const getTenderCounts = async (context: Context, tenantId: number): Promise<TenderCountSummary> => {
+    try {
+      // Get all tenders for the tenant
+      const tenders = await context.models.Tender.findAll({
+        where: { tenantId },
+        attributes: ['status']
+      });
+
+      const total = tenders.length;
+
+      // Group by status
+      const statusCounts = new Map<string, number>();
+      tenders.forEach(tender => {
+        const count = statusCounts.get(tender.status) || 0;
+        statusCounts.set(tender.status, count + 1);
+      });
+
+      // Convert to array with percentages
+      const byStatus = Array.from(statusCounts.entries()).map(([status, count]) => ({
+        status,
+        count,
+        percentage: total > 0 ? Math.round((count / total) * 100 * 100) / 100 : 0
+      }));
+
+      // Sort by count descending
+      byStatus.sort((a, b) => b.count - a.count);
+
+      return {
+        total,
+        byStatus
+      };
+    } catch (error) {
+      context.logger.error('Failed to get tender counts:', error);
+      throw error;
+    }
+  }
+
   return {
     getOverview,
     getBasketValues,
     getQuoteSuccessRate,
     getJobProfitability,
     getQuoteDateAnalytics,
+    getAllAnalytics,
+    getTenderCounts,
     triggerAnalyticsUpdate
   }
 }
