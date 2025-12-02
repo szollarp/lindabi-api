@@ -66,6 +66,16 @@ export const itemMovementService = (): ItemMovementService => {
           { model: context.models.Item, as: 'item' },
           { model: context.models.User, as: 'employee' },
           {
+            model: context.models.User,
+            as: 'receiver',
+            required: false
+          },
+          {
+            model: context.models.Company,
+            as: 'supplier',
+            required: false
+          },
+          {
             model: context.models.Warehouse,
             as: 'sourceWarehouse',
             required: false
@@ -111,6 +121,8 @@ export const itemMovementService = (): ItemMovementService => {
         include: [
           { model: context.models.Item, as: 'item' },
           { model: context.models.User, as: 'employee' },
+          { model: context.models.User, as: 'receiver' },
+          { model: context.models.Company, as: 'supplier' },
           { model: context.models.Warehouse, as: 'sourceWarehouse' },
           { model: context.models.Project, as: 'sourceProject' },
           { model: context.models.Warehouse, as: 'targetWarehouse' },
@@ -141,6 +153,8 @@ export const itemMovementService = (): ItemMovementService => {
         itemId: item.itemId,
         quantity: item.quantity,
         employeeId: data.employeeId,
+        receiverId: data.receiverId || undefined,
+        supplierId: data.supplierId || undefined,
         source: data.source || undefined,
         sourceId: data.sourceId || undefined,
         target: data.target || undefined,
@@ -163,6 +177,8 @@ export const itemMovementService = (): ItemMovementService => {
         include: [
           { model: context.models.Item, as: 'item' },
           { model: context.models.User, as: 'employee' },
+          { model: context.models.User, as: 'receiver' },
+          { model: context.models.Company, as: 'supplier' },
           { model: context.models.Warehouse, as: 'sourceWarehouse' },
           { model: context.models.Project, as: 'sourceProject' },
           { model: context.models.Warehouse, as: 'targetWarehouse' },
@@ -253,6 +269,16 @@ export const itemMovementService = (): ItemMovementService => {
         include: [
           { model: context.models.Item, as: 'item' },
           { model: context.models.User, as: 'employee' },
+          {
+            model: context.models.User,
+            as: 'receiver',
+            required: false
+          },
+          {
+            model: context.models.Company,
+            as: 'supplier',
+            required: false
+          },
           {
             model: context.models.Warehouse,
             as: 'sourceWarehouse',

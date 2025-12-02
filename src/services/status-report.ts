@@ -64,19 +64,19 @@ const getProjects = async (context: Context, user: DecodedUser): Promise<Array<{
 
 const create = async (context: Context, user: DecodedUser, body: CreateStatusReportProperties): Promise<Partial<StatusReport> | { exists: boolean }> => {
   try {
-    const isExists = await context.models.StatusReport.findOne({
-      where: {
-        tenantId: user.tenant,
-        projectId: body.projectId,
-        dueDate: {
-          [Op.eq]: body.dueDate
-        }
-      }
-    });
+    // const isExists = await context.models.StatusReport.findOne({
+    //   where: {
+    //     tenantId: user.tenant,
+    //     projectId: body.projectId,
+    //     dueDate: {
+    //       [Op.eq]: body.dueDate
+    //     }
+    //   }
+    // });
 
-    if (isExists) {
-      return { exists: true };
-    }
+    // if (isExists) {
+    //   return { exists: true };
+    // }
 
     return await context.models.StatusReport.create({ ...body, createdBy: user.id, tenantId: user.tenant });
   } catch (error) {

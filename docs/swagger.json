@@ -5591,6 +5591,14 @@
 						"type": "number",
 						"format": "double"
 					},
+					"receiverId": {
+						"type": "number",
+						"format": "double"
+					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
 					"source": {
 						"type": "string",
 						"enum": [
@@ -5640,6 +5648,12 @@
 					},
 					"employee": {
 						"$ref": "#/components/schemas/User"
+					},
+					"receiver": {
+						"$ref": "#/components/schemas/User"
+					},
+					"supplier": {
+						"$ref": "#/components/schemas/Company"
 					},
 					"sourceWarehouse": {
 						"$ref": "#/components/schemas/Warehouse"
@@ -7911,6 +7925,14 @@
 						"type": "number",
 						"format": "double"
 					},
+					"receiverId": {
+						"type": "number",
+						"format": "double"
+					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
 					"source": {
 						"type": "string",
 						"enum": [
@@ -7947,7 +7969,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__": {
+			"Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-receiver-or-supplier-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__": {
 				"properties": {
 					"tenantId": {
 						"type": "number",
@@ -7973,7 +7995,15 @@
 						"type": "number",
 						"format": "double"
 					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
 					"itemId": {
+						"type": "number",
+						"format": "double"
+					},
+					"receiverId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -8004,7 +8034,7 @@
 				"description": "Make all properties in T optional"
 			},
 			"UpdateItemMovementProperties": {
-				"$ref": "#/components/schemas/Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__"
+				"$ref": "#/components/schemas/Partial_Omit_ItemMovement.id-or-createdOn-or-updatedOn-or-createdBy-or-item-or-employee-or-receiver-or-supplier-or-sourceWarehouse-or-sourceProject-or-targetWarehouse-or-targetProject__"
 			},
 			"Pick_Invoice.Exclude_keyofInvoice.id-or-createdOn-or-updatedOn-or-approvedBy-or-approvedOn__": {
 				"properties": {

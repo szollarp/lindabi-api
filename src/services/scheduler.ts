@@ -2,6 +2,7 @@ import * as cron from "node-cron";
 import type { Context } from "../types";
 import { milestoneNotificationJob } from "../jobs/milestone-notification-job";
 import { AnalyticsUpdateJob } from "../jobs/analytics-update-job";
+import { employeeDocumentExpirationJob } from "../jobs/employee-document-expiration-job";
 
 export interface SchedulerService {
   start: (context: Context) => void;
@@ -46,6 +47,27 @@ export const schedulerService = (): SchedulerService => {
     const analyticsJob = new AnalyticsUpdateJob(context);
     analyticsJob.start();
     context.logger.info("Analytics update job initialized and scheduled");
+
+    // Add Employee Document Expiration Job
+    const documentExpirationJob = cron.schedule(
+      "0 8 * * *",
+      async () => {
+        context.logger.info("Running scheduled employee document expiration check job");
+        try {
+          const job = employeeDocumentExpirationJob();
+          await job.checkExpiringDocuments(context);
+        } catch (error) {
+          context.logger.error("Error running employee document expiration check job:", error);
+        }
+      },
+      {
+        timezone: "Europe/Budapest"
+      }
+    );
+
+    jobs.push(documentExpirationJob);
+    documentExpirationJob.start();
+    context.logger.info("Scheduled employee document expiration check job to run daily at 8:00 AM");
 
     isRunning = true;
   };

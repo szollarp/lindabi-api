@@ -8,6 +8,7 @@ import { ItemModel } from "./item";
 import { Item } from "./interfaces/item";
 import { Tenant } from "./interfaces/tenant";
 import { User } from "./interfaces/user";
+import { Company } from "./interfaces/company";
 
 export class ItemMovementModel extends Model<ItemMovement, CreateItemMovementProperties> implements ItemMovement {
   public id!: number;
@@ -19,6 +20,10 @@ export class ItemMovementModel extends Model<ItemMovement, CreateItemMovementPro
   public quantity!: number;
 
   public employeeId?: ForeignKey<User["id"]>;
+
+  public receiverId?: ForeignKey<User["id"]>;
+
+  public supplierId?: ForeignKey<Company["id"]>;
 
   public source?: 'warehouse' | 'project';
 
@@ -39,6 +44,10 @@ export class ItemMovementModel extends Model<ItemMovement, CreateItemMovementPro
   public readonly targetWarehouse?: NonAttribute<Warehouse>;
 
   public readonly targetProject?: NonAttribute<Project>;
+
+  public readonly supplier?: NonAttribute<Company>;
+
+  public readonly receiver?: NonAttribute<User>;
 
   public readonly createdOn!: Date;
 
@@ -77,6 +86,22 @@ export const ItemMovementFactory = (sequelize: Sequelize) => {
     employeeId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+    supplierId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'companies',
+        key: 'id',
+      },
+    },
+    receiverId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
     },
     source: {
       type: DataTypes.ENUM('warehouse', 'project'),
@@ -157,6 +182,16 @@ export const ItemMovementFactory = (sequelize: Sequelize) => {
     ItemMovementModel.belongsTo(models.User, {
       as: 'employee',
       foreignKey: 'employee_id'
+    });
+
+    ItemMovementModel.belongsTo(models.User, {
+      as: 'receiver',
+      foreignKey: 'receiver_id'
+    });
+
+    ItemMovementModel.belongsTo(models.Company, {
+      as: 'supplier',
+      foreignKey: 'supplier_id'
     });
   };
 
