@@ -1,4 +1,5 @@
 import type { Company } from "./company";
+import type { User } from "./user";
 
 export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | "invoice" | "task" | null;
 
@@ -37,6 +38,8 @@ export interface Document {
   //
   createdOn?: Date
   updatedOn?: Date | null
+  //
+  user?: User;
 };
 
 export type CreateDocumentProperties = Omit<Document, "id" | "createdOn" | "updatedOn">;

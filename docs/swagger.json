@@ -277,6 +277,9 @@
 						"type": "string",
 						"format": "date-time",
 						"nullable": true
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					}
 				},
 				"required": [
@@ -6945,6 +6948,9 @@
 					"updatedOn": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					}
 				},
 				"type": "object",

@@ -3,6 +3,7 @@ import { CreateDocumentProperties, Document, DocumentOwnerType, DocumentType } f
 import { AzureStorageService } from "../helpers/azure-storage";
 import { isImage } from "../helpers/document";
 import type { Models } from ".";
+import { User } from "./interfaces/user";
 
 export class DocumentModel extends Model<Document, CreateDocumentProperties> implements Document {
   public id!: number;
@@ -21,11 +22,13 @@ export class DocumentModel extends Model<Document, CreateDocumentProperties> imp
 
   public ownerType?: DocumentOwnerType;
 
-  public properties?: Record<string, unknown> | {};
+  public properties?: Record<string, unknown>;
 
   public companyId?: number | string | null;
 
   public approved?: boolean;
+
+  public readonly user?: User;
 
   public readonly stored!: {
     original: string;
