@@ -29,3 +29,24 @@ export interface EmployeeSchedule {
 export type CreateEmployeeScheduleProperties = Omit<EmployeeSchedule, "id" | "createdOn" | "updatedOn">;
 
 export type CreateHolidayScheduleProperties = Pick<EmployeeSchedule, "startDate" | "endDate" | "employeeId">;
+
+export interface Workspace {
+  id: number;
+  type: EmployeeScheduleType;
+  startDate: Date;
+  endDate: Date;
+  project?: {
+    id: number;
+    number: string;
+    name?: string | null;
+    shortName?: string | null;
+    location?: {
+      id: number;
+      city: string;
+      address: string;
+      zipCode: string;
+      country: string;
+      region?: string | null;
+    } | null;
+  } | null;
+}

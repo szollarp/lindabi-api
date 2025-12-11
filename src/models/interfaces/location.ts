@@ -12,6 +12,8 @@ export interface Location {
   city: string
   address: string
   zipCode: string
+  latitude?: number | null
+  longitude?: number | null
   status: LOCATION_STATUS.ACTIVE | LOCATION_STATUS.INACTIVE
   notes?: string | null
   //

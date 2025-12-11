@@ -25,6 +25,10 @@ export class LocationModel extends Model<Location, CreateLocationProperties> imp
 
   public address!: string;
 
+  public latitude!: number | null;
+
+  public longitude!: number | null;
+
   public notes!: string | null;
 
   declare tenders: NonAttribute<TenderModel[]>;
@@ -88,6 +92,16 @@ export const LocationFactory = (sequelize: Sequelize): typeof LocationModel => {
       address: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      latitude: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+        defaultValue: null
+      },
+      longitude: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+        defaultValue: null
       },
       notes: {
         type: DataTypes.STRING,

@@ -7,6 +7,10 @@ export interface LoginRequest {
   * @minLength 1 Please provide a password.
   */
   password: string
+  /**
+  * @isBoolean Please provide a valid boolean value.
+  */
+  isMobile: boolean
 };
 
 export interface Login2FaRequest {

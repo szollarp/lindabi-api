@@ -1254,6 +1254,16 @@
 					"zipCode": {
 						"type": "string"
 					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
 					"status": {
 						"anyOf": [
 							{
@@ -2826,6 +2836,124 @@
 			},
 			"CreateWorkTypeProperties": {
 				"$ref": "#/components/schemas/Omit_WorkType.id-or-createdAt-or-updatedAt_"
+			},
+			"WorkSiteEventType": {
+				"type": "string",
+				"enum": [
+					"first_entry",
+					"entry",
+					"exit",
+					"work_start_at_site",
+					"gps_signal_lost",
+					"gps_signal_recovered",
+					"app_background",
+					"app_foreground",
+					"app_init"
+				]
+			},
+			"WorkSiteEvent": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double"
+					},
+					"workSiteId": {
+						"type": "string",
+						"nullable": true
+					},
+					"workSiteName": {
+						"type": "string",
+						"nullable": true
+					},
+					"eventType": {
+						"$ref": "#/components/schemas/WorkSiteEventType"
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"occurredAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"tenantId",
+					"userId",
+					"eventType",
+					"occurredAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateWorkSiteEventRequest": {
+				"properties": {
+					"workSiteId": {
+						"type": "string",
+						"nullable": true
+					},
+					"workSiteName": {
+						"type": "string",
+						"nullable": true
+					},
+					"eventType": {
+						"$ref": "#/components/schemas/WorkSiteEventType"
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"occurredAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"eventType",
+					"occurredAt"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"Partial_any_": {
 				"properties": {},
@@ -6449,6 +6577,91 @@
 			"CreateHolidayScheduleProperties": {
 				"$ref": "#/components/schemas/Pick_EmployeeSchedule.startDate-or-endDate-or-employeeId_"
 			},
+			"Workspace": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"$ref": "#/components/schemas/EmployeeScheduleType"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"project": {
+						"properties": {
+							"location": {
+								"properties": {
+									"region": {
+										"type": "string",
+										"nullable": true
+									},
+									"country": {
+										"type": "string"
+									},
+									"zipCode": {
+										"type": "string"
+									},
+									"address": {
+										"type": "string"
+									},
+									"city": {
+										"type": "string"
+									},
+									"id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"country",
+									"zipCode",
+									"address",
+									"city",
+									"id"
+								],
+								"type": "object",
+								"nullable": true
+							},
+							"shortName": {
+								"type": "string",
+								"nullable": true
+							},
+							"name": {
+								"type": "string",
+								"nullable": true
+							},
+							"number": {
+								"type": "string"
+							},
+							"id": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"number",
+							"id"
+						],
+						"type": "object",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"type",
+					"startDate",
+					"endDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Partial_Role_": {
 				"properties": {
 					"id": {
@@ -7690,6 +7903,14 @@
 					"zipCode": {
 						"type": "string"
 					},
+					"latitude": {
+						"type": "number",
+						"format": "double"
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double"
+					},
 					"status": {
 						"$ref": "#/components/schemas/LOCATION_STATUS"
 					},
@@ -7762,6 +7983,14 @@
 					},
 					"taxNumber": {
 						"type": "string"
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double"
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -9090,11 +9319,15 @@
 					"password": {
 						"type": "string",
 						"minLength": 1
+					},
+					"isMobile": {
+						"type": "boolean"
 					}
 				},
 				"required": [
 					"email",
-					"password"
+					"password",
+					"isMobile"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -9529,6 +9762,94 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/work-site-events": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/WorkSiteEvent"
+								}
+							}
+						}
+					}
+				},
+				"description": "Rögzíti a munkaterületre történő belépés/kilépés eseményét.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"WorkSiteEvent"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWorkSiteEventRequest"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetEventsByDate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/WorkSiteEvent"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lekéri a felhasználó munkaterület eseményeit egy adott napra.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"WorkSiteEvent"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- A dátum ISO string formátumban (pl. \"2025-12-11\") vagy Date objektum",
+						"in": "query",
+						"name": "date",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "- A munkaterület ID-ja (project ID), opcionális",
+						"in": "query",
+						"name": "workSiteId",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -14660,6 +14981,40 @@
 						}
 					}
 				]
+			}
+		},
+		"/schedules/workspace/today": {
+			"get": {
+				"operationId": "GetTodayWorkspace",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Workspace"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves today's workspace (work schedule) for the authenticated user.\nThis endpoint is designed for mobile applications and returns all necessary data\nincluding project details and location information.",
+				"tags": [
+					"Schedule"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/roles": {

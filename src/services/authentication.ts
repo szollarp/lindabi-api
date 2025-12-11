@@ -3,7 +3,7 @@ import { createRandomToken } from "../helpers/token";
 import { verifyOtpToken } from "../helpers/two-factor";
 import { hashPassword } from "../helpers/password";
 import * as jwt from "../helpers/jwt";
-import { USER_STATUS } from "../constants";
+import { BANNED_MOBILE_ROLES, USER_STATUS } from "../constants";
 import { nextDay } from "../helpers/date";
 import type {
   ForgottenPasswordRequest,
@@ -13,6 +13,7 @@ import type {
   ResetPasswordResponse, VerifyAccountRequest, VerifyAccountResponse
 } from "../models/interfaces/authentication";
 import type { AuthConfig, Context, DecodedUser } from "../types";
+import { Op } from "sequelize";
 
 export interface AuthenticationService {
   login: (context: Context, body: LoginRequest, deviceId?: string) => Promise<LoginResponse>
@@ -38,7 +39,10 @@ export const authenticationService = (): AuthenticationService => {
         attributes: ["id", "password", "salt", "enableTwoFactor", "name"],
         where: {
           email: body.email.toLowerCase(),
-          status: USER_STATUS.ACTIVE
+          status: USER_STATUS.ACTIVE,
+          roleId: {
+            [Op.notIn]: body.isMobile ? BANNED_MOBILE_ROLES : []
+          }
         },
         include: [{
           model: context.models.Role,

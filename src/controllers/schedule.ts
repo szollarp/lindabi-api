@@ -2,7 +2,7 @@ import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Query
 import type { User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { USER_TYPE } from "../constants";
-import { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule } from "../models/interfaces/employee-schedule";
+import { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule, Workspace } from "../models/interfaces/employee-schedule";
 
 @Route("schedules")
 export class ScheduleController extends Controller {
@@ -115,5 +115,21 @@ export class ScheduleController extends Controller {
     const { context, user } = request;
     await context.services.user.update(context, user.tenant, id, { inSchedule: false }, user.id);
     return await context.services.employeeSchedule.removeByEmployee(context, id);
+  }
+
+  /**
+   * Retrieves today's workspace (work schedule) for the authenticated user.
+   * This endpoint is designed for mobile applications and returns all necessary data
+   * including project details and location information.
+   * 
+   * @returns The workspace object for today's work schedule, or null if no work is scheduled.
+   */
+  @Tags("Schedule")
+  @SuccessResponse("200", "OK")
+  @Get("/workspace/today")
+  @Security("authentication", ["Tenant"])
+  public async getTodayWorkspace(@Request() request: ContextualRequest): Promise<Workspace | null> {
+    const { context, user } = request;
+    return await context.services.employeeSchedule.getTodayWorkspace(context, user);
   }
 };

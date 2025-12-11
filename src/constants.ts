@@ -256,3 +256,5 @@ export enum NOTIFICATION_PRIORITY {
   HIGH = "high",
   URGENT = "urgent"
 }
+
+export const BANNED_MOBILE_ROLES = [1, 2, 7, 8, 9];
