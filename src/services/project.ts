@@ -176,7 +176,7 @@ export const projectService = (): ProjectService => {
       await context.services.journey.addDiffLogs(context, user, {
         activity: `The project have been successfully updated.`,
         existed: project,
-        updated: data
+        updated: data as any
       }, project.id, "project", t);
 
       await project.update({ ...data, updatedBy: user.id }, { transaction: t });

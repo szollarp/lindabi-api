@@ -44,7 +44,8 @@
 					"completion",
 					"inspection",
 					"contract",
-					"attachment"
+					"attachment",
+					"note_image"
 				]
 			},
 			"DocumentOwnerType": {
@@ -61,6 +62,7 @@
 					"execution",
 					"invoice",
 					"task",
+					"work_site_event",
 					null
 				],
 				"nullable": true
@@ -1856,6 +1858,12 @@
 						},
 						"type": "array"
 					},
+					"workSiteEvents": {
+						"items": {
+							"$ref": "#/components/schemas/WorkSiteEvent"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -2087,6 +2095,135 @@
 					"dueDate",
 					"status",
 					"projectId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WorkSiteEventType": {
+				"type": "string",
+				"enum": [
+					"first_entry",
+					"entry",
+					"exit",
+					"work_start_at_site",
+					"gps_signal_lost",
+					"gps_signal_recovered",
+					"app_background",
+					"app_foreground",
+					"app_init",
+					"note"
+				]
+			},
+			"Record_string.any_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"WorkSiteEvent": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"project": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Project"
+							}
+						],
+						"nullable": true
+					},
+					"eventType": {
+						"$ref": "#/components/schemas/WorkSiteEventType"
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"metadata": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.any_"
+							}
+						],
+						"nullable": true
+					},
+					"occurredAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"appVersion": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"deleted": {
+						"type": "boolean"
+					},
+					"deletedAt": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"documentIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"tenantId",
+					"userId",
+					"eventType",
+					"occurredAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2837,41 +2974,11 @@
 			"CreateWorkTypeProperties": {
 				"$ref": "#/components/schemas/Omit_WorkType.id-or-createdAt-or-updatedAt_"
 			},
-			"WorkSiteEventType": {
-				"type": "string",
-				"enum": [
-					"first_entry",
-					"entry",
-					"exit",
-					"work_start_at_site",
-					"gps_signal_lost",
-					"gps_signal_recovered",
-					"app_background",
-					"app_foreground",
-					"app_init"
-				]
-			},
-			"WorkSiteEvent": {
+			"CreateWorkSiteEventRequest": {
 				"properties": {
-					"id": {
+					"projectId": {
 						"type": "number",
 						"format": "double"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"userId": {
-						"type": "number",
-						"format": "double"
-					},
-					"workSiteId": {
-						"type": "string",
-						"nullable": true
-					},
-					"workSiteName": {
-						"type": "string",
-						"nullable": true
 					},
 					"eventType": {
 						"$ref": "#/components/schemas/WorkSiteEventType"
@@ -2890,67 +2997,74 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"createdOn": {
+					"appVersion": {
 						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
 						"nullable": true
 					},
-					"createdBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
+					"metadata": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.any_"
+							}
+						],
 						"nullable": true
 					}
 				},
 				"required": [
-					"id",
-					"tenantId",
-					"userId",
+					"projectId",
 					"eventType",
 					"occurredAt"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateWorkSiteEventRequest": {
+			"DailyWorkStatus": {
 				"properties": {
-					"workSiteId": {
+					"date": {
+						"type": "string"
+					},
+					"status": {
 						"type": "string",
-						"nullable": true
+						"enum": [
+							"recorded",
+							"missing",
+							"none"
+						]
 					},
-					"workSiteName": {
-						"type": "string",
-						"nullable": true
+					"hasWorkLogs": {
+						"type": "boolean"
 					},
-					"eventType": {
-						"$ref": "#/components/schemas/WorkSiteEventType"
-					},
-					"latitude": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"longitude": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"occurredAt": {
-						"type": "string",
-						"format": "date-time"
+					"projectNames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"eventType",
-					"occurredAt"
+					"date",
+					"status",
+					"hasWorkLogs",
+					"projectNames"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MonthlyWorkStatus": {
+				"properties": {
+					"month": {
+						"type": "string"
+					},
+					"days": {
+						"items": {
+							"$ref": "#/components/schemas/DailyWorkStatus"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"month",
+					"days"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -6917,6 +7031,12 @@
 						},
 						"type": "array"
 					},
+					"workSiteEvents": {
+						"items": {
+							"$ref": "#/components/schemas/WorkSiteEvent"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -8285,6 +8405,9 @@
 					"milestone": {
 						"$ref": "#/components/schemas/Milestone"
 					},
+					"note": {
+						"type": "string"
+					},
 					"tenantId": {
 						"type": "number",
 						"format": "double"
@@ -8340,9 +8463,6 @@
 					},
 					"paymentType": {
 						"$ref": "#/components/schemas/INVOICE_PAYMENT_TYPE"
-					},
-					"note": {
-						"type": "string"
 					},
 					"completionDate": {
 						"type": "string",
@@ -9767,6 +9887,39 @@
 				]
 			}
 		},
+		"/work-site-events/{eventId}": {
+			"delete": {
+				"operationId": "DeleteEvent",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"description": "Töröl egy munkaterület eseményt.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"WorkSiteEvent"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- A törlendő esemény ID-ja",
+						"in": "path",
+						"name": "eventId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/work-site-events": {
 			"post": {
 				"operationId": "CreateEvent",
@@ -9835,6 +9988,15 @@
 				],
 				"parameters": [
 					{
+						"in": "query",
+						"name": "projectId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
 						"description": "- A dátum ISO string formátumban (pl. \"2025-12-11\") vagy Date objektum",
 						"in": "query",
 						"name": "date",
@@ -9842,17 +10004,114 @@
 						"schema": {
 							"type": "string"
 						}
-					},
+					}
+				]
+			}
+		},
+		"/work-site-events/monthly": {
+			"get": {
+				"operationId": "GetMonthlyEvents",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MonthlyWorkStatus"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lekéri a felhasználó havi munkastátuszait (melyik napon volt munkavégzés, melyiken nem).\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"WorkSiteEvent"
+				],
+				"security": [
 					{
-						"description": "- A munkaterület ID-ja (project ID), opcionális",
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- A hónap egy napja vagy hónap kezdete (pl. \"2025-12-01\")",
 						"in": "query",
-						"name": "workSiteId",
+						"name": "date",
 						"required": false,
 						"schema": {
 							"type": "string"
 						}
 					}
 				]
+			}
+		},
+		"/work-site-events/{eventId}/documents": {
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Dokumentumok feltöltése egy munkaterület eseményhez.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"WorkSiteEvent"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "eventId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/website/tender": {

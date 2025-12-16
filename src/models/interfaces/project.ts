@@ -8,6 +8,7 @@ import type { Tenant } from "./tenant"
 import type { Tender } from "./tender"
 import type { Milestone } from "./milestone"
 import type { User } from "./user"
+import type { WorkSiteEvent } from "./work-site-event"
 
 export interface Project {
   id: number
@@ -64,6 +65,8 @@ export interface Project {
   //
   milestoneIds?: Milestone["id"][] | null
   milestones?: Milestone[]
+  //
+  workSiteEvents?: WorkSiteEvent[]
   //
   createdOn?: Date
   updatedOn?: Date | null

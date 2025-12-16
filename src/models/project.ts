@@ -29,6 +29,7 @@ import { ProjectCommentModel } from "./project-comment";
 import { ProjectComment } from "./interfaces/project-comment";
 import { getNetAmount, getVatAmount } from "../helpers/project";
 import { TaskModel } from "./task";
+import { WorkSiteEventModel } from "./work-site-event";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -457,6 +458,11 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
     ProjectModel.hasMany(models.Task, {
       foreignKey: "projectId",
       as: "tasks",
+    });
+
+    ProjectModel.hasMany(models.WorkSiteEvent, {
+      foreignKey: "projectId",
+      as: "workSiteEvents",
     });
   };
 
