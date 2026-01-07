@@ -14,18 +14,17 @@ import {
   UploadedFiles
 } from "tsoa";
 import type { ContextualRequest } from "../types";
-import type { WorkSiteEvent, WorkSiteEventType, MonthlyWorkStatus } from "../models/interfaces/work-site-event";
+import type { TrackingEvent, TrackingEventType, MonthlyWorkStatus } from "../models/interfaces/tracking-event";
 import type { DocumentType } from "../models/interfaces/document";
+import { Workspace } from "../models/interfaces/employee-schedule";
 
 /**
  * Work site event types
  */
-export enum WorkSiteEventTypeEnum {
-  FIRST_ENTRY = "first_entry",
+export enum TrackingEventTypeEnum {
   ENTRY = "entry",
   EXIT = "exit",
   NOTE = "note",
-  WORK_START_AT_SITE = "work_start_at_site",
   GPS_SIGNAL_LOST = "gps_signal_lost",
   GPS_SIGNAL_RECOVERED = "gps_signal_recovered",
   APP_BACKGROUND = "app_background",
@@ -33,12 +32,9 @@ export enum WorkSiteEventTypeEnum {
   APP_INIT = "app_init"
 }
 
-export interface CreateWorkSiteEventRequest {
-  projectId: number;
-  /**
-   * @isEnum WorkSiteEventTypeEnum
-   */
-  eventType: WorkSiteEventType;
+export interface CreateTrackingEventRequest {
+  projectId?: number | null;
+  eventType: TrackingEventType;
   latitude?: number | null;
   longitude?: number | null;
   occurredAt: Date;
@@ -46,15 +42,31 @@ export interface CreateWorkSiteEventRequest {
   metadata?: Record<string, any> | null;
 }
 
-@Route("work-site-events")
-export class WorkSiteEventController extends Controller {
+@Route("trackings")
+export class TrackingEventController extends Controller {
+  /**
+   * Retrieves today's workspace (work schedule) for the authenticated user.
+   * This endpoint is designed for mobile applications and returns all necessary data
+   * including project details and location information.
+   * 
+   * @returns The workspace object for today's work schedule, or null if no work is scheduled.
+   */
+  @Tags("Tracking")
+  @SuccessResponse("200", "OK")
+  @Get("today")
+  @Security("authentication", ["Tenant"])
+  public async getTodayWorkspace(@Request() request: ContextualRequest): Promise<Workspace[]> {
+    const { context, user } = request;
+    return await context.services.employeeSchedule.getTodayWorkspace(context, user);
+  }
+
   /**
    * Töröl egy munkaterület eseményt.
    * Csak bejelentkezett (Tenant) felhasználó hívhatja.
    * 
    * @param eventId - A törlendő esemény ID-ja
    */
-  @Tags("WorkSiteEvent")
+  @Tags("Tracking")
   @SuccessResponse("204", "No Content")
   @Delete("/{eventId}")
   @Security("authentication", ["Tenant"])
@@ -63,23 +75,23 @@ export class WorkSiteEventController extends Controller {
     eventId: number
   ): Promise<void> {
     const { context, user } = request;
-    await context.services.workSiteEvent.deleteEvent(context, user.tenant, user.id, eventId);
+    await context.services.trackingEvent.deleteEvent(context, user.tenant, user.id, eventId);
   }
 
   /**
    * Rögzíti a munkaterületre történő belépés/kilépés eseményét.
    * Csak bejelentkezett (Tenant) felhasználó hívhatja.
    */
-  @Tags("WorkSiteEvent")
+  @Tags("Tracking")
   @SuccessResponse("200", "OK")
   @Post("/")
   @Security("authentication", ["Tenant"])
   public async createEvent(
     @Request() request: ContextualRequest,
-    @Body() body: CreateWorkSiteEventRequest
-  ): Promise<WorkSiteEvent> {
+    @Body() body: CreateTrackingEventRequest
+  ): Promise<TrackingEvent> {
     const { context, user } = request;
-    return await context.services.workSiteEvent.createEvent(context, user.tenant, user.id, body);
+    return await context.services.trackingEvent.createEvent(context, user.tenant, user.id, body);
   }
 
   /**
@@ -89,7 +101,7 @@ export class WorkSiteEventController extends Controller {
    * @param date - A hónap egy napja vagy hónap kezdete (pl. "2025-12-01")
    * @returns Havi statisztika
    */
-  @Tags("WorkSiteEvent")
+  @Tags("Tracking")
   @SuccessResponse("200", "OK")
   @Get("/monthly")
   @Security("authentication", ["Tenant"])
@@ -99,7 +111,7 @@ export class WorkSiteEventController extends Controller {
   ): Promise<MonthlyWorkStatus> {
     const { context, user } = request;
     const targetDate = date ? new Date(date) : new Date();
-    return await context.services.workSiteEvent.getMonthlyWorkStatus(context, user.tenant, user.id, targetDate);
+    return await context.services.trackingEvent.getMonthlyWorkStatus(context, user.tenant, user.id, targetDate);
   }
 
   /**
@@ -107,10 +119,10 @@ export class WorkSiteEventController extends Controller {
    * Csak bejelentkezett (Tenant) felhasználó hívhatja.
    * 
    * @param date - A dátum ISO string formátumban (pl. "2025-12-11") vagy Date objektum
-   * @param workSiteId - A munkaterület ID-ja (project ID), opcionális
+   * @param TrackingId - A munkaterület ID-ja (project ID), opcionális
    * @returns A napra vonatkozó munkaterület események listája
    */
-  @Tags("WorkSiteEvent")
+  @Tags("Tracking")
   @SuccessResponse("200", "OK")
   @Get("/")
   @Security("authentication", ["Tenant"])
@@ -118,17 +130,17 @@ export class WorkSiteEventController extends Controller {
     @Request() request: ContextualRequest,
     @Query() projectId?: number,
     @Query() date?: string
-  ): Promise<WorkSiteEvent[]> {
+  ): Promise<TrackingEvent[]> {
     const { context, user } = request;
     const targetDate = date ? new Date(date) : new Date();
-    return await context.services.workSiteEvent.getEventsByDate(context, user.tenant, user.id, targetDate, projectId);
+    return await context.services.trackingEvent.getEventsByDate(context, user.tenant, user.id, targetDate, projectId);
   }
 
   /**
    * Dokumentumok feltöltése egy munkaterület eseményhez.
    * Csak bejelentkezett (Tenant) felhasználó hívhatja.
    */
-  @Tags("WorkSiteEvent")
+  @Tags("Tracking")
   @SuccessResponse("200", "OK")
   @Put("/{eventId}/documents")
   @Security("authentication", ["Tenant"])
@@ -143,6 +155,6 @@ export class WorkSiteEventController extends Controller {
     // We might need to update the DocumentModel associations if not already supported,
     // but based on typical patterns in this codebase, we can try using "work_site_event" or similar.
     // Looking at other controllers, they use strings like "user", "tender", etc.
-    return await context.services.document.upload(context, user, eventId, "work_site_event", type, files, {}, false);
+    return await context.services.document.upload(context, user, eventId, "tracking_event", type, files, {}, false);
   }
 }

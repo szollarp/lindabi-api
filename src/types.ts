@@ -45,4 +45,5 @@ export interface AuthConfig {
   authToken: { key: string, expiresIn: StringValue }
   refreshToken: { key: string, expiresIn: StringValue }
   verifyToken: { key: string, expiresIn: StringValue }
+  refreshTokenRotation: { enabled: boolean, expirationDays: number }
 };

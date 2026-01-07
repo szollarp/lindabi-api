@@ -16,8 +16,8 @@ import type { AuthConfig, Context, DecodedUser } from "../types";
 import { Op } from "sequelize";
 
 export interface AuthenticationService {
-  login: (context: Context, body: LoginRequest, deviceId?: string) => Promise<LoginResponse>
-  loginTwoFactor: (context: Context, body: Login2FaRequest, deviceId?: string) => Promise<LoginResponse>
+  login: (context: Context, body: LoginRequest, deviceId?: string, headers?: Record<string, string>) => Promise<LoginResponse>
+  loginTwoFactor: (context: Context, body: Login2FaRequest, deviceId?: string, headers?: Record<string, string>) => Promise<LoginResponse>
   logout: (context: Context, cookies: Record<string, string>) => Promise<LogoutResponse>
   verifyAccount: (context: Context, body: VerifyAccountRequest, v: string) => Promise<VerifyAccountResponse>
   refreshToken: (context: Context, cookies: Record<string, string>, user: DecodedUser) => Promise<RefreshTokenResponse>
@@ -26,7 +26,21 @@ export interface AuthenticationService {
 }
 
 export const authenticationService = (): AuthenticationService => {
-  const login = async (context: Context, body: LoginRequest, deviceId?: string): Promise<LoginResponse> => {
+  /**
+   * Extract device metadata from request headers
+   */
+  const extractDeviceMetadata = (headers: Record<string, string>, req?: any) => {
+    return {
+      platform: headers["x-device-platform"] || null,
+      osVersion: headers["x-device-os-version"] || null,
+      appVersion: headers["x-app-version"] || null,
+      deviceModel: headers["x-device-model"] || null,
+      ipAddress: headers["x-forwarded-for"] || headers["x-real-ip"] || (req?.ip) || null,
+      lastActivity: new Date()
+    };
+  };
+
+  const login = async (context: Context, body: LoginRequest, deviceId?: string, headers?: Record<string, string>): Promise<LoginResponse> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -71,14 +85,31 @@ export const authenticationService = (): AuthenticationService => {
           name: user.name
         });
 
+        const authConfig: AuthConfig = context.config.get("auth");
+        const expiresAt = authConfig.refreshTokenRotation.enabled
+          ? new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000)
+          : null;
+
+        // Extract device metadata from headers
+        const deviceMetadata = headers ? extractDeviceMetadata(headers) : {};
+
         const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
           where: { userId: user.id, deviceId },
-          defaults: { token: jwtTokens.refreshToken, deviceId },
+          defaults: {
+            token: jwtTokens.refreshToken,
+            deviceId,
+            expiresAt,
+            ...deviceMetadata
+          },
           transaction: t
         });
 
         if (!created) {
-          await refreshToken.update({ token: jwtTokens.refreshToken }, { transaction: t });
+          await refreshToken.update({
+            token: jwtTokens.refreshToken,
+            expiresAt,
+            ...deviceMetadata
+          }, { transaction: t });
         }
 
         await user.update({ lastLoggedIn: new Date() }, { transaction: t });
@@ -107,7 +138,7 @@ export const authenticationService = (): AuthenticationService => {
     }
   };
 
-  const loginTwoFactor = async (context: Context, body: Login2FaRequest, deviceId?: string): Promise<LoginResponse> => {
+  const loginTwoFactor = async (context: Context, body: Login2FaRequest, deviceId?: string, headers?: Record<string, string>): Promise<LoginResponse> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -162,14 +193,31 @@ export const authenticationService = (): AuthenticationService => {
         name: user.name
       });
 
+      const authConfig: AuthConfig = context.config.get("auth");
+      const expiresAt = authConfig.refreshTokenRotation.enabled
+        ? new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000)
+        : null;
+
+      // Extract device metadata from headers
+      const deviceMetadata = headers ? extractDeviceMetadata(headers) : {};
+
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
         where: { userId: user.id, deviceId },
-        defaults: { token: jwtTokens.refreshToken, deviceId },
+        defaults: {
+          token: jwtTokens.refreshToken,
+          deviceId,
+          expiresAt,
+          ...deviceMetadata
+        },
         transaction: t
       });
 
       if (!created) {
-        await refreshToken.update({ token: jwtTokens.refreshToken, deviceId }, { transaction: t });
+        await refreshToken.update({
+          token: jwtTokens.refreshToken,
+          deviceId, expiresAt,
+          ...deviceMetadata
+        }, { transaction: t });
       }
 
       await context.models.User.update({
@@ -234,14 +282,16 @@ export const authenticationService = (): AuthenticationService => {
   const refreshToken = async (context: Context, headers: Record<string, string>, user: DecodedUser): Promise<RefreshTokenResponse> => {
     try {
       const headerToken = headers["x-refresh-token"];
+      const deviceId = headers["x-session-id"];
       const authConfig: AuthConfig = context.config.get("auth");
-      if (!jwt.verify(headerToken, authConfig.refreshToken.key)) {
+
+      if (!jwt.verify(headerToken, authConfig.refreshToken.key, 'lindabi-mobile')) {
         console.error("Refresh token verification failed", { headerToken });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
-      const refreshToken = await context.models.RefreshToken.findOne({
-        attributes: ["token", "id"],
+      const refreshTokenRecord = await context.models.RefreshToken.findOne({
+        attributes: ["token", "id", "expiresAt", "deviceId"],
         where: { token: headerToken },
         include: [{
           model: context.models.User,
@@ -251,13 +301,47 @@ export const authenticationService = (): AuthenticationService => {
         }]
       });
 
-      if (!refreshToken || !refreshToken.user) {
-        console.error("Refresh token not found or user not associated", { headerToken, refreshToken });
+      if (!refreshTokenRecord || !refreshTokenRecord.user) {
+        console.error("Refresh token not found or user not associated", { headerToken, refreshTokenRecord });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
-      const { accessToken, refreshToken: newRefreshToken } = await jwt.getJWTTokens(context, refreshToken.user);
-      await refreshToken.update({ token: newRefreshToken });
+      // Check token expiration if feature is enabled and expiresAt is set
+      if (authConfig.refreshTokenRotation.enabled && refreshTokenRecord.expiresAt) {
+        if (new Date() > new Date(refreshTokenRecord.expiresAt)) {
+          console.error("Refresh token expired", {
+            expiresAt: refreshTokenRecord.expiresAt,
+            now: new Date()
+          });
+          await refreshTokenRecord.destroy(); // Clean up expired token
+          throw Unauthorized("Refresh token has expired. Please login again.");
+        }
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } = await jwt.getJWTTokens(context, refreshTokenRecord.user);
+
+      if (authConfig.refreshTokenRotation.enabled) {
+        // FEATURE ENABLED: Rotate refresh token (new behavior)
+        const expiresAt = new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000);
+
+        await refreshTokenRecord.update({
+          token: newRefreshToken,
+          expiresAt,
+          lastActivity: new Date(),
+          updatedOn: new Date()
+        });
+
+        context.logger.info("Refresh token rotated", {
+          userId: refreshTokenRecord.user.id,
+          deviceId: refreshTokenRecord.deviceId,
+          expiresAt
+        });
+      } else {
+        // FEATURE DISABLED: Keep old refresh token (backward compatible)
+        context.logger.debug("Refresh token rotation disabled, keeping existing token");
+        // Return the OLD refresh token (backward compatible)
+        return { accessToken, refreshToken: headerToken };
+      }
 
       return { accessToken, refreshToken: newRefreshToken };
     } catch (error: any) {

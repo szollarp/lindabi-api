@@ -1,4 +1,5 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
+import { v4 as uuidv4 } from 'uuid';
 import type { StringValue } from "ms";
 import type { User } from "../models/interfaces/user";
 import type { Context, AuthConfig } from "../types";
@@ -8,14 +9,52 @@ interface GetJwtTokens {
   refreshToken: string
 };
 
-export const generate = (payload: string | Record<string, unknown> | Buffer, key: string, expiresIn: StringValue | number): string => {
+export const generate = (
+  payload: string | Record<string, unknown> | Buffer,
+  key: string,
+  expiresIn: StringValue | number,
+  audience: 'lindabi-mobile' | 'lindabi-web' = 'lindabi-mobile'
+): string => {
+  // If payload is an object, enhance with standard JWT claims
+  if (typeof payload === 'object' && !Buffer.isBuffer(payload)) {
+    const enhancedPayload = {
+      ...payload,
+      iss: 'lindabi-api',                    // Issuer
+      aud: audience,                         // Audience
+      sub: (payload as any).user?.id || (payload as any).id,  // Subject (user ID)
+      jti: uuidv4(),                        // JWT ID (unique)
+      iat: Math.floor(Date.now() / 1000)    // Issued at
+    };
+    return jwt.sign(enhancedPayload, key, { expiresIn, algorithm: "HS512" });
+  }
+
+  // Fallback for non-object payloads
   return jwt.sign(payload, key, { expiresIn, algorithm: "HS512" });
 };
 
-export const verify = (jwtToken: string, key: string): JwtPayload | string | null => {
+export const verify = (
+  jwtToken: string,
+  key: string,
+  expectedAudience?: 'lindabi-mobile' | 'lindabi-web'
+): JwtPayload | string | null => {
   try {
-    const verifiedToken = jwt.verify(jwtToken, key);
+    const verifiedToken = jwt.verify(jwtToken, key) as JwtPayload;
     if (verifiedToken === null) {
+      return null;
+    }
+
+    // Validate issuer (if present)
+    if (verifiedToken.iss && verifiedToken.iss !== 'lindabi-api') {
+      console.error('JWT validation failed: Invalid issuer', { iss: verifiedToken.iss });
+      return null;
+    }
+
+    // Validate audience (if expected audience is provided)
+    if (expectedAudience && verifiedToken.aud && verifiedToken.aud !== expectedAudience) {
+      console.error('JWT validation failed: Invalid audience', {
+        expected: expectedAudience,
+        actual: verifiedToken.aud
+      });
       return null;
     }
 

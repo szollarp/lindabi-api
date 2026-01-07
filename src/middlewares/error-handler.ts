@@ -10,6 +10,8 @@ const errorMiddleware = (error: Error, request: Request, response: Response, nex
   }
 
   if (error instanceof ValidateError) {
+    request.context.logger.info(JSON.stringify(error));
+
     response.statusCode = 422;
     response.json({
       message: "Validation Failed. Please review the provided data and try again.",

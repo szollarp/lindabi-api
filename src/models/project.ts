@@ -29,7 +29,8 @@ import { ProjectCommentModel } from "./project-comment";
 import { ProjectComment } from "./interfaces/project-comment";
 import { getNetAmount, getVatAmount } from "../helpers/project";
 import { TaskModel } from "./task";
-import { WorkSiteEventModel } from "./work-site-event";
+import { TrackingEventModel } from "./tracking-event";
+import { TrackingEvent } from "./interfaces/tracking-event";
 
 export class ProjectModel extends Model<Project, CreateProjectProperties> implements Project {
   public id!: number;
@@ -168,6 +169,8 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public tender?: NonAttribute<Tender>;
 
+  public trackingEvents?: NonAttribute<TrackingEvent[]>;
+
   public readonly createdOn!: Date;
 
   public readonly updatedOn!: Date | null;
@@ -191,6 +194,7 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     milestones: Association<ProjectModel, MilestoneModel>
     comments: Association<ProjectModel, ProjectCommentModel>
     tasks: Association<ProjectModel, TaskModel>
+    trackingEvents: Association<ProjectModel, TrackingEventModel>
   };
 
   public readonly itemsNetAmount?: number;
@@ -460,9 +464,9 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       as: "tasks",
     });
 
-    ProjectModel.hasMany(models.WorkSiteEvent, {
+    ProjectModel.hasMany(models.TrackingEvent, {
       foreignKey: "projectId",
-      as: "workSiteEvents",
+      as: "trackingEvents",
     });
   };
 

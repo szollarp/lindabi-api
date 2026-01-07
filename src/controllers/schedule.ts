@@ -116,20 +116,4 @@ export class ScheduleController extends Controller {
     await context.services.user.update(context, user.tenant, id, { inSchedule: false }, user.id);
     return await context.services.employeeSchedule.removeByEmployee(context, id);
   }
-
-  /**
-   * Retrieves today's workspace (work schedule) for the authenticated user.
-   * This endpoint is designed for mobile applications and returns all necessary data
-   * including project details and location information.
-   * 
-   * @returns The workspace object for today's work schedule, or null if no work is scheduled.
-   */
-  @Tags("Schedule")
-  @SuccessResponse("200", "OK")
-  @Get("/workspace/today")
-  @Security("authentication", ["Tenant"])
-  public async getTodayWorkspace(@Request() request: ContextualRequest): Promise<Workspace | null> {
-    const { context, user } = request;
-    return await context.services.employeeSchedule.getTodayWorkspace(context, user);
-  }
 };

@@ -56,6 +56,10 @@
     "verifyToken": {
       "key": "UFTGP]rpV=n])T&OGYLUHD%(FTGOYUHI+$PSZ7BjqGNpt9N(^FOGYUPHIJ^(%*E$DR$IDR&OTFIYGOUL)g4tn(",
       "expiresIn": "1h"
+    },
+    "refreshTokenRotation": {
+      "enabled": false,
+      "expirationDays": 30
     }
   },
   "website": {

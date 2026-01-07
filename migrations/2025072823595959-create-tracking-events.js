@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable("work_site_events", {
+    return queryInterface.createTable("tracking_events", {
       id: {
         unique: true,
         primaryKey: true,
@@ -13,22 +13,13 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false
       },
-      user_id: {
+      project_id: {
         type: Sequelize.DataTypes.INTEGER,
-        allowNull: false
-      },
-      work_site_id: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: true,
-        defaultValue: null
-      },
-      work_site_name: {
-        type: Sequelize.DataTypes.STRING,
         allowNull: true,
         defaultValue: null
       },
       event_type: {
-        type: Sequelize.DataTypes.ENUM("first_entry", "entry", "exit", "work_start_at_site"),
+        type: Sequelize.DataTypes.ENUM("entry", "exit", "gps_signal_lost", "gps_signal_recovered", "app_background", "app_foreground", "app_init", "note"),
         allowNull: false
       },
       latitude: {
@@ -44,6 +35,16 @@ module.exports = {
       occurred_at: {
         type: Sequelize.DataTypes.DATE,
         allowNull: false
+      },
+      metadata: {
+        type: Sequelize.DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null
+      },
+      app_version: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
       },
       created_by: {
         type: Sequelize.DataTypes.INTEGER,
@@ -62,12 +63,17 @@ module.exports = {
         type: Sequelize.DataTypes.DATE,
         defaultValue: null,
         allowNull: true
+      },
+      deleted_on: {
+        type: Sequelize.DataTypes.DATE,
+        defaultValue: null,
+        allowNull: true
       }
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("work_site_events");
-    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_work_site_events_event_type\";");
+    await queryInterface.dropTable("tracking_events");
+    await queryInterface.sequelize.query("DROP TYPE IF EXISTS \"enum_tracking_events_event_type\";");
   }
 };

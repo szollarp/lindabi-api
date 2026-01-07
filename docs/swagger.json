@@ -62,7 +62,7 @@
 					"execution",
 					"invoice",
 					"task",
-					"work_site_event",
+					"tracking_event",
 					null
 				],
 				"nullable": true
@@ -1858,9 +1858,9 @@
 						},
 						"type": "array"
 					},
-					"workSiteEvents": {
+					"trackingEvents": {
 						"items": {
-							"$ref": "#/components/schemas/WorkSiteEvent"
+							"$ref": "#/components/schemas/TrackingEvent"
 						},
 						"type": "array"
 					},
@@ -2099,13 +2099,11 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"WorkSiteEventType": {
+			"TrackingEventType": {
 				"type": "string",
 				"enum": [
-					"first_entry",
 					"entry",
 					"exit",
-					"work_start_at_site",
 					"gps_signal_lost",
 					"gps_signal_recovered",
 					"app_background",
@@ -2120,17 +2118,13 @@
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
 			},
-			"WorkSiteEvent": {
+			"TrackingEvent": {
 				"properties": {
 					"id": {
 						"type": "number",
 						"format": "double"
 					},
 					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"userId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -2148,7 +2142,7 @@
 						"nullable": true
 					},
 					"eventType": {
-						"$ref": "#/components/schemas/WorkSiteEventType"
+						"$ref": "#/components/schemas/TrackingEventType"
 					},
 					"latitude": {
 						"type": "number",
@@ -2195,10 +2189,7 @@
 						"format": "double",
 						"nullable": true
 					},
-					"deleted": {
-						"type": "boolean"
-					},
-					"deletedAt": {
+					"deletedOn": {
 						"type": "string",
 						"format": "date-time",
 						"nullable": true
@@ -2221,7 +2212,6 @@
 				"required": [
 					"id",
 					"tenantId",
-					"userId",
 					"eventType",
 					"occurredAt"
 				],
@@ -2973,101 +2963,6 @@
 			},
 			"CreateWorkTypeProperties": {
 				"$ref": "#/components/schemas/Omit_WorkType.id-or-createdAt-or-updatedAt_"
-			},
-			"CreateWorkSiteEventRequest": {
-				"properties": {
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"eventType": {
-						"$ref": "#/components/schemas/WorkSiteEventType"
-					},
-					"latitude": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"longitude": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"occurredAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"appVersion": {
-						"type": "string",
-						"nullable": true
-					},
-					"metadata": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.any_"
-							}
-						],
-						"nullable": true
-					}
-				},
-				"required": [
-					"projectId",
-					"eventType",
-					"occurredAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DailyWorkStatus": {
-				"properties": {
-					"date": {
-						"type": "string"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"recorded",
-							"missing",
-							"none"
-						]
-					},
-					"hasWorkLogs": {
-						"type": "boolean"
-					},
-					"projectNames": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"date",
-					"status",
-					"hasWorkLogs",
-					"projectNames"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"MonthlyWorkStatus": {
-				"properties": {
-					"month": {
-						"type": "string"
-					},
-					"days": {
-						"items": {
-							"$ref": "#/components/schemas/DailyWorkStatus"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"month",
-					"days"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"Partial_any_": {
 				"properties": {},
@@ -4143,6 +4038,195 @@
 				"required": [
 					"password",
 					"newPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EmployeeScheduleType": {
+				"type": "string",
+				"enum": [
+					"work",
+					"not working",
+					"rainy day",
+					"background work"
+				]
+			},
+			"Workspace": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"$ref": "#/components/schemas/EmployeeScheduleType"
+					},
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"project": {
+						"properties": {
+							"location": {
+								"properties": {
+									"region": {
+										"type": "string",
+										"nullable": true
+									},
+									"country": {
+										"type": "string"
+									},
+									"zipCode": {
+										"type": "string"
+									},
+									"address": {
+										"type": "string"
+									},
+									"city": {
+										"type": "string"
+									},
+									"id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"country",
+									"zipCode",
+									"address",
+									"city",
+									"id"
+								],
+								"type": "object",
+								"nullable": true
+							},
+							"shortName": {
+								"type": "string",
+								"nullable": true
+							},
+							"name": {
+								"type": "string",
+								"nullable": true
+							},
+							"number": {
+								"type": "string"
+							},
+							"id": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"number",
+							"id"
+						],
+						"type": "object",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"type",
+					"startDate",
+					"endDate"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateTrackingEventRequest": {
+				"properties": {
+					"projectId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"eventType": {
+						"$ref": "#/components/schemas/TrackingEventType"
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"occurredAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"appVersion": {
+						"type": "string",
+						"nullable": true
+					},
+					"metadata": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.any_"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"eventType",
+					"occurredAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DailyWorkStatus": {
+				"properties": {
+					"date": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string",
+						"enum": [
+							"recorded",
+							"missing",
+							"none"
+						]
+					},
+					"hasWorkLogs": {
+						"type": "boolean"
+					},
+					"projectNames": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"date",
+					"status",
+					"hasWorkLogs",
+					"projectNames"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MonthlyWorkStatus": {
+				"properties": {
+					"month": {
+						"type": "string"
+					},
+					"days": {
+						"items": {
+							"$ref": "#/components/schemas/DailyWorkStatus"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"month",
+					"days"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -6514,15 +6598,6 @@
 			"CreateFinancialSettingProperties": {
 				"$ref": "#/components/schemas/Omit_FinancialSetting.id-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
-			"EmployeeScheduleType": {
-				"type": "string",
-				"enum": [
-					"work",
-					"not working",
-					"rainy day",
-					"background work"
-				]
-			},
 			"Partial_EmployeeSchedule_": {
 				"properties": {
 					"id": {
@@ -6690,91 +6765,6 @@
 			},
 			"CreateHolidayScheduleProperties": {
 				"$ref": "#/components/schemas/Pick_EmployeeSchedule.startDate-or-endDate-or-employeeId_"
-			},
-			"Workspace": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"type": {
-						"$ref": "#/components/schemas/EmployeeScheduleType"
-					},
-					"startDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"endDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"project": {
-						"properties": {
-							"location": {
-								"properties": {
-									"region": {
-										"type": "string",
-										"nullable": true
-									},
-									"country": {
-										"type": "string"
-									},
-									"zipCode": {
-										"type": "string"
-									},
-									"address": {
-										"type": "string"
-									},
-									"city": {
-										"type": "string"
-									},
-									"id": {
-										"type": "number",
-										"format": "double"
-									}
-								},
-								"required": [
-									"country",
-									"zipCode",
-									"address",
-									"city",
-									"id"
-								],
-								"type": "object",
-								"nullable": true
-							},
-							"shortName": {
-								"type": "string",
-								"nullable": true
-							},
-							"name": {
-								"type": "string",
-								"nullable": true
-							},
-							"number": {
-								"type": "string"
-							},
-							"id": {
-								"type": "number",
-								"format": "double"
-							}
-						},
-						"required": [
-							"number",
-							"id"
-						],
-						"type": "object",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"type",
-					"startDate",
-					"endDate"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"Partial_Role_": {
 				"properties": {
@@ -7031,9 +7021,9 @@
 						},
 						"type": "array"
 					},
-					"workSiteEvents": {
+					"trackingEvents": {
 						"items": {
-							"$ref": "#/components/schemas/WorkSiteEvent"
+							"$ref": "#/components/schemas/TrackingEvent"
 						},
 						"type": "array"
 					},
@@ -9177,6 +9167,136 @@
 			"CreateContactProperties": {
 				"$ref": "#/components/schemas/Omit_Contact.id-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
+			"Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__": {
+				"properties": {
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"orderFormId": {
+						"type": "number",
+						"format": "double"
+					},
+					"deviation": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"projectId",
+					"amount",
+					"employeeId",
+					"orderFormId"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_CompletionCertificate.id-or-status-or-createdOn-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateCompletionCertificateProperties": {
+				"$ref": "#/components/schemas/Omit_CompletionCertificate.id-or-status-or-createdOn-or-updatedOn_"
+			},
+			"Partial_CompletionCertificate_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/COMPLETION_CERTIFICATE_STATUS"
+					},
+					"projectId": {
+						"type": "number",
+						"format": "double"
+					},
+					"employeeId": {
+						"type": "number",
+						"format": "double"
+					},
+					"orderFormId": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"deviation": {
+						"type": "string"
+					},
+					"approvedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"approvedBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenant": {
+						"$ref": "#/components/schemas/Tenant"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"COMPANY_STATUS": {
 				"enum": [
 					"active",
@@ -9570,136 +9690,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__": {
-				"properties": {
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
-						"type": "string"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"approvedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"orderFormId": {
-						"type": "number",
-						"format": "double"
-					},
-					"deviation": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"projectId",
-					"amount",
-					"employeeId",
-					"orderFormId"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_CompletionCertificate.id-or-status-or-createdOn-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_CompletionCertificate.Exclude_keyofCompletionCertificate.id-or-status-or-createdOn-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateCompletionCertificateProperties": {
-				"$ref": "#/components/schemas/Omit_CompletionCertificate.id-or-status-or-createdOn-or-updatedOn_"
-			},
-			"Partial_CompletionCertificate_": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"$ref": "#/components/schemas/COMPLETION_CERTIFICATE_STATUS"
-					},
-					"projectId": {
-						"type": "number",
-						"format": "double"
-					},
-					"employeeId": {
-						"type": "number",
-						"format": "double"
-					},
-					"orderFormId": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
-						"type": "string"
-					},
-					"deviation": {
-						"type": "string"
-					},
-					"approvedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"approvedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double"
-					},
-					"tenant": {
-						"$ref": "#/components/schemas/Tenant"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"type": "object",
-				"description": "Make all properties in T optional"
 			}
 		},
 		"securitySchemes": {
@@ -9885,233 +9875,6 @@
 						}
 					}
 				]
-			}
-		},
-		"/work-site-events/{eventId}": {
-			"delete": {
-				"operationId": "DeleteEvent",
-				"responses": {
-					"204": {
-						"description": "No Content"
-					}
-				},
-				"description": "Töröl egy munkaterület eseményt.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
-				"tags": [
-					"WorkSiteEvent"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "- A törlendő esemény ID-ja",
-						"in": "path",
-						"name": "eventId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/work-site-events": {
-			"post": {
-				"operationId": "CreateEvent",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/WorkSiteEvent"
-								}
-							}
-						}
-					}
-				},
-				"description": "Rögzíti a munkaterületre történő belépés/kilépés eseményét.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
-				"tags": [
-					"WorkSiteEvent"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateWorkSiteEventRequest"
-							}
-						}
-					}
-				}
-			},
-			"get": {
-				"operationId": "GetEventsByDate",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/WorkSiteEvent"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Lekéri a felhasználó munkaterület eseményeit egy adott napra.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
-				"tags": [
-					"WorkSiteEvent"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "projectId",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"description": "- A dátum ISO string formátumban (pl. \"2025-12-11\") vagy Date objektum",
-						"in": "query",
-						"name": "date",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/work-site-events/monthly": {
-			"get": {
-				"operationId": "GetMonthlyEvents",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/MonthlyWorkStatus"
-								}
-							}
-						}
-					}
-				},
-				"description": "Lekéri a felhasználó havi munkastátuszait (melyik napon volt munkavégzés, melyiken nem).\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
-				"tags": [
-					"WorkSiteEvent"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"description": "- A hónap egy napja vagy hónap kezdete (pl. \"2025-12-01\")",
-						"in": "query",
-						"name": "date",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/work-site-events/{eventId}/documents": {
-			"put": {
-				"operationId": "UploadDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"description": "Dokumentumok feltöltése egy munkaterület eseményhez.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
-				"tags": [
-					"WorkSiteEvent"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "eventId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "type",
-						"required": true,
-						"schema": {
-							"$ref": "#/components/schemas/DocumentType"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"files": {
-										"items": {
-											"type": "string",
-											"format": "binary"
-										},
-										"type": "array"
-									}
-								},
-								"required": [
-									"files"
-								]
-							}
-						}
-					}
-				}
 			}
 		},
 		"/website/tender": {
@@ -11141,6 +10904,265 @@
 							"schema": {
 								"$ref": "#/components/schemas/NotificationSettings",
 								"description": "A record of settings indicating the types of notifications and whether they should be enabled or disabled."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/trackings/today": {
+			"get": {
+				"operationId": "GetTodayWorkspace",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Workspace"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves today's workspace (work schedule) for the authenticated user.\nThis endpoint is designed for mobile applications and returns all necessary data\nincluding project details and location information.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/trackings/{eventId}": {
+			"delete": {
+				"operationId": "DeleteEvent",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"description": "Töröl egy munkaterület eseményt.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- A törlendő esemény ID-ja",
+						"in": "path",
+						"name": "eventId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/trackings": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TrackingEvent"
+								}
+							}
+						}
+					}
+				},
+				"description": "Rögzíti a munkaterületre történő belépés/kilépés eseményét.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTrackingEventRequest"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetEventsByDate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/TrackingEvent"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lekéri a felhasználó munkaterület eseményeit egy adott napra.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "projectId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "- A dátum ISO string formátumban (pl. \"2025-12-11\") vagy Date objektum",
+						"in": "query",
+						"name": "date",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/trackings/monthly": {
+			"get": {
+				"operationId": "GetMonthlyEvents",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/MonthlyWorkStatus"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lekéri a felhasználó havi munkastátuszait (melyik napon volt munkavégzés, melyiken nem).\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "- A hónap egy napja vagy hónap kezdete (pl. \"2025-12-01\")",
+						"in": "query",
+						"name": "date",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/trackings/{eventId}/documents": {
+			"put": {
+				"operationId": "UploadDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"description": "Dokumentumok feltöltése egy munkaterület eseményhez.\nCsak bejelentkezett (Tenant) felhasználó hívhatja.",
+				"tags": [
+					"Tracking"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "eventId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentType"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
+									}
+								},
+								"required": [
+									"files"
+								]
 							}
 						}
 					}
@@ -15240,40 +15262,6 @@
 						}
 					}
 				]
-			}
-		},
-		"/schedules/workspace/today": {
-			"get": {
-				"operationId": "GetTodayWorkspace",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/Workspace"
-										}
-									],
-									"nullable": true
-								}
-							}
-						}
-					}
-				},
-				"description": "Retrieves today's workspace (work schedule) for the authenticated user.\nThis endpoint is designed for mobile applications and returns all necessary data\nincluding project details and location information.",
-				"tags": [
-					"Schedule"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant"
-						]
-					}
-				],
-				"parameters": []
 			}
 		},
 		"/roles": {
@@ -20052,6 +20040,274 @@
 				]
 			}
 		},
+		"/documents/chunk": {
+			"put": {
+				"operationId": "UploadDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"uploaded": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"uploaded"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"chunk": {
+										"type": "string",
+										"format": "binary"
+									},
+									"chunkIndex": {
+										"type": "string"
+									},
+									"fileName": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"chunk",
+									"chunkIndex",
+									"fileName"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/documents/merge": {
+			"post": {
+				"operationId": "MergeDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		},
+		"/documents/assign": {
+			"post": {
+				"operationId": "AssignDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"assigned": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"assigned"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"documentIds": {
+										"items": {
+											"type": "number",
+											"format": "double"
+										},
+										"type": "array"
+									},
+									"ownerId": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"documentIds",
+									"ownerId"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/documents/{id}": {
+			"delete": {
+				"operationId": "RemoveDocument",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"removed": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"removed"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Documents:Upload"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/documents": {
+			"get": {
+				"operationId": "GetDocuments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Document"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Document"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Documents:List"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "ownerType",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/DocumentOwnerType"
+						}
+					},
+					{
+						"in": "query",
+						"name": "ownerId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/contacts": {
 			"get": {
 				"operationId": "GetContacts",
@@ -20475,6 +20731,262 @@
 						}
 					}
 				}
+			}
+		},
+		"/completion-certificates": {
+			"get": {
+				"operationId": "GetCompletionCertificates",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/CompletionCertificate"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:List"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateCompletionCertificate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CompletionCertificate"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:Create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCompletionCertificateProperties"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/completion-certificates/{id}": {
+			"get": {
+				"operationId": "GetCompletionCertificate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/CompletionCertificate"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCompletionCertificate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CompletionCertificate"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_CompletionCertificate_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCompletionCertificate",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:Delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/completion-certificates/get/order-forms": {
+			"get": {
+				"operationId": "GetOrderForms",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OrderForm"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Completion Certificate"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"CompletionCertificate:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "employeeId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "projectId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/companies": {
@@ -21271,530 +21783,6 @@
 					}
 				],
 				"parameters": []
-			}
-		},
-		"/completion-certificates": {
-			"get": {
-				"operationId": "GetCompletionCertificates",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/CompletionCertificate"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:List"
-						]
-					}
-				],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateCompletionCertificate",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/CompletionCertificate"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:Create"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateCompletionCertificateProperties"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/completion-certificates/{id}": {
-			"get": {
-				"operationId": "GetCompletionCertificate",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/CompletionCertificate"
-										}
-									],
-									"nullable": true
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:Get"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UpdateCompletionCertificate",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/CompletionCertificate"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:Update"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/Partial_CompletionCertificate_"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteCompletionCertificate",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"success": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"success"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:Delete"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/completion-certificates/get/order-forms": {
-			"get": {
-				"operationId": "GetOrderForms",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/OrderForm"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Completion Certificate"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"CompletionCertificate:Get"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "employeeId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "projectId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/documents/chunk": {
-			"put": {
-				"operationId": "UploadDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"uploaded": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"uploaded"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Document"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"Documents:Upload"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"chunk": {
-										"type": "string",
-										"format": "binary"
-									},
-									"chunkIndex": {
-										"type": "string"
-									},
-									"fileName": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"chunk",
-									"chunkIndex",
-									"fileName"
-								]
-							}
-						}
-					}
-				}
-			}
-		},
-		"/documents/merge": {
-			"post": {
-				"operationId": "MergeDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Document"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"Documents:Upload"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {}
-						}
-					}
-				}
-			}
-		},
-		"/documents/assign": {
-			"post": {
-				"operationId": "AssignDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"assigned": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"assigned"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Document"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"Documents:Upload"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"documentIds": {
-										"items": {
-											"type": "number",
-											"format": "double"
-										},
-										"type": "array"
-									},
-									"ownerId": {
-										"type": "number",
-										"format": "double"
-									}
-								},
-								"required": [
-									"documentIds",
-									"ownerId"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/documents/{id}": {
-			"delete": {
-				"operationId": "RemoveDocument",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"removed": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"removed"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Document"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"Documents:Upload"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/documents": {
-			"get": {
-				"operationId": "GetDocuments",
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Document"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Document"
-				],
-				"security": [
-					{
-						"authentication": [
-							"Tenant",
-							"Documents:List"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "ownerType",
-						"required": true,
-						"schema": {
-							"$ref": "#/components/schemas/DocumentOwnerType"
-						}
-					},
-					{
-						"in": "query",
-						"name": "ownerId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "type",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
 			}
 		},
 		"/employees": {

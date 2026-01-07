@@ -1,15 +1,14 @@
 import { Document } from "./document";
 import type { Project } from "./project";
 
-export type WorkSiteEventType = "first_entry" | "entry" | "exit" | "work_start_at_site" | "gps_signal_lost" | "gps_signal_recovered" | "app_background" | "app_foreground" | "app_init" | "note";
+export type TrackingEventType = "entry" | "exit" | "gps_signal_lost" | "gps_signal_recovered" | "app_background" | "app_foreground" | "app_init" | "note";
 
-export interface WorkSiteEvent {
+export interface TrackingEvent {
   id: number;
   tenantId: number;
-  userId: number;
   projectId?: number | null;
   project?: Project | null;
-  eventType: WorkSiteEventType;
+  eventType: TrackingEventType;
   latitude?: number | null;
   longitude?: number | null;
   metadata?: Record<string, any> | null;
@@ -19,15 +18,14 @@ export interface WorkSiteEvent {
   updatedOn?: Date | null;
   createdBy?: number | null;
   updatedBy?: number | null;
-  deleted?: boolean;
-  deletedAt?: Date | null;
+  deletedOn?: Date | null;
   //
   documentIds?: Document["id"][] | null
   documents?: Document[]
 }
 
-export type CreateWorkSiteEventProperties = Omit<
-  WorkSiteEvent,
+export type CreateTrackingEventProperties = Omit<
+  TrackingEvent,
   "id" | "createdOn" | "updatedOn" | "updatedBy"
 >;
 

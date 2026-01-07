@@ -3,6 +3,7 @@ import type { Context } from "../types";
 import { milestoneNotificationJob } from "../jobs/milestone-notification-job";
 import { AnalyticsUpdateJob } from "../jobs/analytics-update-job";
 import { employeeDocumentExpirationJob } from "../jobs/employee-document-expiration-job";
+import { refreshTokenCleanupJob } from "../jobs/refresh-token-cleanup-job";
 
 export interface SchedulerService {
   start: (context: Context) => void;
@@ -68,6 +69,27 @@ export const schedulerService = (): SchedulerService => {
     jobs.push(documentExpirationJob);
     documentExpirationJob.start();
     context.logger.info("Scheduled employee document expiration check job to run daily at 8:00 AM");
+
+    // Add Refresh Token Cleanup Job
+    const tokenCleanupJob = cron.schedule(
+      "0 2 * * *",
+      async () => {
+        context.logger.info("Running scheduled refresh token cleanup job");
+        try {
+          const job = refreshTokenCleanupJob();
+          await job.cleanupExpiredTokens(context);
+        } catch (error) {
+          context.logger.error("Error running refresh token cleanup job:", error);
+        }
+      },
+      {
+        timezone: "Europe/Budapest"
+      }
+    );
+
+    jobs.push(tokenCleanupJob);
+    tokenCleanupJob.start();
+    context.logger.info("Scheduled refresh token cleanup job to run daily at 2:00 AM");
 
     isRunning = true;
   };

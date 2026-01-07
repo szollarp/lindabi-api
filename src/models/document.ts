@@ -202,11 +202,11 @@ export const DocumentFactory = (sequelize: Sequelize, storage: AzureStorageServi
         ownerType: "task"
       }
     });
-    DocumentModel.belongsTo(models.WorkSiteEvent, {
+    DocumentModel.belongsTo(models.TrackingEvent, {
       foreignKey: "owner_id",
-      as: "workSiteEvent",
+      as: "trackingEvent",
       scope: {
-        ownerType: "work_site_event"
+        ownerType: "tracking_event"
       }
     });
 

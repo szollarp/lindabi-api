@@ -1,17 +1,16 @@
 import { Model, DataTypes } from "sequelize";
 import type { Sequelize, ForeignKey, NonAttribute } from "sequelize";
 import type { Models } from ".";
-import type { CreateWorkSiteEventProperties, WorkSiteEvent } from "./interfaces/work-site-event";
+import type { CreateTrackingEventProperties, TrackingEvent } from "./interfaces/tracking-event";
 import type { Project } from "./interfaces/project";
-import { ProjectModel } from "./project";
 
-export class WorkSiteEventModel extends Model<WorkSiteEvent, CreateWorkSiteEventProperties> implements WorkSiteEvent {
+export class TrackingEventModel extends Model<TrackingEvent, CreateTrackingEventProperties> implements TrackingEvent {
   declare id: number;
   declare tenantId: number;
   declare userId: number;
   declare projectId: number | null;
   declare project?: NonAttribute<Project | null>;
-  declare eventType: WorkSiteEvent["eventType"];
+  declare eventType: TrackingEvent["eventType"];
   declare latitude: number | null;
   declare longitude: number | null;
   declare metadata: Record<string, any> | null;
@@ -19,8 +18,6 @@ export class WorkSiteEventModel extends Model<WorkSiteEvent, CreateWorkSiteEvent
   declare appVersion: string | null;
   declare createdBy: number | null;
   declare updatedBy: number | null;
-  declare deleted: boolean;
-  declare deletedAt: Date | null;
 
   declare tenantIdRef: ForeignKey<number>;
   declare userIdRef: ForeignKey<number>;
@@ -29,8 +26,8 @@ export class WorkSiteEventModel extends Model<WorkSiteEvent, CreateWorkSiteEvent
   public static associate: (models: Models) => void;
 }
 
-export const WorkSiteEventFactory = (sequelize: Sequelize): typeof WorkSiteEventModel => {
-  WorkSiteEventModel.init(
+export const TrackingEventFactory = (sequelize: Sequelize): typeof TrackingEventModel => {
+  TrackingEventModel.init(
     {
       id: {
         unique: true,
@@ -43,11 +40,6 @@ export const WorkSiteEventFactory = (sequelize: Sequelize): typeof WorkSiteEvent
         allowNull: false,
         field: "tenant_id"
       },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        field: "user_id"
-      },
       projectId: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -55,7 +47,7 @@ export const WorkSiteEventFactory = (sequelize: Sequelize): typeof WorkSiteEvent
         field: "project_id"
       },
       eventType: {
-        type: DataTypes.ENUM("first_entry", "entry", "exit", "work_start_at_site", "gps_signal_lost", "gps_signal_recovered", "app_background", "app_foreground", "app_init", "note"),
+        type: DataTypes.ENUM("entry", "exit", "gps_signal_lost", "gps_signal_recovered", "app_background", "app_foreground", "app_init", "note"),
         allowNull: false,
         field: "event_type"
       },
@@ -96,35 +88,26 @@ export const WorkSiteEventFactory = (sequelize: Sequelize): typeof WorkSiteEvent
         allowNull: true,
         defaultValue: null,
         field: "updated_by"
-      },
-      deleted: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: null,
-        field: "deleted_at"
       }
     },
     {
       sequelize,
-      tableName: "work_site_events",
+      tableName: "tracking_events",
       timestamps: true,
       createdAt: "created_on",
       updatedAt: "updated_on",
-      underscored: true
+      deletedAt: "deleted_on",
+      underscored: true,
+      paranoid: true
     }
   );
 
-  WorkSiteEventModel.associate = (models) => {
-    WorkSiteEventModel.belongsTo(models.Tenant, { foreignKey: "tenant_id" });
-    WorkSiteEventModel.belongsTo(models.User, { foreignKey: "user_id" });
-    WorkSiteEventModel.belongsTo(models.Project, { foreignKey: "project_id", as: "project" });
+  TrackingEventModel.associate = (models) => {
+    TrackingEventModel.belongsTo(models.Tenant, { foreignKey: "tenant_id" });
+    TrackingEventModel.belongsTo(models.User, { foreignKey: "created_by" });
+    TrackingEventModel.belongsTo(models.Project, { foreignKey: "project_id", as: "project" });
 
-    WorkSiteEventModel.hasMany(models.Document, {
+    TrackingEventModel.hasMany(models.Document, {
       foreignKey: "owner_id",
       scope: {
         ownerType: "work_site_event"
@@ -133,5 +116,5 @@ export const WorkSiteEventFactory = (sequelize: Sequelize): typeof WorkSiteEvent
     });
   };
 
-  return WorkSiteEventModel;
+  return TrackingEventModel;
 };

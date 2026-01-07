@@ -1,7 +1,7 @@
 import type { Company } from "./company";
 import type { User } from "./user";
 
-export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | "invoice" | "task" | "work_site_event" | null;
+export type DocumentOwnerType = "user" | "tenant" | "contact" | "company" | "tender" | "project" | "milestone" | "report" | "execution" | "invoice" | "task" | "tracking_event" | null;
 
 export type DocumentType = "logo" | "stamp" | "signature" | "avatar" | "survey" | "other" |
   "plan" | "pdf" | "employee" | "medical-fitness-certificate" | "work-authorization-document" |

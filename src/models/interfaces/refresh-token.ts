@@ -10,6 +10,15 @@ export interface RefreshToken {
   //
   deviceId: string
   //
+  expiresAt?: Date | null
+  //
+  platform?: string | null
+  osVersion?: string | null
+  appVersion?: string | null
+  deviceModel?: string | null
+  lastActivity?: Date | null
+  ipAddress?: string | null
+  //
   createdOn?: Date
   updatedOn?: Date | null
 };

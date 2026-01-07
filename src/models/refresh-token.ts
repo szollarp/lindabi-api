@@ -18,6 +18,15 @@ export class RefreshTokenModel extends Model<RefreshToken, CreateRefreshTokenPro
 
   declare deviceId: string;
 
+  declare expiresAt: Date | null;
+
+  declare platform: string | null;
+  declare osVersion: string | null;
+  declare appVersion: string | null;
+  declare deviceModel: string | null;
+  declare lastActivity: Date | null;
+  declare ipAddress: string | null;
+
   public getUser!: HasOneGetAssociationMixin<User>;
 
   public static associate: (models: Models) => void;
@@ -43,6 +52,47 @@ export const RefreshTokenFactory = (sequelize: Sequelize): typeof RefreshTokenMo
       deviceId: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      expiresAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+        field: "expires_at"
+      },
+      platform: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+        defaultValue: null
+      },
+      osVersion: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        defaultValue: null,
+        field: "os_version"
+      },
+      appVersion: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+        defaultValue: null,
+        field: "app_version"
+      },
+      deviceModel: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        defaultValue: null,
+        field: "device_model"
+      },
+      lastActivity: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+        field: "last_activity"
+      },
+      ipAddress: {
+        type: DataTypes.STRING(45),
+        allowNull: true,
+        defaultValue: null,
+        field: "ip_address"
       },
       createdOn: {
         type: DataTypes.DATE

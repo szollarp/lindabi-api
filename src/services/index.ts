@@ -31,7 +31,7 @@ import { type StockService, stockService } from "./stock";
 import { type ItemMovementService, itemMovementService } from "./item-movement";
 import { type SchedulerService, schedulerService } from "./scheduler";
 import { type TenderItemsSearchService, tenderItemsSearchService } from "./tender-items-search";
-import { type WorkSiteEventService, workSiteEventService } from "./work-site-event";
+import { type TrackingEventService, trackingEventService } from "./tracking-event";
 
 export interface Services {
   version: VersionService
@@ -67,7 +67,7 @@ export interface Services {
   itemMovement: ItemMovementService
   scheduler: SchedulerService
   tenderItemsSearch: TenderItemsSearchService
-  workSiteEvent: WorkSiteEventService
+  trackingEvent: TrackingEventService
 }
 
 const createServices = (): Services => ({
@@ -104,7 +104,7 @@ const createServices = (): Services => ({
   itemMovement: itemMovementService(),
   scheduler: schedulerService(),
   tenderItemsSearch: tenderItemsSearchService(),
-  workSiteEvent: workSiteEventService()
+  trackingEvent: trackingEventService()
 });
 
 export { createServices };
