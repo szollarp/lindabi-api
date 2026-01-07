@@ -114,7 +114,7 @@ export const trackingEventService = (): TrackingEventService => {
               {
                 model: context.models.Location,
                 as: 'location',
-                attributes: ["id", "name", "latitude", "longitude"]
+                attributes: ["id", "name", "latitude", "longitude", "address", "city", "zipCode"]
               }
             ]
           },

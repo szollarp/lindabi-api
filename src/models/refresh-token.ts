@@ -42,7 +42,7 @@ export const RefreshTokenFactory = (sequelize: Sequelize): typeof RefreshTokenMo
         autoIncrement: true
       },
       token: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
       },
       userId: {
