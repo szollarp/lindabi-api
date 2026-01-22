@@ -273,6 +273,7 @@ export const tenderService = (): TenderService => {
       // Map frontend field names to database field names
       const fieldMapping: { [key: string]: string } = {
         'customer.name': '$customer.name$',
+        'startDate': 'startDate',
         'type': 'type',
         'createdOn': 'createdOn',
         'dueDate': 'dueDate',
@@ -285,20 +286,35 @@ export const tenderService = (): TenderService => {
 
       const dbField = fieldMapping[orderBy] || orderBy;
       const sortOrder = order.toUpperCase() as 'ASC' | 'DESC';
+      const nulls = sortOrder === 'DESC' ? 'NULLS LAST' : 'NULLS FIRST';
 
       // Handle virtual fields that need special sorting
       let orderClause: any;
       if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
         // For virtual fields, we need to sort by the calculated amount
         // This requires a more complex query with subqueries
-        orderClause = [['updatedOn', sortOrder]]; // Fallback to updatedOn for now
+        orderClause = [['updatedOn', sortOrder], ['id', 'DESC']]; // Fallback to updatedOn for now
       } else if (fieldMapping[orderBy]) {
         // Use mapped field if it exists
-        orderClause = [[dbField, sortOrder]];
+        orderClause = [[dbField, sortOrder], ['id', 'DESC']];
       } else {
         // Fallback to updatedOn for unknown fields
         context.logger.warn(`Unknown sort field: ${orderBy}, falling back to updatedOn`);
-        orderClause = [['updatedOn', sortOrder]];
+        orderClause = [['updatedOn', sortOrder], ['id', 'DESC']];
+      }
+
+      if (orderBy === 'startDate') {
+        orderClause = [
+          [
+            context.models.sequelize.literal(
+              `(CASE WHEN "TenderModel"."status" NOT IN ('final', 'ordered', 'sent')
+                  THEN NULL
+                  ELSE "TenderModel"."start_date"
+                END) ${sortOrder} ${nulls}`
+            )
+          ],
+          ['id', 'DESC']
+        ];
       }
 
       // Define includes for queries
@@ -444,6 +460,7 @@ export const tenderService = (): TenderService => {
       };
     } catch (error) {
       context.logger.error(error);
+
       if (error instanceof Error) {
         context.logger.error(error.stack);
       }
