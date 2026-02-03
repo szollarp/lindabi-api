@@ -68,7 +68,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public otherComment!: string | null;
 
-  public customerId!: ForeignKey<Company["id"]>;
+  public customerId?: ForeignKey<Company["id"]> | null;
 
   public customer?: NonAttribute<Company>;
 
@@ -76,7 +76,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public getCustomer!: HasOneGetAssociationMixin<CompanyModel>;
 
-  public contractorId!: ForeignKey<Company["id"]>;
+  public contractorId?: ForeignKey<Company["id"]> | null;
 
   public contractor?: NonAttribute<Company>;
 
@@ -84,7 +84,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public getContractor!: HasOneGetAssociationMixin<CompanyModel>;
 
-  public locationId!: ForeignKey<Location["id"]>;
+  public locationId?: ForeignKey<Location["id"]> | null;
 
   public location?: NonAttribute<Location>;
 
@@ -92,7 +92,7 @@ export class TenderModel extends Model<Tender, CreateTenderProperties> implement
 
   public getLocation!: HasOneGetAssociationMixin<LocationModel>;
 
-  public contactId!: ForeignKey<Contact["id"]>;
+  public contactId?: ForeignKey<Contact["id"]> | null;
 
   public contact?: NonAttribute<Contact>;
 
@@ -262,19 +262,23 @@ export const TenderFactory = (sequelize: Sequelize): typeof TenderModel => {
     },
     customerId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     },
     contractorId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     },
     locationId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     },
     contactId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     },
     tenantId: {
       type: DataTypes.INTEGER,

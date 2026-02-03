@@ -38,6 +38,7 @@ export enum CONTACT_STATUS {
 };
 
 export enum TENDER_STATUS {
+  DRAFT = "draft",
   INQUIRY = "inquiry",
   PENDING = "pending",
   AWAITING_OFFER = "awaiting offer",

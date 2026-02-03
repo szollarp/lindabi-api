@@ -37,6 +37,7 @@ export interface TenderService {
   createTender: (context: Context, tenantId: number, user: DecodedUser, data: CreateTenderProperties) => Promise<Partial<Tender> | null>
   uploadTenderDocuments: (context: Context, id: number, user: DecodedUser, documents: CreateDocumentProperties[]) => Promise<{ uploaded: boolean }>
   updateTender: (context: Context, id: number, user: DecodedUser, data: Partial<Tender>) => Promise<{ statusChanged: boolean, tender: Partial<Tender> | null, status?: string }>
+  updateTenderDateRange: (context: Context, id: number, tenantId: number, data: { startDate: string | null, endDate: string | null }) => Promise<{ tender: Partial<Tender> | null }>
   deleteTender: (context: Context, tenantId: number, id: number) => Promise<{ success: boolean }>
   deleteTenders: (context: Context, tenantId: number, body: { ids: number[] }) => Promise<{ success: boolean }>
   getTenderJourneys: (context: Context, id: number) => Promise<Partial<Journey>[] | []>
@@ -1127,6 +1128,26 @@ export const tenderService = (): TenderService => {
     }
   };
 
+  const updateTenderDateRange = async (context: Context, id: number, tenantId: number, data: { startDate: string | null, endDate: string | null }): Promise<{ tender: Partial<Tender> | null }> => {
+    try {
+      const tender = await context.models.Tender.findOne({ where: { id, tenantId } });
+      if (!tender) {
+        return { tender: null };
+      }
+
+      // Explicitly handle date conversion or null assignment to ensure Sequelize processes it correctly
+      tender.startDate = data.startDate ? new Date(data.startDate) : null;
+      tender.endDate = data.endDate ? new Date(data.endDate) : null;
+
+      await tender.save();
+
+      return { tender };
+    } catch (error) {
+      context.logger.error(error);
+      throw error;
+    }
+  };
+
   return {
     getTenders,
     getBasicTenders,
@@ -1153,6 +1174,7 @@ export const tenderService = (): TenderService => {
     findDuplicateTenderNumbers,
     cleanupDuplicateTenderNumbers,
     getTenderNumberStats,
-    getTenderStatusCounts
+    getTenderStatusCounts,
+    updateTenderDateRange
   }
 };

@@ -1326,6 +1326,7 @@
 			},
 			"TENDER_STATUS": {
 				"enum": [
+					"draft",
 					"inquiry",
 					"pending",
 					"awaiting offer",
@@ -12445,6 +12446,77 @@
 						}
 					}
 				]
+			}
+		},
+		"/tenders/{id}/date-range": {
+			"put": {
+				"operationId": "UpdateTenderDateRange",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_Tender_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Updates the date range of an existing tender, identified by their ID. Access to this\nendpoint is restricted to authenticated requests with \"Tender:Update\" permission.",
+				"tags": [
+					"Tender"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tender:Update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The unique identifier of the tender to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "An object containing the start and end dates of the tender.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"endDate": {
+										"type": "string",
+										"nullable": true
+									},
+									"startDate": {
+										"type": "string",
+										"nullable": true
+									}
+								},
+								"required": [
+									"endDate",
+									"startDate"
+								],
+								"type": "object",
+								"description": "An object containing the start and end dates of the tender."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/tender-items-search": {

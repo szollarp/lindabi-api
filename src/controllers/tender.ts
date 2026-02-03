@@ -393,6 +393,24 @@ export class TenderController extends Controller {
   }
 
   /**
+   * Updates the date range of an existing tender, identified by their ID. Access to this
+   * endpoint is restricted to authenticated requests with "Tender:Update" permission.
+   *
+   * @param id The unique identifier of the tender to update.
+   * @param body An object containing the start and end dates of the tender.
+   * @returns The updated tender object with partial details, or null if the update fails.
+   */
+  @Tags("Tender")
+  @SuccessResponse("200", "OK")
+  @Put("{id}/date-range")
+  @Security("authentication", ["Tender:Update"])
+  public async updateTenderDateRange(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { startDate: string | null, endDate: string | null }): Promise<Partial<Tender> | null> {
+    const { context, user } = request;
+    const data = await context.services.tender.updateTenderDateRange(context, id, user.tenant, body);
+    return data.tender;
+  }
+
+  /**
    * Deletes multiple tenders based on the provided array of IDs. This operation requires
    * authentication and "Tender:Delete" permission. The deletion affects only the tenders
    * associated with the authenticated user's tenant.
