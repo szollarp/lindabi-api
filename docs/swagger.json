@@ -12457,12 +12457,15 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/Partial_Tender_"
+									"properties": {
+										"success": {
+											"type": "boolean"
 										}
+									},
+									"required": [
+										"success"
 									],
-									"nullable": true
+									"type": "object"
 								}
 							}
 						}

@@ -404,10 +404,9 @@ export class TenderController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("{id}/date-range")
   @Security("authentication", ["Tender:Update"])
-  public async updateTenderDateRange(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { startDate: string | null, endDate: string | null }): Promise<Partial<Tender> | null> {
+  public async updateTenderDateRange(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { startDate: string | null, endDate: string | null }): Promise<{ success: boolean }> {
     const { context, user } = request;
-    const data = await context.services.tender.updateTenderDateRange(context, id, user.tenant, body);
-    return data.tender;
+    return await context.services.tender.updateTenderDateRange(context, id, user, body);
   }
 
   /**
