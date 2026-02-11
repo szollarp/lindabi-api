@@ -7,7 +7,7 @@ import { Company } from "./company";
 
 export interface ItemMovement {
   id: number;
-  type: 'issue' | 'return' | 'transfer';
+  type: 'issue' | 'return' | 'transfer' | 'procurement';
   itemId: number;
   quantity: number;
   employeeId?: User["id"]; // Employee who performed the transaction
@@ -41,7 +41,7 @@ export interface ItemMovementItem {
 }
 
 export interface CreateItemMovementProperties {
-  type: 'issue' | 'return' | 'transfer';
+  type: 'issue' | 'return' | 'transfer' | 'procurement';
   employeeId?: User["id"];
   receiverId?: User["id"];
   supplierId?: Company["id"];

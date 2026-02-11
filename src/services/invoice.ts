@@ -32,16 +32,52 @@ const create = async (context: Context, user: DecodedUser, data: CreateInvoicePr
       throw new Error("Invoice with this number already exists");
     }
 
-    return await context.models.Invoice.create({
+    const invoice = await context.models.Invoice.create({
       ...data,
-      status: INVOICE_STATUS.CREATED,
+      status: data.status || INVOICE_STATUS.CREATED,
       createdBy: user.id,
       tenantId: user.tenant
     } as Invoice);
+
+    if (invoice.status === INVOICE_STATUS.APPROVED || data.status === INVOICE_STATUS.PAYED) {
+      invoice.approvedBy = user.id;
+      invoice.approvedOn = new Date();
+
+      if (data.status === INVOICE_STATUS.PAYED && data.payedOn) {
+        data.payedOn = new Date(data.payedOn);
+
+        const pattyCashInput = data.pattyCash == true ?
+          {
+            payerId: data.employeeId,
+            payerType: "employee",
+            recipientType: "cash desk",
+          } : {
+            payerType: "cash desk",
+            recipientType: "employee",
+            recipientId: data.employeeId
+          }
+
+        const project = await context.models.Project.findByPk(invoice.projectId);
+
+        await context.models.FinancialTransaction.create({
+          date: new Date(),
+          amount: invoice.netAmount,
+          contractorId: project!.contractorId,
+          description: invoice.invoiceNumber,
+          createdBy: user.id,
+          tenantId: user.tenant,
+          ...pattyCashInput
+        } as CreateFinancialTransactionProperties);
+      }
+
+      await invoice.save();
+    }
+
+    return invoice;
   } catch (error) {
     throw error;
   }
-};
+}
 
 const update = async (context: Context, user: DecodedUser, id: number, data: Partial<Invoice>): Promise<Invoice> => {
   const t = await context.models.sequelize.transaction();

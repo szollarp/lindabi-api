@@ -556,6 +556,9 @@ export const tenderService = (): TenderService => {
         property: "status"
       }, tender.id, "tender");
 
+      tender.sentOn = new Date();
+      await tender.save();
+
       return { success: true };
     }
     catch (error: any) {

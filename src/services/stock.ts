@@ -50,11 +50,10 @@ export const stockService = (): StockService => {
         let currentStock = 0;
         let totalIssued = 0;
         let totalReturned = 0;
+        let totalProcured = 0;
         let totalTransferredIn = 0;
         let totalTransferredOut = 0;
         let lastTransactionDate: Date | undefined;
-
-        console.log({ movements });
 
         movements.forEach(movement => {
           const quantity = movement.quantity || 0;
@@ -80,6 +79,9 @@ export const stockService = (): StockService => {
             if (movement.type === 'return') {
               totalReturned += quantity;
               currentStock += quantity;
+            } else if (movement.type === 'procurement') {
+              totalTransferredIn += quantity;
+              currentStock += quantity;
             } else if (movement.type === 'transfer') {
               totalTransferredIn += quantity;
               currentStock += quantity;
@@ -93,6 +95,7 @@ export const stockService = (): StockService => {
           currentStock: Math.max(0, currentStock), // Ensure non-negative stock
           totalIssued,
           totalReturned,
+          totalProcured,
           totalTransferredIn,
           totalTransferredOut,
           lastTransactionDate

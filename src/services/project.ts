@@ -106,6 +106,7 @@ export const projectService = (): ProjectService => {
         name: shortName,
         createdBy: user.id,
         status: PROJECT_STATUS.ORDERED,
+        inSchedule: true
       } as any, { transaction: t });
 
       for (const item of items!) {

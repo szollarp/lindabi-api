@@ -38,7 +38,22 @@ export const itemService = (): ItemService => {
 
   const createItem = async (context: Context, tenantId: number, createdBy: number, data: CreateItemProperties): Promise<Partial<Item> | null> => {
     try {
-      return await context.models.Item.create({ ...data, tenantId, createdBy });
+      const { initialInventory, ...itemData } = data;
+      const createdItem = await context.models.Item.create({ ...itemData, tenantId, createdBy });
+
+      if (initialInventory && createdItem) {
+        await context.services.itemMovement.createItemMovements(context, tenantId, createdBy, {
+          type: 'transfer',
+          target: 'warehouse',
+          targetId: initialInventory.entityId,
+          items: [{
+            itemId: createdItem.id,
+            quantity: initialInventory.quantity
+          }]
+        });
+      }
+
+      return createdItem;
     } catch (error) {
       context.logger.error(error);
       throw error;

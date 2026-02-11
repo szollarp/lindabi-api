@@ -31,7 +31,7 @@ export class ItemController extends Controller {
   @Tags("Item")
   @SuccessResponse("200", "OK")
   @Get("/{id}")
-  @Security("authentication", ["Tenant", "Item:Get"])
+  @Security("authentication", ["Tenant", "Item:List"])
   public async getItem(@Request() request: ContextualRequest, @Path() id: number): Promise<Partial<Item> | null> {
     const { context, user } = request;
     return await context.services.item.getItem(context, user.tenant, id);

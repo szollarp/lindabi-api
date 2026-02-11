@@ -9,6 +9,7 @@ export interface StockItem {
   currentStock: number;
   totalIssued: number;
   totalReturned: number;
+  totalProcured: number;
   totalTransferredIn: number;
   totalTransferredOut: number;
   lastTransactionDate?: Date;

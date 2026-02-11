@@ -391,14 +391,14 @@ function validateDocument({ user, document, documentType, companyName, isSkipped
     };
   }
 
-  if (!document.approved) {
-    return {
-      document: documentType,
-      company: companyName,
-      approved: false,
-      reason: "not_approved"
-    };
-  }
+  // if (!document.approved) {
+  //   return {
+  //     document: documentType,
+  //     company: companyName,
+  //     approved: false,
+  //     reason: "not_approved"
+  //   };
+  // }
 
   if (document.properties?.endOfValidity && moment(document.properties.endOfValidity).isBefore(moment())) {
     return {

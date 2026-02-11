@@ -21,4 +21,10 @@ export interface Item {
   updatedBy?: User["id"] | null
 }
 
-export type CreateItemProperties = Omit<Item, 'id' | 'createdAt' | 'updatedAt'>;
+export interface CreateItemProperties extends Omit<Item, 'id' | 'createdAt' | 'updatedAt'> {
+  initialInventory?: {
+    entityType: 'warehouse' | 'project';
+    entityId: number;
+    quantity: number;
+  };
+}
