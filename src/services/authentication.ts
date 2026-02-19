@@ -86,7 +86,7 @@ export const authenticationService = (): AuthenticationService => {
         const jwtTokens = await jwt.getJWTTokens(context, {
           id: user.id,
           name: user.name
-        }, { refreshTokenExpiresIn: body.isMobile ? '365d' : undefined });
+        }, { refreshTokenExpiresIn: body.isMobile ? '365d' : undefined, accessTokenExpiresIn: body.isMobile ? '365d' : undefined });
 
         const expiresAt = authConfig.refreshTokenRotation.enabled
           ? new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000)
@@ -197,7 +197,7 @@ export const authenticationService = (): AuthenticationService => {
       const jwtTokens = await jwt.getJWTTokens(context, {
         id: user.id,
         name: user.name
-      }, { refreshTokenExpiresIn: isMobile ? '365d' : undefined });
+      }, { refreshTokenExpiresIn: isMobile ? '365d' : undefined, accessTokenExpiresIn: isMobile ? '365d' : undefined });
 
       const expiresAt = authConfig.refreshTokenRotation.enabled
         ? new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000)
@@ -288,8 +288,14 @@ export const authenticationService = (): AuthenticationService => {
       const deviceId = headers["x-session-id"];
       const authConfig: AuthConfig = context.config.get("auth");
 
-      if (!jwt.verify(headerToken, authConfig.refreshToken.key, 'lindabi-mobile')) {
-        console.error("Refresh token verification failed", { headerToken });
+      try {
+        const decoded = jwt.verify(headerToken, authConfig.refreshToken.key, 'lindabi-mobile');
+        if (!decoded) {
+          console.error("Refresh token jwt.verify returned null/false", { headerToken });
+          throw new Error("JWT verification failed");
+        }
+      } catch (err: any) {
+        console.error("Refresh token verification failed", { headerToken, error: err.message });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
@@ -305,7 +311,11 @@ export const authenticationService = (): AuthenticationService => {
       });
 
       if (!refreshTokenRecord || !refreshTokenRecord.user) {
-        console.error("Refresh token not found or user not associated", { headerToken, refreshTokenRecord });
+        console.error("Refresh token not found in DB or user missing", {
+          headerTokenPreview: headerToken ? headerToken.substring(0, 10) + '...' : 'null',
+          recordFound: !!refreshTokenRecord,
+          userFound: !!refreshTokenRecord?.user
+        });
         throw Unauthorized("Refresh token is invalid or has expired. Please login again.");
       }
 
@@ -317,11 +327,17 @@ export const authenticationService = (): AuthenticationService => {
             now: new Date()
           });
           await refreshTokenRecord.destroy(); // Clean up expired token
+          console.error("Refresh token expired by DB check", { expiresAt: refreshTokenRecord.expiresAt });
           throw Unauthorized("Refresh token has expired. Please login again.");
         }
       }
 
-      const { accessToken, refreshToken: newRefreshToken } = await jwt.getJWTTokens(context, refreshTokenRecord.user);
+      const isMobile = headers?.["x-device-platform"] === "android" || headers?.["x-device-platform"] === "ios";
+
+      const { accessToken, refreshToken: newRefreshToken } = await jwt.getJWTTokens(context, refreshTokenRecord.user, {
+        refreshTokenExpiresIn: isMobile ? '365d' : undefined,
+        accessTokenExpiresIn: isMobile ? '365d' : undefined
+      });
 
       if (authConfig.refreshTokenRotation.enabled) {
         // FEATURE ENABLED: Rotate refresh token (new behavior)

@@ -23,32 +23,47 @@ const validateHeaderToken = async (context: Context, authToken: string, refreshT
   const authConfig: { refreshToken: { key: string }, authToken: { key: string } } = context.config.get("auth");
 
   let user: DecodedUser | null = null;
-  if (checkAccessToken) {
-    const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
-
-    if (!decodedToken) {
-      throw new Unauthorized();
+  try {
+    if (checkAccessToken) {
+      try {
+        const decodedToken = jwt.verify(authToken, authConfig.authToken.key) as { user: DecodedUser };
+        if (!decodedToken) throw new Error("Decoded access token is null");
+        user = decodedToken.user;
+      } catch (err: any) {
+        console.error("Access token verification failed:", err.message);
+        throw new Unauthorized("Invalid access token");
+      }
     }
 
-    user = decodedToken.user;
+    let decodedRefreshToken: { user: DecodedUser };
+    try {
+      decodedRefreshToken = jwt.verify(refreshToken, authConfig.refreshToken.key) as { user: DecodedUser };
+      if (!decodedRefreshToken) throw new Error("Decoded refresh token is null");
+    } catch (err: any) {
+      console.error("Refresh token verification failed:", err.message);
+      throw new Unauthorized("Invalid refresh token");
+    }
+
+    const token = await context.models.RefreshToken.findOne({
+      where: { token: refreshToken, userId: decodedRefreshToken.user.id, deviceId }
+    });
+
+    if (!token) {
+      console.error("Refresh token not found in DB or deviceId mismatch", {
+        userId: decodedRefreshToken.user.id,
+        deviceId,
+        tokenPreview: refreshToken.substring(0, 10) + "..."
+      });
+      throw new Unauthorized("Session expired or invalid");
+    }
+
+    user = decodedRefreshToken.user;
+
+    return { user };
+  } catch (error) {
+    console.error("validateHeaderToken failed:", error);
+    throw error;
   }
-
-  const decodedToken = jwt.verify(refreshToken, authConfig.refreshToken.key) as { user: DecodedUser };
-  if (!decodedToken) {
-    throw new Unauthorized();
-  }
-
-  const token = await context.models.RefreshToken.findOne({
-    where: { token: refreshToken, userId: decodedToken.user.id, deviceId }
-  });
-
-  if (!token) {
-    throw new Unauthorized();
-  }
-
-  user = decodedToken.user;
-
-  return { user };
 };
 
 const hasPermission = (user: User, permission: string): boolean => {
