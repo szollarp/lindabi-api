@@ -80,14 +80,16 @@ export const authenticationService = (): AuthenticationService => {
       }
 
       if (!user.enableTwoFactor) {
+        const authConfig: AuthConfig = context.config.get("auth");
+        const expirationDays = body.isMobile ? 365 : authConfig.refreshTokenRotation.expirationDays;
+
         const jwtTokens = await jwt.getJWTTokens(context, {
           id: user.id,
           name: user.name
-        });
+        }, { refreshTokenExpiresIn: body.isMobile ? '365d' : undefined });
 
-        const authConfig: AuthConfig = context.config.get("auth");
         const expiresAt = authConfig.refreshTokenRotation.enabled
-          ? new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000)
+          ? new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000)
           : null;
 
         // Extract device metadata from headers
@@ -188,17 +190,18 @@ export const authenticationService = (): AuthenticationService => {
 
       await twoFactorSession.destroy({ force: true, transaction: t });
 
+      const authConfig: AuthConfig = context.config.get("auth");
+      const isMobile = headers?.["x-device-platform"] === "android" || headers?.["x-device-platform"] === "ios";
+      const expirationDays = isMobile ? 365 : authConfig.refreshTokenRotation.expirationDays;
+
       const jwtTokens = await jwt.getJWTTokens(context, {
         id: user.id,
         name: user.name
-      });
+      }, { refreshTokenExpiresIn: isMobile ? '365d' : undefined });
 
-      const authConfig: AuthConfig = context.config.get("auth");
       const expiresAt = authConfig.refreshTokenRotation.enabled
-        ? new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000)
+        ? new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000)
         : null;
-
-      // Extract device metadata from headers
       const deviceMetadata = headers ? extractDeviceMetadata(headers) : {};
 
       const [refreshToken, created] = await context.models.RefreshToken.findOrCreate({
@@ -322,7 +325,9 @@ export const authenticationService = (): AuthenticationService => {
 
       if (authConfig.refreshTokenRotation.enabled) {
         // FEATURE ENABLED: Rotate refresh token (new behavior)
-        const expiresAt = new Date(Date.now() + authConfig.refreshTokenRotation.expirationDays * 24 * 60 * 60 * 1000);
+        const isMobile = headers?.["x-device-platform"] === "android" || headers?.["x-device-platform"] === "ios";
+        const expirationDays = isMobile ? 365 : authConfig.refreshTokenRotation.expirationDays;
+        const expiresAt = new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000);
 
         await refreshTokenRecord.update({
           token: newRefreshToken,

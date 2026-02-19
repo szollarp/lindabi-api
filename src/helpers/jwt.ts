@@ -69,10 +69,12 @@ export const pickUserData = (user: User): Partial<User> => {
   return { id, name, country, region, city, email, enableTwoFactor, phoneNumber, status, address, zipCode };
 };
 
-export const getJWTTokens = async (context: Context, user: { id: number, name: string }): Promise<GetJwtTokens> => {
+export const getJWTTokens = async (context: Context, user: { id: number, name: string }, options?: { refreshTokenExpiresIn?: StringValue | number }): Promise<GetJwtTokens> => {
   const { refreshToken: refreshTokenConfig, authToken: authTokenConfig }: AuthConfig = context.config.get("auth");
 
-  const refreshToken = generate({ user }, refreshTokenConfig.key, refreshTokenConfig.expiresIn);
+  const refreshTokenExpiration = options?.refreshTokenExpiresIn || refreshTokenConfig.expiresIn;
+
+  const refreshToken = generate({ user }, refreshTokenConfig.key, refreshTokenExpiration);
   const accessToken = generate({ user }, authTokenConfig.key, authTokenConfig.expiresIn);
 
   return { accessToken, refreshToken };
