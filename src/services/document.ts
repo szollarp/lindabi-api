@@ -21,12 +21,13 @@ export const MAIN_DOCUMENTS = [
   "medical-fitness-certificate",
   "work-authorization-document",
   "personal-protective-equipment-inspection-report",
+  "annual-subcontractor-framework-agreement",
+  "annual-general-occupational-safety-training",
+  "data-processing-declaration"
 ];
 
 export const COMPANY_DOCUMENTS = [
-  "annual-subcontractor-framework-agreement",
-  "annual-general-occupational-safety-training",
-  "data-processing-declaration",
+
 ];
 
 type DocumentUploadProperties = DocumentProperties & {
@@ -516,12 +517,9 @@ export async function checkUserDocuments(context: Context, tenantId: number, id:
     }
 
     // Validate main documents and company documents in parallel
-    const [mainDocumentResults, companyDocumentResults] = await Promise.all([
-      Promise.resolve(validateMainDocuments(user)),
-      validateCompanyDocuments(context, tenantId, user)
-    ]);
+    const documentResults = await validateMainDocuments(user);
 
-    return [...mainDocumentResults, ...companyDocumentResults];
+    return documentResults;
   } catch (error) {
     context.logger.error('Error checking user documents:', error);
     throw error;

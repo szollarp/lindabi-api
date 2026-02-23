@@ -7079,75 +7079,6 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
-			"Pick_Milestone.Exclude_keyofMilestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
-				"properties": {
-					"project": {
-						"$ref": "#/components/schemas/Project"
-					},
-					"name": {
-						"type": "string"
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"status": {
-						"$ref": "#/components/schemas/MILESTONE_STATUS"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"documents": {
-						"items": {
-							"$ref": "#/components/schemas/Document"
-						},
-						"type": "array"
-					},
-					"dueDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"netAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"invoiceNumber": {
-						"type": "string"
-					},
-					"invoiceDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"tigNotes": {
-						"type": "string"
-					},
-					"restraintAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"restraintDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"technicalInspector": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name",
-					"status",
-					"dueDate"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_Milestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
-				"$ref": "#/components/schemas/Pick_Milestone.Exclude_keyofMilestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"CreateMilestoneProperties": {
-				"$ref": "#/components/schemas/Omit_Milestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
-			},
 			"Partial_Milestone_": {
 				"properties": {
 					"id": {
@@ -7224,6 +7155,75 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"Pick_Milestone.Exclude_keyofMilestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__": {
+				"properties": {
+					"project": {
+						"$ref": "#/components/schemas/Project"
+					},
+					"name": {
+						"type": "string"
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/MILESTONE_STATUS"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"documents": {
+						"items": {
+							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"dueDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"netAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"invoiceNumber": {
+						"type": "string"
+					},
+					"invoiceDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"tigNotes": {
+						"type": "string"
+					},
+					"restraintAmount": {
+						"type": "number",
+						"format": "double"
+					},
+					"restraintDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"technicalInspector": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"status",
+					"dueDate"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Milestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_": {
+				"$ref": "#/components/schemas/Pick_Milestone.Exclude_keyofMilestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"CreateMilestoneProperties": {
+				"$ref": "#/components/schemas/Omit_Milestone.id-or-projectId-or-createdAt-or-createdOn-or-updatedBy-or-updatedOn_"
 			},
 			"Partial_Document_": {
 				"properties": {
@@ -16366,15 +16366,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"updated": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"updated"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/Partial_Milestone_"
 								}
 							}
 						}
@@ -16427,15 +16419,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"updated": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"updated"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/Partial_Milestone_"
 								}
 							}
 						}

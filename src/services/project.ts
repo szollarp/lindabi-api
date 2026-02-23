@@ -41,8 +41,8 @@ export interface ProjectService {
   addProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
   removeProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
   getProjectColors: (context: Context, tenantId: number) => Promise<string[]>
-  addMilestone: (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties) => Promise<{ updated: boolean }>
-  updateMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>) => Promise<{ updated: boolean }>
+  addMilestone: (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties) => Promise<Partial<Milestone>>
+  updateMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>) => Promise<Partial<Milestone>>
   removeMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number) => Promise<{ updated: boolean }>
   createProjectItem: (context: Context, projectId: number, user: DecodedUser, data: CreateProjectItemProperties) => Promise<ProjectItem>
   updateProjectItem: (context: Context, projectId: number, id: number, user: DecodedUser, data: Partial<ProjectItem>) => Promise<Partial<ProjectItem> | null>
@@ -841,7 +841,7 @@ export const projectService = (): ProjectService => {
     return PROJECT_COLORS.filter(color => !usedColors.includes(color));
   }
 
-  const addMilestone = async (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties): Promise<{ updated: boolean }> => {
+  const addMilestone = async (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties): Promise<Partial<Milestone>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -891,7 +891,7 @@ export const projectService = (): ProjectService => {
       }
 
       await t.commit();
-      return { updated: true };
+      return milestone;
     } catch (error) {
       await t.rollback();
 
@@ -900,7 +900,7 @@ export const projectService = (): ProjectService => {
     }
   }
 
-  const updateMilestone = async (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>): Promise<{ updated: boolean }> => {
+  const updateMilestone = async (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>): Promise<Partial<Milestone>> => {
     const t = await context.models.sequelize.transaction();
 
     try {
@@ -946,7 +946,7 @@ export const projectService = (): ProjectService => {
       }
 
       await t.commit();
-      return { updated: true };
+      return milestone;
     } catch (error) {
       await t.rollback();
 

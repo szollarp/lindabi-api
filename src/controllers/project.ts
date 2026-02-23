@@ -287,7 +287,7 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/{id}/milestones")
   @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
-  public async addMilestone(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateMilestoneProperties): Promise<{ updated: boolean }> {
+  public async addMilestone(@Request() request: ContextualRequest, @Path() id: number, @Body() body: CreateMilestoneProperties): Promise<Partial<Milestone>> {
     const { context, user } = request;
     return await context.services.project.addMilestone(context, user, id, body);
   }
@@ -305,7 +305,7 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Put("/{id}/milestones/{mid}")
   @Security("authentication", ["Tenant", "Project:UpdateMilestones"])
-  public async updateMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number, @Body() body: Partial<Milestone>): Promise<{ updated: boolean }> {
+  public async updateMilestone(@Request() request: ContextualRequest, @Path() id: number, @Path() mid: number, @Body() body: Partial<Milestone>): Promise<Partial<Milestone>> {
     const { context, user } = request;
     return await context.services.project.updateMilestone(context, user, id, mid, body);
   }

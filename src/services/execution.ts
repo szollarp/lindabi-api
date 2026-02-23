@@ -74,9 +74,6 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
   try {
     const employeeDocs = await context.services.document.checkUserDocuments(context, user.tenant, body.employeeId!);
     const invalidEmployeeDocuments = employeeDocs.filter(doc => doc.reason !== 'valid' && doc.reason !== 'skipped');
-    if (invalidEmployeeDocuments.length > 0) {
-      return { invalidEmployeeDocuments: true };
-    }
 
     const isExists = await context.models.Execution.findOne({
       where: {
@@ -105,12 +102,17 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
       return { missingStatusReport: true };
     }
 
-    return await context.models.Execution.create({
+    const execution = await context.models.Execution.create({
       ...body,
       status: EXECUTION_STATUS.PENDING,
       createdBy: user.id,
       tenantId: user.tenant
     } as Execution);
+
+    return {
+      ...execution.toJSON(),
+      invalidEmployeeDocuments: invalidEmployeeDocuments.length > 0
+    }
   } catch (error) {
     throw error;
   }
