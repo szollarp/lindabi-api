@@ -707,6 +707,12 @@
 					"tenant": {
 						"$ref": "#/components/schemas/Tenant"
 					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -967,96 +973,6 @@
 					"archived"
 				],
 				"type": "string"
-			},
-			"Contact": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string",
-						"nullable": true
-					},
-					"phoneNumber": {
-						"type": "string",
-						"nullable": true
-					},
-					"status": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
-							},
-							{
-								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
-							}
-						]
-					},
-					"notes": {
-						"type": "string",
-						"nullable": true
-					},
-					"tenantId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"tenant": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Tenant"
-							}
-						],
-						"nullable": true
-					},
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"user": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/User"
-							}
-						],
-						"nullable": true
-					},
-					"projectSupervisors": {
-						"items": {
-							"$ref": "#/components/schemas/Project"
-						},
-						"type": "array"
-					},
-					"createdOn": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedOn": {
-						"type": "string",
-						"format": "date-time",
-						"nullable": true
-					},
-					"createdBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"status"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"Company": {
 				"properties": {
@@ -1319,6 +1235,96 @@
 					"city",
 					"address",
 					"zipCode",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Contact": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string",
+						"nullable": true
+					},
+					"phoneNumber": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.ACTIVE"
+							},
+							{
+								"$ref": "#/components/schemas/CONTACT_STATUS.INACTIVE"
+							}
+						]
+					},
+					"notes": {
+						"type": "string",
+						"nullable": true
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"tenant": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Tenant"
+							}
+						],
+						"nullable": true
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"user": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/User"
+							}
+						],
+						"nullable": true
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time",
+						"nullable": true
+					},
+					"createdBy": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedBy": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
 					"status"
 				],
 				"type": "object",
@@ -1764,7 +1770,7 @@
 					},
 					"supervisors": {
 						"items": {
-							"$ref": "#/components/schemas/Contact"
+							"$ref": "#/components/schemas/User"
 						},
 						"type": "array"
 					},
@@ -3332,6 +3338,12 @@
 					"tenant": {
 						"$ref": "#/components/schemas/Tenant"
 					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
+					},
 					"createdOn": {
 						"type": "string",
 						"format": "date-time"
@@ -3566,6 +3578,12 @@
 							"$ref": "#/components/schemas/Document"
 						},
 						"type": "array"
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -3773,6 +3791,12 @@
 					"documents": {
 						"items": {
 							"$ref": "#/components/schemas/Document"
+						},
+						"type": "array"
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
 						},
 						"type": "array"
 					}
@@ -4003,6 +4027,12 @@
 					},
 					"tenant": {
 						"$ref": "#/components/schemas/Tenant"
+					},
+					"projectSupervisors": {
+						"items": {
+							"$ref": "#/components/schemas/Project"
+						},
+						"type": "array"
 					},
 					"createdOn": {
 						"type": "string",
@@ -6950,7 +6980,7 @@
 					},
 					"supervisors": {
 						"items": {
-							"$ref": "#/components/schemas/Contact"
+							"$ref": "#/components/schemas/User"
 						},
 						"type": "array"
 					},
@@ -9237,15 +9267,15 @@
 					"notes": {
 						"type": "string"
 					},
-					"userId": {
-						"type": "number",
-						"format": "double"
-					},
 					"projectSupervisors": {
 						"items": {
 							"$ref": "#/components/schemas/Project"
 						},
 						"type": "array"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -16264,13 +16294,13 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"contactId": {
+									"userId": {
 										"type": "number",
 										"format": "double"
 									}
 								},
 								"required": [
-									"contactId"
+									"userId"
 								],
 								"type": "object",
 								"description": "Contains the ID of the contact to be added as a supervisor."
@@ -16280,7 +16310,7 @@
 				}
 			}
 		},
-		"/projects/{id}/supervisors/{cid}": {
+		"/projects/{id}/supervisors/{uid}": {
 			"delete": {
 				"operationId": "RemoveProjectSupervisor",
 				"responses": {
@@ -16312,9 +16342,8 @@
 						}
 					},
 					{
-						"description": "The ID of the supervisor to remove.",
 						"in": "path",
-						"name": "cid",
+						"name": "uid",
 						"required": true,
 						"schema": {
 							"format": "double",

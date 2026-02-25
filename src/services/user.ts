@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { NotAcceptable, Unauthorized } from "http-errors";
 import { createRandomToken } from "../helpers/token";
-import { USER_STATUS, USER_TYPE } from "../constants";
+import { CONTACT_STATUS, USER_STATUS, USER_TYPE } from "../constants";
 import type {
   CreateUserProperties, NotificationSettings, UpdatePasswordProperties, User
 } from "../models/interfaces/user";
@@ -81,11 +81,22 @@ export const userService = (): UserService => {
         createdBy
       }, { transaction: t });
 
-      if (contactId) {
+      if (contactId && contactId > 0) {
         const contact = await context.models.Contact.findByPk(contactId, { transaction: t });
         if (contact) {
           await contact.update({ userId: user.id }, { transaction: t });
         }
+      } else {
+        await context.models.Contact.create({
+          name: data.name,
+          email: email.toLowerCase(),
+          phoneNumber: data.phoneNumber,
+          status: CONTACT_STATUS.ACTIVE,
+          notes: "",
+          tenantId,
+          userId: user.id,
+          createdBy
+        }, { transaction: t });
       }
 
       if (salaries) {

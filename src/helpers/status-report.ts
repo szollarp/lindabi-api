@@ -28,22 +28,14 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
           }]
         },
         {
-          model: context.models.Contact,
+          model: context.models.User,
           as: "supervisors",
           attributes: ["id"],
           through: {
             attributes: ["endDate"],
             as: "attributes",
             where: { endDate: null },
-          },
-          include: [
-            {
-              model: context.models.User,
-              as: "user",
-              attributes: ["id"],
-              required: true,
-            },
-          ],
+          }
         }
       ],
       where: {
@@ -51,7 +43,7 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
           { tenantId: user.tenant },
           {
             [Op.or]: [
-              { "$supervisors.user.id$": user.id },
+              { "$supervisors.id$": user.id },
               { createdBy: user.id }
             ]
           }
@@ -73,7 +65,7 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
   const where = (user.isSystemAdmin || (user.isManager && hasPermission(user, "Report:List"))) ? { tenantId: user.tenant } : {
     tenantId: user.tenant,
     [Op.or]: [
-      { "$project.supervisors.user.id$": user.id },
+      { "$project.supervisors.id$": user.id },
       { "$project.contacts.user.id$": user.id, availableToClient: true },
       { createdBy: user.id }
     ]
@@ -105,7 +97,7 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
         as: "contractor",
         attributes: ["id", "name"]
       }, {
-        model: context.models.Contact,
+        model: context.models.User,
         as: "supervisors",
         attributes: ["id"],
         through: {
@@ -113,11 +105,6 @@ export const getRelatedStatusReports = async (context: Context, user: DecodedUse
           as: "attributes",
           where: { endDate: null },
         },
-        include: [{
-          model: context.models.User,
-          as: "user",
-          attributes: ["id"]
-        }],
         required: false
       }, {
         model: context.models.Contact,

@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import type { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule, Workspace } from "../models/interfaces/employee-schedule";
 import type { Context, DecodedUser } from "../types";
+import { USER_STATUS } from "../constants";
 
 type ScheduleQueryParams = {
   startDate?: string;
@@ -25,11 +26,11 @@ export const employeeScheduleService = (): EmployeeScheduleService => {
 const list = async (context: Context, user: DecodedUser, query: ScheduleQueryParams): Promise<Array<Partial<EmployeeSchedule>>> => {
   try {
     return await context.models.User.findAll({
-      attributes: ["id", "name", "email"],
+      attributes: ["id", "name", "email", "entity"],
       where: {
         inSchedule: true,
         tenantId: user.tenant,
-        entity: "employee"
+        status: USER_STATUS.ACTIVE
       },
       order: [["name", "ASC"]],
       include: [

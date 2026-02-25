@@ -237,9 +237,9 @@ export class ProjectController extends Controller {
   @SuccessResponse("200", "OK")
   @Post("/{id}/supervisors")
   @Security("authentication", ["Tenant", "Project:UpdateMain"])
-  public async addProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { contactId: number }): Promise<void> {
+  public async addProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Body() body: { userId: number }): Promise<void> {
     const { context, user } = request;
-    return await context.services.project.addProjectSupervisor(context, user, id, body.contactId);
+    return await context.services.project.addProjectSupervisor(context, user, id, body.userId);
   }
 
   /**
@@ -252,11 +252,11 @@ export class ProjectController extends Controller {
    */
   @Tags("Project")
   @SuccessResponse("200", "OK")
-  @Delete("/{id}/supervisors/{cid}")
+  @Delete("/{id}/supervisors/{uid}")
   @Security("authentication", ["Tenant", "Project:UpdateMain"])
-  public async removeProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Path() cid: number): Promise<void> {
+  public async removeProjectSupervisor(@Request() request: ContextualRequest, @Path() id: number, @Path() uid: number): Promise<void> {
     const { context, user } = request;
-    return await context.services.project.removeProjectSupervisor(context, user, id, cid);
+    return await context.services.project.removeProjectSupervisor(context, user, id, uid);
   }
 
   /**

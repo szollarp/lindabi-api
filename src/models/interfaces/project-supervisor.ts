@@ -1,12 +1,12 @@
-import type { Contact } from "./contact";
+import type { User } from "./user";
 import type { Project } from "./project";
 
 export interface ProjectSupervisor {
   startDate?: Date | null;
   endDate?: Date | null;
   //
-  contactId: Contact["id"];
-  contact?: Contact;
+  userId: User["id"];
+  user?: User;
   //
   projectId: Project["id"];
   project?: Project;

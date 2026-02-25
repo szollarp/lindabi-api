@@ -70,7 +70,7 @@ const getDistanceAmount = (execution: Execution, settings: Partial<FinancialSett
 };
 
 export const getEmployeePayroll = (employee: User, settings: Partial<FinancialSetting>[]) => {
-  const { executions, invoices, salaries, id, name, contact } = employee;
+  const { executions, invoices, salaries, id, name, contact, projectSupervisors } = employee;
 
   const itemizedExecutions = executions?.filter(execution => execution.settlement === EXECUTION_SETTLEMENT.ITEMIZED);
   const itemizedAmount = itemizedExecutions?.reduce((acc, execution) => acc + getItemizedAmount(execution), 0) || 0;
@@ -89,7 +89,7 @@ export const getEmployeePayroll = (employee: User, settings: Partial<FinancialSe
   const invoicesAmount = invoices?.reduce((acc, invoice) => acc + invoice.netAmount, 0) || 0;
 
   const bonusAmount = settings.find(setting => setting.type === FINANCIAL_SETTING_TYPE.SUPERVISOR_BONUS)?.amount || 0;
-  const supervisorBonus = (contact?.projectSupervisors?.length || 0) * Number(bonusAmount);
+  const supervisorBonus = (projectSupervisors?.length || 0) * Number(bonusAmount);
 
   const summary = itemizedAmount + hourlyAmount + distanceAmount + supervisorBonus - invoicesAmount;
 

@@ -8,11 +8,13 @@ import { Tender } from "./interfaces/tender";
 import { Document } from "./interfaces/document";
 import { Location } from "./interfaces/location";
 import { Contact } from "./interfaces/contact";
+import { User } from "./interfaces/user";
 import { Company } from "./interfaces/company";
 import { Tenant } from "./interfaces/tenant";
 import { CompanyModel } from "./company";
 import { LocationModel } from "./location";
 import { ContactModel } from "./contact";
+import { UserModel } from "./user";
 import { TenantModel } from "./tenant";
 import { DocumentModel } from "./document";
 import { Journey } from "./interfaces/journey";
@@ -113,15 +115,15 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
 
   public getContacts!: HasManyGetAssociationsMixin<ContactModel>;
 
-  public supervisorIds!: ForeignKey<Contact["id"][]>;
+  public supervisorIds!: ForeignKey<User["id"][]>;
 
-  public supervisors?: NonAttribute<Contact[]>;
+  public supervisors?: NonAttribute<User[]>;
 
-  public addSupervisor!: HasManyAddAssociationMixin<ContactModel, number>;
+  public addSupervisor!: HasManyAddAssociationMixin<UserModel, number>;
 
-  public setSupervisor!: HasManySetAssociationsMixin<ContactModel, number>;
+  public setSupervisor!: HasManySetAssociationsMixin<UserModel, number>;
 
-  public getSupervisors!: HasManyGetAssociationsMixin<ContactModel>;
+  public getSupervisors!: HasManyGetAssociationsMixin<UserModel>;
 
   public commentIds!: ForeignKey<ProjectComment["id"][]>;
 
@@ -189,7 +191,7 @@ export class ProjectModel extends Model<Project, CreateProjectProperties> implem
     contractor: Association<ProjectModel, CompanyModel>,
     location: Association<ProjectModel, LocationModel>,
     contacts: Association<ProjectModel, ContactModel>
-    supervisors: Association<ProjectModel, ContactModel>
+    supervisors: Association<ProjectModel, UserModel>
     items: Association<ProjectModel, TenderItemModel>,
     milestones: Association<ProjectModel, MilestoneModel>
     comments: Association<ProjectModel, ProjectCommentModel>
@@ -430,8 +432,9 @@ export const ProjectFactory = (sequelize: Sequelize): typeof ProjectModel => {
       as: "contacts"
     });
 
-    ProjectModel.belongsToMany(models.Contact, {
+    ProjectModel.belongsToMany(models.User, {
       foreignKey: "projectId",
+      otherKey: "userId",
       through: models.ProjectSupervisor,
       as: "supervisors"
     });

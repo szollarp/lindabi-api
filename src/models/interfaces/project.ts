@@ -36,8 +36,8 @@ export interface Project {
   otherComment?: string | null
   contractOption?: string | null
   //
-  supervisorIds?: Contact["id"][] | null
-  supervisors?: Contact[]
+  supervisorIds?: User["id"][] | null
+  supervisors?: User[]
   //
   customerId?: Company["id"] | null
   customer?: Company

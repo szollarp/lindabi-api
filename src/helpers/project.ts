@@ -53,22 +53,14 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
           ],
         },
         {
-          model: context.models.Contact,
+          model: context.models.User,
           as: "supervisors",
           attributes: ["id"],
           through: {
             attributes: ["endDate"],
             as: "attributes",
             where: { endDate: null },
-          },
-          include: [
-            {
-              model: context.models.User,
-              as: "user",
-              attributes: ["id"],
-              required: true,
-            },
-          ],
+          }
         },
       ],
       where: { tenantId: user.tenant },
@@ -87,7 +79,7 @@ export const getUserProjectIds = async (context: Context, user: DecodedUser): Pr
         }
 
         if (Array.isArray(supervisors)) {
-          return supervisors.some(supervisor => hasPermission(user, "Project:List") && supervisor.user?.id === user.id);
+          return supervisors.some(supervisor => hasPermission(user, "Project:List") && supervisor.id === user.id);
         }
 
         return false;

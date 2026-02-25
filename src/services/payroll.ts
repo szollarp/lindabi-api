@@ -106,40 +106,38 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
         {
           model: context.models.Contact,
           as: "contact",
-          attributes: ["id"],
-          include: [
-            {
-              model: context.models.Project,
-              as: "projectSupervisors",
-              attributes: ["id", "supervisorBonus"],
-              where: { supervisorBonus: true },
-              required: true,
-              through: {
-                attributes: ["startDate", "endDate"],
-                as: "supervisors",
-                where: {
-                  [Op.or]: [
-                    {
-                      startDate: {
-                        [Op.lte]: new Date(startDate)
-                      },
-                      endDate: {
-                        [Op.is]: null,
-                      },
-                    },
-                    {
-                      startDate: {
-                        [Op.lte]: new Date(startDate)
-                      },
-                      endDate: {
-                        [Op.gte]: new Date(endDate)
-                      },
-                    }
-                  ]
+          attributes: ["id"]
+        },
+        {
+          model: context.models.Project,
+          as: "projectSupervisors",
+          attributes: ["id", "supervisorBonus"],
+          where: { supervisorBonus: true },
+          required: false, // Make required: false since we're attaching it to employee array and it shouldn't filter employees, wait initially it was `required: true` inside Contact! Let's keep required: false so it doesn't filter out employees without bonuses, or wait, if required: true it only returns those contacts? If required:false was not there, the default is false for includes unless `where` is on the include... Wait! the original had `required: false` on Contact but `required: true` on projectSupervisors inside Contact. That means it only included Contact if it has projectSupervisors. I'll just use `required: false` here to be safe and avoid filtering out employees without bonuses. Actually, wait. The original code didn't have `required` on `Contact` so it was `false`. Let me just use `required: false`.
+          through: {
+            attributes: ["startDate", "endDate"],
+            as: "supervisors",
+            where: {
+              [Op.or]: [
+                {
+                  startDate: {
+                    [Op.lte]: new Date(startDate)
+                  },
+                  endDate: {
+                    [Op.is]: null,
+                  },
+                },
+                {
+                  startDate: {
+                    [Op.lte]: new Date(startDate)
+                  },
+                  endDate: {
+                    [Op.gte]: new Date(endDate)
+                  },
                 }
-              }
+              ]
             }
-          ]
+          }
         },
         {
           model: context.models.Invoice,
@@ -227,40 +225,38 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
         {
           model: context.models.Contact,
           as: "contact",
-          attributes: ["id"],
-          include: [
-            {
-              model: context.models.Project,
-              as: "projectSupervisors",
-              attributes: ["id", "supervisorBonus"],
-              where: { supervisorBonus: true },
-              required: true,
-              through: {
-                attributes: ["startDate", "endDate"],
-                as: "supervisors",
-                where: {
-                  [Op.or]: [
-                    {
-                      startDate: {
-                        [Op.lte]: new Date(startDate)
-                      },
-                      endDate: {
-                        [Op.is]: null,
-                      },
-                    },
-                    {
-                      startDate: {
-                        [Op.lte]: new Date(startDate)
-                      },
-                      endDate: {
-                        [Op.gte]: new Date(endDate)
-                      },
-                    }
-                  ]
+          attributes: ["id"]
+        },
+        {
+          model: context.models.Project,
+          as: "projectSupervisors",
+          attributes: ["id", "supervisorBonus"],
+          where: { supervisorBonus: true },
+          required: false,
+          through: {
+            attributes: ["startDate", "endDate"],
+            as: "supervisors",
+            where: {
+              [Op.or]: [
+                {
+                  startDate: {
+                    [Op.lte]: new Date(startDate)
+                  },
+                  endDate: {
+                    [Op.is]: null,
+                  },
+                },
+                {
+                  startDate: {
+                    [Op.lte]: new Date(startDate)
+                  },
+                  endDate: {
+                    [Op.gte]: new Date(endDate)
+                  },
                 }
-              }
+              ]
             }
-          ]
+          }
         },
         {
           model: context.models.Invoice,

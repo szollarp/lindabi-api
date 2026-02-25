@@ -98,10 +98,6 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
       }
     });
 
-    if (!report) {
-      return { missingStatusReport: true };
-    }
-
     const execution = await context.models.Execution.create({
       ...body,
       status: EXECUTION_STATUS.PENDING,
@@ -111,7 +107,8 @@ const create = async (context: Context, user: DecodedUser, body: Partial<Executi
 
     return {
       ...execution.toJSON(),
-      invalidEmployeeDocuments: invalidEmployeeDocuments.length > 0
+      invalidEmployeeDocuments: invalidEmployeeDocuments.length > 0,
+      missingStatusReport: !report
     }
   } catch (error) {
     throw error;

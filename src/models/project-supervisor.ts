@@ -2,18 +2,18 @@ import { Model, DataTypes } from "sequelize";
 import type { Sequelize } from "sequelize";
 import { CreateProjectSupervisorProperties, ProjectSupervisor } from "./interfaces/project-supervisor";
 import type { Models } from ".";
-import { Contact } from "./interfaces/contact";
+import { User } from "./interfaces/user";
 
 export class ProjectSupervisorModel extends Model<ProjectSupervisor, CreateProjectSupervisorProperties> implements ProjectSupervisor {
   public projectId!: number;
 
-  public contactId!: number;
+  public userId!: number;
 
-  public readonly contact?: Contact;
+  public readonly user?: User;
 
-  public readonly startDate!: Date | null;
+  public startDate!: Date | null;
 
-  public readonly endDate!: Date | null;
+  public endDate!: Date | null;
 
   public readonly createdOn!: Date;
 
@@ -28,27 +28,33 @@ export const ProjectSupervisorFactory = (sequelize: Sequelize): typeof ProjectSu
   ProjectSupervisorModel.init({
     projectId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: "project_id"
     },
-    contactId: {
+    userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      field: "user_id"
     },
     startDate: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: "start_date"
     },
     endDate: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: "end_date"
     },
     createdOn: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      field: "created_on"
     },
     updatedOn: {
       type: DataTypes.DATE,
       defaultValue: null,
-      allowNull: true
+      allowNull: true,
+      field: "updated_on"
     }
   }, {
     sequelize,
@@ -61,15 +67,13 @@ export const ProjectSupervisorFactory = (sequelize: Sequelize): typeof ProjectSu
   });
 
   ProjectSupervisorModel.associate = (models) => {
-    ProjectSupervisorModel.belongsToMany(models.Project, {
-      foreignKey: "project_id",
-      through: "project_supervisors",
+    ProjectSupervisorModel.belongsTo(models.Project, {
+      foreignKey: "projectId"
     });
 
-    ProjectSupervisorModel.belongsToMany(models.Contact, {
-      foreignKey: "contact_id",
-      through: "project_supervisors",
-      as: "contact"
+    ProjectSupervisorModel.belongsTo(models.User, {
+      foreignKey: "userId",
+      as: "user"
     });
   };
 

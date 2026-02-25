@@ -35,6 +35,8 @@ import { Execution } from "./interfaces/execution";
 import { EmployeeSchedule } from "./interfaces/employee-schedule";
 import { Notification } from "./interfaces/notification";
 import { NotificationModel } from "./notification";
+import { Project } from "./interfaces/project";
+import { ProjectModel } from "./project";
 
 export class UserModel extends Model<User, CreateUserProperties> implements User {
   public id!: number;
@@ -222,6 +224,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
   declare notificationIds?: ForeignKey<Notification["id"]>[];
 
   declare itemMovements?: NonAttribute<any[]>;
+
+  declare projectSupervisors?: NonAttribute<Project[]>;
 
   public static associations: {
     accountVerifyToken: Association<UserModel, AccountVerifyTokenModel>
@@ -525,6 +529,13 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
     UserModel.hasMany(models.ItemMovement, {
       foreignKey: "employee_id",
       as: "itemMovements"
+    });
+
+    UserModel.belongsToMany(models.Project, {
+      foreignKey: "userId",
+      otherKey: "projectId",
+      through: "project_supervisors",
+      as: "projectSupervisors"
     });
   };
 

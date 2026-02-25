@@ -38,8 +38,8 @@ export interface ProjectService {
   updateProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number, body: { canShow: boolean, userContact: boolean }) => Promise<void>
   addProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
   removeProjectContact: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
-  addProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
-  removeProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, contactId: number) => Promise<void>
+  addProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, userId: number) => Promise<void>
+  removeProjectSupervisor: (context: Context, user: DecodedUser, projectId: number, userId: number) => Promise<void>
   getProjectColors: (context: Context, tenantId: number) => Promise<string[]>
   addMilestone: (context: Context, user: DecodedUser, projectId: number, body: CreateMilestoneProperties) => Promise<Partial<Milestone>>
   updateMilestone: (context: Context, user: DecodedUser, projectId: number, milestoneId: number, body: Partial<Milestone>) => Promise<Partial<Milestone>>
@@ -353,7 +353,7 @@ export const projectService = (): ProjectService => {
       // Define includes for queries
       const baseIncludes = [
         {
-          model: context.models.Contact,
+          model: context.models.User,
           as: "supervisors",
           attributes: [],
           required: false
@@ -429,7 +429,7 @@ export const projectService = (): ProjectService => {
           required: false
         },
         {
-          model: context.models.Contact,
+          model: context.models.User,
           as: "supervisors",
           attributes: ["id", "name"],
           required: false
@@ -575,9 +575,9 @@ export const projectService = (): ProjectService => {
             }
           },
           {
-            model: context.models.Contact,
+            model: context.models.User,
             as: "supervisors",
-            attributes: ["name", "id", "userId"],
+            attributes: ["name", "id", "email", "phoneNumber"],
             through: {
               attributes: ["startDate", "endDate", "createdOn"],
               as: "attributes",
@@ -739,75 +739,92 @@ export const projectService = (): ProjectService => {
     }
   }
 
-  const addProjectSupervisor = async (context: Context, user: DecodedUser, projectId: number, contactId: number): Promise<void> => {
+  const addProjectSupervisor = async (context: Context, user: DecodedUser, projectId: number, userId: number): Promise<void> => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      const projectSupervisor = await context.models.ProjectSupervisor.findOne({
-        where: { projectId, contactId }, transaction: t
+      const activeSupervisor = await context.models.ProjectSupervisor.findOne({
+        where: { projectId, userId, endDate: null }, transaction: t
       });
 
-      if (projectSupervisor) {
-        throw new NotAcceptable("Project contact already exists");
+      if (activeSupervisor) {
+        throw new NotAcceptable("Project supervisor is already active");
       }
 
-      const contact = await context.models.Contact.findOne({
-        attributes: ["id", "userId", "name"],
-        where: { id: contactId },
+      const employee = await context.models.User.findOne({
+        attributes: ["id", "name"],
+        where: { id: userId },
         transaction: t
       });
 
-      if (!contact) {
-        throw new NotAcceptable("Project contact not exists");
+      if (!employee) {
+        throw new NotAcceptable("Project supervisor not exists");
       }
 
-      await context.models.ProjectSupervisor.update({ endDate: new Date() }, {
-        where: { projectId, endDate: null },
+      const now = new Date();
+
+      await context.models.ProjectSupervisor.update({ endDate: now }, {
+        where: { projectId },
         transaction: t
       });
 
       await context.models.ProjectSupervisor.create({
         projectId,
-        contactId,
-        startDate: new Date(),
+        userId,
+        startDate: now,
       }, { transaction: t });
 
       await context.services.journey.addSimpleLog(context, user, {
         activity: `The project supervisor have been successfully added.`,
         property: "Project Supervisor",
-        updated: contact.name
+        updated: user.name
       }, projectId, "project");
 
       await t.commit();
     } catch (error) {
       await t.rollback();
-
-      context.logger.error(error);
       throw error;
     }
   }
 
-  const removeProjectSupervisor = async (context: Context, user: DecodedUser, projectId: number, contactId: number): Promise<void> => {
+  const removeProjectSupervisor = async (context: Context, user: DecodedUser, projectId: number, userId: number): Promise<void> => {
     const t = await context.models.sequelize.transaction();
 
     try {
       const projectSupervisor = await context.models.ProjectSupervisor.findOne({
-        where: { projectId, contactId }, transaction: t
+        where: { projectId, userId, endDate: null }, transaction: t
       });
 
       if (!projectSupervisor) {
-        throw new NotAcceptable("Project contact not found");
+        throw new NotAcceptable("Project supervisor not found or not currently active");
       }
 
-      await projectSupervisor.destroy({ transaction: t });
-      await context.models.ProjectSupervisor.update({ endDate: null }, {
-        where: { projectId, endDate: projectSupervisor.startDate },
+      const previousSupervisor = await context.models.ProjectSupervisor.findOne({
+        where: { projectId, endDate: { [Op.not]: null } },
+        order: [['endDate', 'DESC']],
         transaction: t
       });
 
-      const contact = await context.models.Contact.findOne({
+      if (previousSupervisor) {
+        await context.models.sequelize.query(
+          'UPDATE project_supervisors SET end_date = NULL, updated_on = NOW() WHERE project_id = :projectId AND user_id = :userId AND start_date = :startDate AND end_date = :endDate',
+          {
+            replacements: {
+              projectId: previousSupervisor.projectId,
+              userId: previousSupervisor.userId,
+              startDate: previousSupervisor.startDate,
+              endDate: previousSupervisor.endDate
+            },
+            transaction: t
+          }
+        );
+      }
+
+      await projectSupervisor.destroy({ transaction: t });
+
+      const contact = await context.models.User.findOne({
         attributes: ["name"],
-        where: { id: contactId },
+        where: { id: userId },
         transaction: t
       });
 

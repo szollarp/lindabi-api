@@ -112,6 +112,8 @@ export interface User {
   tenantId?: Tenant["id"] | null
   tenant?: Tenant
   //
+  projectSupervisors?: Project[]
+  //
   createdOn?: Date
   updatedOn?: Date | null
   deletedOn?: Date | null
