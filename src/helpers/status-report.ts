@@ -52,8 +52,8 @@ export const getRelatedProjectsByStatusReport = async (context: Context, user: D
     });
 
     return projects.map(project => {
-      const { id, shortName, type, reports, customer, number, tender } = project;
-      return { id, tender, name: shortName || type, reports, customer: customer!.name, number: number || "" };
+      const { id, shortName, type, reports, customer, number, tender, status } = project;
+      return { id, status, tender, name: shortName || type, reports, customer: customer!.name, number: number || "" };
     });
   } catch (error) {
     console.error("Error fetching projects:", error);
