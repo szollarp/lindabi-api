@@ -9,7 +9,7 @@ const hasPermission = (user: DecodedUser, permission: string): boolean => {
 export const getRelatedProjectsByStatusReport = async (context: Context, user: DecodedUser): Promise<Array<{ id: number, tender?: Tender, name: string, reports: boolean, customer: string, number: string }>> => {
   try {
     const projects = await context.models.Project.findAll({
-      attributes: ["id", "number", "shortName", "type", "reports"],
+      attributes: ["id", "number", "shortName", "type", "reports", "status"],
       include: [
         {
           model: context.models.Company,

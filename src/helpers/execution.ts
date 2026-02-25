@@ -18,7 +18,7 @@ export const getRelatedProjectsByExecution = async (context: Context, employee: 
       include: [{
         model: context.models.Project,
         as: "project",
-        attributes: ["id", "number", "name", "shortName", "type", "reports"],
+        attributes: ["id", "number", "name", "shortName", "type", "reports", "status"],
         required: true,
         include: [
           {
