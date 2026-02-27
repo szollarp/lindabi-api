@@ -22570,6 +22570,57 @@
 					}
 				}
 			}
+		},
+		"/employees/{id}/trackings": {
+			"get": {
+				"operationId": "GetTrackingEvents",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Retrieves tracking events for a specific employee on a given date.\nSecured with JWT token and requires \"Employee:Get\" permission.",
+				"tags": [
+					"Employee"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Employee:Get",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the employee.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Oponal date to filter events (defaults to today).",
+						"in": "query",
+						"name": "date",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
 		}
 	},
 	"servers": [

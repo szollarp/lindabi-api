@@ -1,4 +1,4 @@
-import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete, UploadedFiles, FormField } from "tsoa";
+import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Post, Path, Body, Put, Delete, UploadedFiles, FormField, Query } from "tsoa";
 import type { CreateUserProperties, User, UserBilling } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { CreateDocumentProperties, Document, DocumentType } from "../models/interfaces/document";
@@ -231,5 +231,23 @@ export class EmployeeController extends Controller {
   public async updateBilling(@Request() request: ContextualRequest, @Path() id: number, @Body() body: UserBilling): Promise<Partial<User>> {
     const { context, user } = request;
     return await context.services.user.update(context, user.tenant, id, { billing: body }, user.id);
+  }
+
+  /**
+   * Retrieves tracking events for a specific employee on a given date.
+   * Secured with JWT token and requires "Employee:Get" permission.
+   *
+   * @param id The ID of the employee.
+   * @param date Oponal date to filter events (defaults to today).
+   * @returns An array of tracking events.
+   */
+  @Tags("Employee")
+  @SuccessResponse("200", "OK")
+  @Get("{id}/trackings")
+  @Security("authentication", ["Employee:Get", "Tenant"])
+  public async getTrackingEvents(@Request() request: ContextualRequest, @Path() id: number, @Query() date?: string): Promise<any[]> {
+    const { context, user } = request;
+    const targetDate = date ? new Date(date) : new Date();
+    return await context.services.trackingEvent.getEventsByDate(context, user.tenant, id, targetDate);
   }
 };
