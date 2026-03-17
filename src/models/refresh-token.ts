@@ -60,7 +60,7 @@ export const RefreshTokenFactory = (sequelize: Sequelize): typeof RefreshTokenMo
         field: "expires_at"
       },
       platform: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(50),
         allowNull: true,
         defaultValue: null
       },
@@ -71,7 +71,7 @@ export const RefreshTokenFactory = (sequelize: Sequelize): typeof RefreshTokenMo
         field: "os_version"
       },
       appVersion: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(50),
         allowNull: true,
         defaultValue: null,
         field: "app_version"

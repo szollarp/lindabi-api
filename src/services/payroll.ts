@@ -14,6 +14,27 @@ export const payrollService = (): PayrollService => ({
   getPayrollByEmployee
 });
 
+/**
+ * Filter projectSupervisors by date range using the junction table data.
+ * Sequelize 6 cannot reliably filter junction (through) table columns in SQL
+ * when underscored: true is set, so we do it in JS after fetching.
+ */
+const filterSupervisorsByDate = (employee: any, startDate: string, endDate: string): any => {
+  if (!employee?.projectSupervisors) return employee;
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const filtered = employee.projectSupervisors.filter((project: any) => {
+    const s = project.supervisors;
+    if (!s) return true;
+    const sStart = s.start_date ? new Date(s.start_date) : null;
+    const sEnd = s.end_date ? new Date(s.end_date) : null;
+    if (!sStart) return true;
+    if (sEnd === null) return sStart <= start;
+    return sStart <= start && sEnd >= end;
+  });
+  return { ...employee, projectSupervisors: filtered };
+};
+
 const getFinancialSettings = async (context: Context, user: DecodedUser, startDate: string, endDate: string): Promise<Partial<FinancialSetting>[]> => {
   return await context.models.FinancialSetting.findAll({
     attributes: ["id", "amount", "type"],
@@ -113,30 +134,10 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
           as: "projectSupervisors",
           attributes: ["id", "supervisorBonus"],
           where: { supervisorBonus: true },
-          required: false, // Make required: false since we're attaching it to employee array and it shouldn't filter employees, wait initially it was `required: true` inside Contact! Let's keep required: false so it doesn't filter out employees without bonuses, or wait, if required: true it only returns those contacts? If required:false was not there, the default is false for includes unless `where` is on the include... Wait! the original had `required: false` on Contact but `required: true` on projectSupervisors inside Contact. That means it only included Contact if it has projectSupervisors. I'll just use `required: false` here to be safe and avoid filtering out employees without bonuses. Actually, wait. The original code didn't have `required` on `Contact` so it was `false`. Let me just use `required: false`.
+          required: false,
           through: {
-            attributes: ["startDate", "endDate"],
-            as: "supervisors",
-            where: {
-              [Op.or]: [
-                {
-                  startDate: {
-                    [Op.lte]: new Date(startDate)
-                  },
-                  endDate: {
-                    [Op.is]: null,
-                  },
-                },
-                {
-                  startDate: {
-                    [Op.lte]: new Date(startDate)
-                  },
-                  endDate: {
-                    [Op.gte]: new Date(endDate)
-                  },
-                }
-              ]
-            }
+            attributes: ["start_date", "end_date"],
+            as: "supervisors"
           }
         },
         {
@@ -155,7 +156,7 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
 
     return {
       employee: employee?.toJSON(),
-      payroll: getEmployeePayroll(employee!, settings)
+      payroll: getEmployeePayroll(filterSupervisorsByDate(employee?.toJSON(), startDate, endDate), settings)
     }
   }
   catch (error) {
@@ -165,10 +166,7 @@ const getPayrollByEmployee = async (context: Context, user: DecodedUser, startDa
 
 const getPayrolls = async (context: Context, user: DecodedUser, startDate: string, endDate: string, approved: boolean = true): Promise<Partial<User>[]> => {
   try {
-    console.log({ startDate, endDate, user, approved });
-
     const settings = await getFinancialSettings(context, user, startDate, endDate);
-    console.log({ settings });
 
     const employees = await context.models.User.findAll({
       attributes: ["id", "name", "status"],
@@ -234,28 +232,8 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
           where: { supervisorBonus: true },
           required: false,
           through: {
-            attributes: ["startDate", "endDate"],
-            as: "supervisors",
-            where: {
-              [Op.or]: [
-                {
-                  startDate: {
-                    [Op.lte]: new Date(startDate)
-                  },
-                  endDate: {
-                    [Op.is]: null,
-                  },
-                },
-                {
-                  startDate: {
-                    [Op.lte]: new Date(startDate)
-                  },
-                  endDate: {
-                    [Op.gte]: new Date(endDate)
-                  },
-                }
-              ]
-            }
+            attributes: ["start_date", "end_date"],
+            as: "supervisors"
           }
         },
         {
@@ -272,7 +250,10 @@ const getPayrolls = async (context: Context, user: DecodedUser, startDate: strin
       ]
     });
 
-    return employees.map((employee) => getEmployeePayroll(employee, settings));
+    return employees.map((employee) => {
+      const emp = employee.toJSON();
+      return getEmployeePayroll(filterSupervisorsByDate(emp, startDate, endDate), settings);
+    });
   } catch (error: any) {
     console.error("Error fetching payrolls:", error);
     console.error(error.stack);

@@ -415,7 +415,7 @@ export const userService = (): UserService => {
     const t = await context.models.sequelize.transaction();
 
     try {
-      await context.models.User.destroy({ where: { id, tenantId, entity, }, transaction: t, cascade: true, force: true });
+      await context.models.User.destroy({ where: { id, tenantId, entity, }, transaction: t, force: true });
       await t.commit();
 
       return { success: true };
