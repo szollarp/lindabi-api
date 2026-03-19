@@ -204,6 +204,15 @@ export const tenderService = (): TenderService => {
             'i': ['í'],
             'o': ['ó', 'ö', 'ő'],
             'u': ['ú', 'ü', 'ű'],
+            'á': ['a'],
+            'é': ['e'],
+            'í': ['i'],
+            'ó': ['o'],
+            'ö': ['o'],
+            'ő': ['o'],
+            'ú': ['u'],
+            'ü': ['u'],
+            'ű': ['u']
           };
 
           // Generate patterns with common accent variations
