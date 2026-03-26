@@ -8,25 +8,13 @@ import { CreateTenderItemProperties, TenderItem } from "../models/interfaces/ten
 import { TENDER_STATUS } from "../constants";
 import { calculateTenderItemAmounts } from "../helpers/tender";
 import { TenderDuplicateCleanup } from "../helpers/tender-duplicate-cleanup";
-
-export interface TenderFilters {
-  status?: TENDER_STATUS | { [Op.ne]: TENDER_STATUS };
-  customerId?: number;
-  contractorId?: number;
-  locationId?: number;
-  contactId?: number;
-  startDate?: Date;
-  endDate?: Date;
-  keyword?: string;
-}
-
-export interface TenderSortOptions {
-  orderBy?: string;
-  order?: 'asc' | 'desc';
-}
+import {
+  buildBaseTenderWhereClause, getOrderClause, searchTenderIdsByKeyword,
+  sortRowsByIdSequence, TenderSearchFilters, TenderSearchSortOptions
+} from "../helpers/search/tender";
 
 export interface TenderService {
-  getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderFilters, sortOptions?: TenderSortOptions) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
+  getTenders: (context: Context, tenantId: number, page?: number, limit?: number, filters?: TenderSearchFilters, sortOptions?: TenderSearchSortOptions) => Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }>
   getBasicTenders: (context: Context, tenantId: number) => Promise<Array<Partial<Tender>>>
   getTender: (context: Context, tenantId: number, id: number) => Promise<Partial<Tender> | null>
   getTenderDocuments: (context: Context, id: number) => Promise<Partial<Document>[] | []>
@@ -168,302 +156,477 @@ export const tenderService = (): TenderService => {
     return null;
   }
 
-  const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderFilters = {}, sortOptions: TenderSortOptions = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
+  // const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderSearchFilters = {}, sortOptions: TenderSearchSortOptions = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
+  //   try {
+  //     // Build base where clause
+  //     const whereClause: any = { tenantId };
+
+  //     // Apply basic filters
+  //     if (filters.status) whereClause.status = filters.status;
+  //     if (filters.customerId) whereClause.customerId = filters.customerId;
+  //     if (filters.contractorId) whereClause.contractorId = filters.contractorId;
+  //     if (filters.locationId) whereClause.locationId = filters.locationId;
+  //     if (filters.contactId) whereClause.contactId = filters.contactId;
+
+  //     // Apply date filters
+  //     if (filters.startDate || filters.endDate) {
+  //       whereClause.createdOn = {};
+  //       if (filters.startDate) whereClause.createdOn[Op.gte] = filters.startDate;
+  //       if (filters.endDate) whereClause.createdOn[Op.lte] = filters.endDate;
+  //     }
+
+  //     // Apply keyword search
+  //     if (filters.keyword) {
+  //       // Create multiple search patterns for accent-insensitive search
+  //       const createSearchPatterns = (text: string): string[] => {
+  //         const patterns: string[] = [];
+  //         const normalized = text.toLowerCase();
+
+  //         // Original text
+  //         patterns.push(`%${normalized}%`);
+
+  //         // Common accent variations for Hungarian
+  //         const accentMap: { [key: string]: string[] } = {
+  //           'a': ['á'],
+  //           'e': ['é'],
+  //           'i': ['í'],
+  //           'o': ['ó', 'ö', 'ő'],
+  //           'u': ['ú', 'ü', 'ű'],
+  //           'á': ['a'],
+  //           'é': ['e'],
+  //           'í': ['i'],
+  //           'ó': ['o'],
+  //           'ö': ['o'],
+  //           'ő': ['o'],
+  //           'ú': ['u'],
+  //           'ü': ['u'],
+  //           'ű': ['u']
+  //         };
+
+  //         // Generate patterns with common accent variations
+  //         // Create all possible combinations of accent variations
+  //         const generateVariations = (text: string, baseIndex: number = 0): string[] => {
+  //           if (baseIndex >= Object.keys(accentMap).length) {
+  //             return [text];
+  //           }
+
+  //           const base = Object.keys(accentMap)[baseIndex];
+  //           const accents = accentMap[base];
+  //           const variations: string[] = [];
+
+  //           if (text.includes(base)) {
+  //             // Generate variations for this base character
+  //             for (const accent of accents) {
+  //               const variant = text.replace(new RegExp(base, 'g'), accent);
+  //               variations.push(...generateVariations(variant, baseIndex + 1));
+  //             }
+  //             // Also keep the original for other base characters
+  //             variations.push(...generateVariations(text, baseIndex + 1));
+  //           } else {
+  //             // No this base character, continue with next
+  //             variations.push(...generateVariations(text, baseIndex + 1));
+  //           }
+
+  //           return variations;
+  //         };
+
+  //         const variations = generateVariations(normalized);
+  //         patterns.push(...variations.map(v => `%${v}%`));
+
+  //         return patterns;
+  //       };
+
+  //       const searchPatterns = createSearchPatterns(filters.keyword);
+
+  //       whereClause[Op.or] = [
+  //         // Direct tender fields
+  //         { short_name: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { number: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { type: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { notes: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { inquiry: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { survey: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { location_description: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { tool_requirements: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { other_comment: { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         // Related fields
+  //         { '$customer.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$customer.address$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$customer.city$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$customer.zip_code$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$customer.tax_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$contact.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$contact.email$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$contact.phone_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
+  //         { '$items.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } }
+  //       ];
+  //     }
+
+  //     const offset = (page - 1) * limit;
+
+  //     // Build sorting options
+  //     const orderBy = sortOptions.orderBy || 'updatedOn';
+  //     const order = sortOptions.order || 'desc';
+
+  //     // Map frontend field names to database field names
+  //     const fieldMapping: { [key: string]: string } = {
+  //       'customer.name': '$customer.name$',
+  //       'startDate': 'startDate',
+  //       'type': 'type',
+  //       'createdOn': 'createdOn',
+  //       'dueDate': 'dueDate',
+  //       'status': 'status',
+  //       'updatedOn': 'updatedOn',
+  //       'shortName': 'short_name',
+  //       'netAmount': 'netAmount',
+  //       'totalAmount': 'totalAmount'
+  //     };
+
+  //     const dbField = fieldMapping[orderBy] || orderBy;
+  //     const sortOrder = order.toUpperCase() as 'ASC' | 'DESC';
+  //     const nulls = sortOrder === 'DESC' ? 'NULLS LAST' : 'NULLS FIRST';
+
+  //     // Handle virtual fields that need special sorting
+  //     let orderClause: any;
+  //     if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
+  //       // For virtual fields, we need to sort by the calculated amount
+  //       // This requires a more complex query with subqueries
+  //       orderClause = [['updatedOn', sortOrder], ['id', 'DESC']]; // Fallback to updatedOn for now
+  //     } else if (fieldMapping[orderBy]) {
+  //       // Use mapped field if it exists
+  //       orderClause = [[dbField, sortOrder], ['id', 'DESC']];
+  //     } else {
+  //       // Fallback to updatedOn for unknown fields
+  //       context.logger.warn(`Unknown sort field: ${orderBy}, falling back to updatedOn`);
+  //       orderClause = [['updatedOn', sortOrder], ['id', 'DESC']];
+  //     }
+
+  //     if (orderBy === 'startDate') {
+  //       orderClause = [
+  //         [
+  //           context.models.sequelize.literal(
+  //             `(CASE WHEN "TenderModel"."status" NOT IN ('final', 'ordered', 'sent')
+  //                 THEN NULL
+  //                 ELSE "TenderModel"."start_date"
+  //               END) ${sortOrder} ${nulls}`
+  //           )
+  //         ],
+  //         ['id', 'DESC']
+  //       ];
+  //     }
+
+  //     // Define includes for queries
+  //     const baseIncludes = [
+  //       {
+  //         model: context.models.Location,
+  //         as: "location",
+  //         attributes: [],
+  //         required: false
+  //       },
+  //       {
+  //         model: context.models.Task,
+  //         as: "tasks",
+  //         attributes: [],
+  //         required: false
+  //       },
+  //       {
+  //         model: context.models.Contact,
+  //         as: "contact",
+  //         attributes: [],
+  //         required: false
+  //       },
+  //       {
+  //         model: context.models.Company,
+  //         as: "customer",
+  //         attributes: [],
+  //         required: false
+  //       },
+  //       {
+  //         model: context.models.Company,
+  //         as: "contractor",
+  //         attributes: [],
+  //         required: false
+  //       },
+  //       {
+  //         model: context.models.TenderItem,
+  //         as: "items",
+  //         attributes: [],
+  //         required: false
+  //       }
+  //     ];
+
+  //     const fullIncludes = [
+  //       {
+  //         model: context.models.Task,
+  //         as: "tasks",
+  //         attributes: ["title"],
+  //         include: [
+  //           {
+  //             model: context.models.TaskColumn,
+  //             as: "column",
+  //             where: {
+  //               finished: false,
+  //             },
+  //             required: true
+  //           },
+  //           {
+  //             model: context.models.User,
+  //             as: "assignee",
+  //             attributes: ["name"],
+  //             include: [
+  //               {
+  //                 model: context.models.Document,
+  //                 attributes: ["id", "name", "mimeType", "type", "stored"],
+  //                 as: 'documents',
+  //                 required: false,
+  //                 where: {
+  //                   type: 'avatar',
+  //                 }
+  //               }
+  //             ],
+  //           }
+  //         ]
+  //       },
+  //       {
+  //         model: context.models.Contact,
+  //         as: "contact",
+  //         attributes: ["name", "email"]
+  //       },
+  //       {
+  //         model: context.models.Location,
+  //         as: "location",
+  //         attributes: ["id", "city", "country", "zipCode", "address"]
+  //       },
+  //       {
+  //         model: context.models.Company,
+  //         as: "customer",
+  //         attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+  //       },
+  //       {
+  //         model: context.models.Company,
+  //         as: "contractor",
+  //         attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+  //         include: [
+  //           {
+  //             model: context.models.Document,
+  //             as: "documents",
+  //             attributes: ["id", "name", "type", "mimeType", "stored"]
+  //           }
+  //         ]
+  //       },
+  //       {
+  //         model: context.models.TenderItem,
+  //         as: "items",
+  //         required: false,
+  //         order: [["num", "ASC"]]
+  //       }
+  //     ];
+
+  //     // Use a consistent approach for both count and data
+  //     // First get all matching tender IDs to ensure consistency
+  //     const allMatchingTenders = await context.models.Tender.findAll({
+  //       where: whereClause,
+  //       include: baseIncludes,
+  //       attributes: ['id'],
+  //       order: orderClause,
+  //       subQuery: false
+  //     });
+
+  //     // Get unique tender IDs and total count
+  //     const uniqueTenderIds = [...new Set(allMatchingTenders.map(t => t.id))];
+  //     const total = uniqueTenderIds.length;
+
+  //     // Apply pagination to the unique IDs
+  //     const paginatedIds = uniqueTenderIds.slice(offset, offset + limit);
+
+  //     // Get full data for the paginated IDs
+  //     const data = await context.models.Tender.findAll({
+  //       where: {
+  //         id: { [Op.in]: paginatedIds },
+  //         tenantId
+  //       },
+  //       include: fullIncludes as any,
+  //       order: orderClause,
+  //       subQuery: false
+  //     });
+
+  //     return {
+  //       data: data as any,
+  //       total,
+  //       page,
+  //       limit
+  //     };
+  //   } catch (error) {
+  //     context.logger.error(error);
+
+  //     if (error instanceof Error) {
+  //       context.logger.error(error.stack);
+  //     }
+  //     throw error;
+  //   }
+  // };
+
+  const getTenders = async (
+    context: Context,
+    tenantId: number,
+    page: number = 1,
+    limit: number = 25,
+    filters: TenderSearchFilters = {},
+    sortOptions: TenderSearchSortOptions = {}
+  ): Promise<{ data: Array<Partial<Tender>>; total: number; page: number; limit: number }> => {
     try {
-      // Build base where clause
-      const whereClause: any = { tenantId };
-
-      // Apply basic filters
-      if (filters.status) whereClause.status = filters.status;
-      if (filters.customerId) whereClause.customerId = filters.customerId;
-      if (filters.contractorId) whereClause.contractorId = filters.contractorId;
-      if (filters.locationId) whereClause.locationId = filters.locationId;
-      if (filters.contactId) whereClause.contactId = filters.contactId;
-
-      // Apply date filters
-      if (filters.startDate || filters.endDate) {
-        whereClause.createdOn = {};
-        if (filters.startDate) whereClause.createdOn[Op.gte] = filters.startDate;
-        if (filters.endDate) whereClause.createdOn[Op.lte] = filters.endDate;
-      }
-
-      // Apply keyword search
-      if (filters.keyword) {
-        // Create multiple search patterns for accent-insensitive search
-        const createSearchPatterns = (text: string): string[] => {
-          const patterns: string[] = [];
-          const normalized = text.toLowerCase();
-
-          // Original text
-          patterns.push(`%${normalized}%`);
-
-          // Common accent variations for Hungarian
-          const accentMap: { [key: string]: string[] } = {
-            'a': ['á'],
-            'e': ['é'],
-            'i': ['í'],
-            'o': ['ó', 'ö', 'ő'],
-            'u': ['ú', 'ü', 'ű'],
-            'á': ['a'],
-            'é': ['e'],
-            'í': ['i'],
-            'ó': ['o'],
-            'ö': ['o'],
-            'ő': ['o'],
-            'ú': ['u'],
-            'ü': ['u'],
-            'ű': ['u']
-          };
-
-          // Generate patterns with common accent variations
-          // Create all possible combinations of accent variations
-          const generateVariations = (text: string, baseIndex: number = 0): string[] => {
-            if (baseIndex >= Object.keys(accentMap).length) {
-              return [text];
-            }
-
-            const base = Object.keys(accentMap)[baseIndex];
-            const accents = accentMap[base];
-            const variations: string[] = [];
-
-            if (text.includes(base)) {
-              // Generate variations for this base character
-              for (const accent of accents) {
-                const variant = text.replace(new RegExp(base, 'g'), accent);
-                variations.push(...generateVariations(variant, baseIndex + 1));
-              }
-              // Also keep the original for other base characters
-              variations.push(...generateVariations(text, baseIndex + 1));
-            } else {
-              // No this base character, continue with next
-              variations.push(...generateVariations(text, baseIndex + 1));
-            }
-
-            return variations;
-          };
-
-          const variations = generateVariations(normalized);
-          patterns.push(...variations.map(v => `%${v}%`));
-
-          return patterns;
-        };
-
-        const searchPatterns = createSearchPatterns(filters.keyword);
-
-        whereClause[Op.or] = [
-          // Direct tender fields
-          { short_name: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { number: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { type: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { notes: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { inquiry: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { survey: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { location_description: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { tool_requirements: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { other_comment: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          // Related fields
-          { '$customer.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$customer.address$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$customer.city$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$customer.zip_code$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$customer.tax_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$contact.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$contact.email$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$contact.phone_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-          { '$items.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } }
-        ];
-      }
-
       const offset = (page - 1) * limit;
-
-      // Build sorting options
-      const orderBy = sortOptions.orderBy || 'updatedOn';
-      const order = sortOptions.order || 'desc';
-
-      // Map frontend field names to database field names
-      const fieldMapping: { [key: string]: string } = {
-        'customer.name': '$customer.name$',
-        'startDate': 'startDate',
-        'type': 'type',
-        'createdOn': 'createdOn',
-        'dueDate': 'dueDate',
-        'status': 'status',
-        'updatedOn': 'updatedOn',
-        'shortName': 'short_name',
-        'netAmount': 'netAmount',
-        'totalAmount': 'totalAmount'
-      };
-
-      const dbField = fieldMapping[orderBy] || orderBy;
-      const sortOrder = order.toUpperCase() as 'ASC' | 'DESC';
-      const nulls = sortOrder === 'DESC' ? 'NULLS LAST' : 'NULLS FIRST';
-
-      // Handle virtual fields that need special sorting
-      let orderClause: any;
-      if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
-        // For virtual fields, we need to sort by the calculated amount
-        // This requires a more complex query with subqueries
-        orderClause = [['updatedOn', sortOrder], ['id', 'DESC']]; // Fallback to updatedOn for now
-      } else if (fieldMapping[orderBy]) {
-        // Use mapped field if it exists
-        orderClause = [[dbField, sortOrder], ['id', 'DESC']];
-      } else {
-        // Fallback to updatedOn for unknown fields
-        context.logger.warn(`Unknown sort field: ${orderBy}, falling back to updatedOn`);
-        orderClause = [['updatedOn', sortOrder], ['id', 'DESC']];
-      }
-
-      if (orderBy === 'startDate') {
-        orderClause = [
-          [
-            context.models.sequelize.literal(
-              `(CASE WHEN "TenderModel"."status" NOT IN ('final', 'ordered', 'sent')
-                  THEN NULL
-                  ELSE "TenderModel"."start_date"
-                END) ${sortOrder} ${nulls}`
-            )
-          ],
-          ['id', 'DESC']
-        ];
-      }
-
-      // Define includes for queries
-      const baseIncludes = [
-        {
-          model: context.models.Location,
-          as: "location",
-          attributes: [],
-          required: false
-        },
-        {
-          model: context.models.Task,
-          as: "tasks",
-          attributes: [],
-          required: false
-        },
-        {
-          model: context.models.Contact,
-          as: "contact",
-          attributes: [],
-          required: false
-        },
-        {
-          model: context.models.Company,
-          as: "customer",
-          attributes: [],
-          required: false
-        },
-        {
-          model: context.models.Company,
-          as: "contractor",
-          attributes: [],
-          required: false
-        },
-        {
-          model: context.models.TenderItem,
-          as: "items",
-          attributes: [],
-          required: false
-        }
-      ];
+      const { sequelizeOrder, sqlOrderBy } = getOrderClause(context, sortOptions);
 
       const fullIncludes = [
         {
           model: context.models.Task,
-          as: "tasks",
-          attributes: ["title"],
+          as: 'tasks',
+          attributes: ['title'],
+          required: false,
           include: [
             {
               model: context.models.TaskColumn,
-              as: "column",
-              where: {
-                finished: false,
-              },
+              as: 'column',
+              where: { finished: false },
               required: true
             },
             {
               model: context.models.User,
-              as: "assignee",
-              attributes: ["name"],
+              as: 'assignee',
+              attributes: ['name'],
               include: [
                 {
                   model: context.models.Document,
-                  attributes: ["id", "name", "mimeType", "type", "stored"],
+                  attributes: ['id', 'name', 'mimeType', 'type', 'stored'],
                   as: 'documents',
                   required: false,
-                  where: {
-                    type: 'avatar',
-                  }
+                  where: { type: 'avatar' }
                 }
-              ],
+              ]
             }
           ]
         },
         {
           model: context.models.Contact,
-          as: "contact",
-          attributes: ["name", "email"]
+          as: 'contact',
+          attributes: ['name', 'email']
         },
         {
           model: context.models.Location,
-          as: "location",
-          attributes: ["id", "city", "country", "zipCode", "address"]
+          as: 'location',
+          attributes: ['id', 'city', 'country', 'zipCode', 'address']
         },
         {
           model: context.models.Company,
-          as: "customer",
-          attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          as: 'customer',
+          attributes: ['id', 'prefix', 'email', 'name', 'address', 'city', 'zipCode', 'taxNumber', 'bankAccount']
         },
         {
           model: context.models.Company,
-          as: "contractor",
-          attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
+          as: 'contractor',
+          attributes: ['id', 'prefix', 'email', 'name', 'address', 'city', 'zipCode', 'taxNumber', 'bankAccount'],
           include: [
             {
               model: context.models.Document,
-              as: "documents",
-              attributes: ["id", "name", "type", "mimeType", "stored"]
+              as: 'documents',
+              attributes: ['id', 'name', 'type', 'mimeType', 'stored']
             }
           ]
         },
         {
           model: context.models.TenderItem,
-          as: "items",
+          as: 'items',
           required: false,
-          order: [["num", "ASC"]]
+          order: [['num', 'ASC']]
         }
       ];
 
-      // Use a consistent approach for both count and data
-      // First get all matching tender IDs to ensure consistency
-      const allMatchingTenders = await context.models.Tender.findAll({
-        where: whereClause,
-        include: baseIncludes,
+      if (filters.keyword?.trim()) {
+        const { ids, total } = await searchTenderIdsByKeyword(
+          context,
+          tenantId,
+          offset,
+          limit,
+          filters,
+          sqlOrderBy
+        );
+
+        if (ids.length === 0) {
+          return {
+            data: [],
+            total,
+            page,
+            limit
+          };
+        }
+
+        const rows = await context.models.Tender.findAll({
+          where: {
+            id: { [Op.in]: ids },
+            tenantId
+          },
+          include: fullIncludes as any,
+          order: sequelizeOrder,
+          subQuery: false
+        });
+
+        return {
+          data: sortRowsByIdSequence(rows as any, ids) as any,
+          total,
+          page,
+          limit
+        };
+      }
+
+      const baseWhereClause = buildBaseTenderWhereClause(tenantId, filters);
+      if (!filters.status) {
+        baseWhereClause.status = { [Op.ne]: 'archived' };
+      }
+
+      const total = await context.models.Tender.count({
+        where: baseWhereClause
+      });
+
+      const idRows = await context.models.Tender.findAll({
+        where: baseWhereClause,
         attributes: ['id'],
-        order: orderClause,
+        include: [
+          {
+            model: context.models.Company,
+            as: 'customer',
+            attributes: []
+          }
+        ],
+        order: sequelizeOrder,
+        limit,
+        offset,
         subQuery: false
       });
 
-      // Get unique tender IDs and total count
-      const uniqueTenderIds = [...new Set(allMatchingTenders.map(t => t.id))];
-      const total = uniqueTenderIds.length;
+      const ids = idRows.map((row) => (row as any).id);
 
-      // Apply pagination to the unique IDs
-      const paginatedIds = uniqueTenderIds.slice(offset, offset + limit);
+      if (ids.length === 0) {
+        return {
+          data: [],
+          total,
+          page,
+          limit
+        };
+      }
 
-      // Get full data for the paginated IDs
-      const data = await context.models.Tender.findAll({
+      const rows = await context.models.Tender.findAll({
         where: {
-          id: { [Op.in]: paginatedIds },
+          id: { [Op.in]: ids },
           tenantId
         },
         include: fullIncludes as any,
-        order: orderClause,
+        order: sequelizeOrder,
         subQuery: false
       });
 
       return {
-        data: data as any,
+        data: sortRowsByIdSequence(rows as any, ids) as any,
         total,
         page,
         limit
@@ -474,6 +637,7 @@ export const tenderService = (): TenderService => {
       if (error instanceof Error) {
         context.logger.error(error.stack);
       }
+
       throw error;
     }
   };
