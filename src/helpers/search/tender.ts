@@ -112,9 +112,21 @@ export const getOrderClause = (
     }
 
     if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
+        const netAmountSql = `(
+            (SELECT COALESCE(SUM(i.material_net_unit_amount * i.quantity + i.fee_net_unit_amount * i.quantity), 0)
+             FROM tender_items i WHERE i.tender_id = "TenderModel"."id")
+            * (1 + COALESCE("TenderModel"."surcharge", 0) / 100.0)
+            * (1 - COALESCE("TenderModel"."discount", 0) / 100.0)
+            - (CASE WHEN "TenderModel"."fee" > 0 AND "TenderModel"."returned" THEN "TenderModel"."fee" ELSE 0 END)
+        )`;
+
+        const sqlField = orderBy === 'netAmount'
+            ? netAmountSql
+            : `(${netAmountSql} * (1 + (CASE WHEN "TenderModel"."vat_key" ~ '^[0-9]+(\\.[0-9]+)?$' THEN "TenderModel"."vat_key"::numeric ELSE 0 END) / 100.0))`;
+
         return {
-            sequelizeOrder: [['updatedOn', safeOrder], ['id', 'DESC']],
-            sqlOrderBy: `"TenderModel"."updated_on" ${safeOrder}, "TenderModel"."id" DESC`
+            sequelizeOrder: [[Sequelize.literal(sqlField), safeOrder], ['id', 'DESC']],
+            sqlOrderBy: `${sqlField} ${safeOrder}, "TenderModel"."id" DESC`
         };
     }
 

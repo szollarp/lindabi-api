@@ -116,10 +116,19 @@ export class TenderController extends Controller {
       keyword
     };
 
+    console.log({
+      orderBy,
+      order
+    })
+
     const sortOptions = {
       orderBy: orderBy || 'updatedOn',
       order: (order === 'asc' || order === 'desc') ? order : 'desc' as 'asc' | 'desc'
     };
+
+    console.log({
+      sortOptions
+    })
 
     return await context.services.tender.getTenders(context, user.tenant, page, limit, filters, sortOptions);
   }

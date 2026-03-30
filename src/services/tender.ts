@@ -1025,7 +1025,7 @@ export const tenderService = (): TenderService => {
       );
 
       await refreshTenderSearch(context);
- 
+
       return { success: true };
     } catch (error) {
       context.logger.error(error);
