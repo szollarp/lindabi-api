@@ -41,6 +41,7 @@ export interface TenderService {
   cleanupDuplicateTenderNumbers: (context: Context, tenantId: number) => Promise<{ cleaned: number; duplicates: Array<{ number: string; count: number; tenderIds: number[] }> }>
   getTenderNumberStats: (context: Context, tenantId: number) => Promise<{ totalTenders: number; tendersWithNumbers: number; uniqueNumbers: number; duplicates: number }>
   getTenderStatusCounts: (context: Context, tenantId: number) => Promise<Record<string, number>>
+  refreshTenderSearch: (context: Context) => Promise<void>
 };
 
 const ALLOWED_STATUSES = [TENDER_STATUS.SENT, TENDER_STATUS.FINALIZED, TENDER_STATUS.ORDERED];
@@ -155,316 +156,6 @@ export const tenderService = (): TenderService => {
 
     return null;
   }
-
-  // const getTenders = async (context: Context, tenantId: number, page: number = 1, limit: number = 25, filters: TenderSearchFilters = {}, sortOptions: TenderSearchSortOptions = {}): Promise<{ data: Array<Partial<Tender>>, total: number, page: number, limit: number }> => {
-  //   try {
-  //     // Build base where clause
-  //     const whereClause: any = { tenantId };
-
-  //     // Apply basic filters
-  //     if (filters.status) whereClause.status = filters.status;
-  //     if (filters.customerId) whereClause.customerId = filters.customerId;
-  //     if (filters.contractorId) whereClause.contractorId = filters.contractorId;
-  //     if (filters.locationId) whereClause.locationId = filters.locationId;
-  //     if (filters.contactId) whereClause.contactId = filters.contactId;
-
-  //     // Apply date filters
-  //     if (filters.startDate || filters.endDate) {
-  //       whereClause.createdOn = {};
-  //       if (filters.startDate) whereClause.createdOn[Op.gte] = filters.startDate;
-  //       if (filters.endDate) whereClause.createdOn[Op.lte] = filters.endDate;
-  //     }
-
-  //     // Apply keyword search
-  //     if (filters.keyword) {
-  //       // Create multiple search patterns for accent-insensitive search
-  //       const createSearchPatterns = (text: string): string[] => {
-  //         const patterns: string[] = [];
-  //         const normalized = text.toLowerCase();
-
-  //         // Original text
-  //         patterns.push(`%${normalized}%`);
-
-  //         // Common accent variations for Hungarian
-  //         const accentMap: { [key: string]: string[] } = {
-  //           'a': ['á'],
-  //           'e': ['é'],
-  //           'i': ['í'],
-  //           'o': ['ó', 'ö', 'ő'],
-  //           'u': ['ú', 'ü', 'ű'],
-  //           'á': ['a'],
-  //           'é': ['e'],
-  //           'í': ['i'],
-  //           'ó': ['o'],
-  //           'ö': ['o'],
-  //           'ő': ['o'],
-  //           'ú': ['u'],
-  //           'ü': ['u'],
-  //           'ű': ['u']
-  //         };
-
-  //         // Generate patterns with common accent variations
-  //         // Create all possible combinations of accent variations
-  //         const generateVariations = (text: string, baseIndex: number = 0): string[] => {
-  //           if (baseIndex >= Object.keys(accentMap).length) {
-  //             return [text];
-  //           }
-
-  //           const base = Object.keys(accentMap)[baseIndex];
-  //           const accents = accentMap[base];
-  //           const variations: string[] = [];
-
-  //           if (text.includes(base)) {
-  //             // Generate variations for this base character
-  //             for (const accent of accents) {
-  //               const variant = text.replace(new RegExp(base, 'g'), accent);
-  //               variations.push(...generateVariations(variant, baseIndex + 1));
-  //             }
-  //             // Also keep the original for other base characters
-  //             variations.push(...generateVariations(text, baseIndex + 1));
-  //           } else {
-  //             // No this base character, continue with next
-  //             variations.push(...generateVariations(text, baseIndex + 1));
-  //           }
-
-  //           return variations;
-  //         };
-
-  //         const variations = generateVariations(normalized);
-  //         patterns.push(...variations.map(v => `%${v}%`));
-
-  //         return patterns;
-  //       };
-
-  //       const searchPatterns = createSearchPatterns(filters.keyword);
-
-  //       whereClause[Op.or] = [
-  //         // Direct tender fields
-  //         { short_name: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { number: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { type: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { notes: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { inquiry: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { survey: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { location_description: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { tool_requirements: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { other_comment: { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         // Related fields
-  //         { '$customer.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$customer.address$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$customer.city$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$customer.zip_code$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$customer.tax_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$contact.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$contact.email$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$contact.phone_number$': { [Op.iLike]: { [Op.any]: searchPatterns } } },
-  //         { '$items.name$': { [Op.iLike]: { [Op.any]: searchPatterns } } }
-  //       ];
-  //     }
-
-  //     const offset = (page - 1) * limit;
-
-  //     // Build sorting options
-  //     const orderBy = sortOptions.orderBy || 'updatedOn';
-  //     const order = sortOptions.order || 'desc';
-
-  //     // Map frontend field names to database field names
-  //     const fieldMapping: { [key: string]: string } = {
-  //       'customer.name': '$customer.name$',
-  //       'startDate': 'startDate',
-  //       'type': 'type',
-  //       'createdOn': 'createdOn',
-  //       'dueDate': 'dueDate',
-  //       'status': 'status',
-  //       'updatedOn': 'updatedOn',
-  //       'shortName': 'short_name',
-  //       'netAmount': 'netAmount',
-  //       'totalAmount': 'totalAmount'
-  //     };
-
-  //     const dbField = fieldMapping[orderBy] || orderBy;
-  //     const sortOrder = order.toUpperCase() as 'ASC' | 'DESC';
-  //     const nulls = sortOrder === 'DESC' ? 'NULLS LAST' : 'NULLS FIRST';
-
-  //     // Handle virtual fields that need special sorting
-  //     let orderClause: any;
-  //     if (orderBy === 'netAmount' || orderBy === 'totalAmount') {
-  //       // For virtual fields, we need to sort by the calculated amount
-  //       // This requires a more complex query with subqueries
-  //       orderClause = [['updatedOn', sortOrder], ['id', 'DESC']]; // Fallback to updatedOn for now
-  //     } else if (fieldMapping[orderBy]) {
-  //       // Use mapped field if it exists
-  //       orderClause = [[dbField, sortOrder], ['id', 'DESC']];
-  //     } else {
-  //       // Fallback to updatedOn for unknown fields
-  //       context.logger.warn(`Unknown sort field: ${orderBy}, falling back to updatedOn`);
-  //       orderClause = [['updatedOn', sortOrder], ['id', 'DESC']];
-  //     }
-
-  //     if (orderBy === 'startDate') {
-  //       orderClause = [
-  //         [
-  //           context.models.sequelize.literal(
-  //             `(CASE WHEN "TenderModel"."status" NOT IN ('final', 'ordered', 'sent')
-  //                 THEN NULL
-  //                 ELSE "TenderModel"."start_date"
-  //               END) ${sortOrder} ${nulls}`
-  //           )
-  //         ],
-  //         ['id', 'DESC']
-  //       ];
-  //     }
-
-  //     // Define includes for queries
-  //     const baseIncludes = [
-  //       {
-  //         model: context.models.Location,
-  //         as: "location",
-  //         attributes: [],
-  //         required: false
-  //       },
-  //       {
-  //         model: context.models.Task,
-  //         as: "tasks",
-  //         attributes: [],
-  //         required: false
-  //       },
-  //       {
-  //         model: context.models.Contact,
-  //         as: "contact",
-  //         attributes: [],
-  //         required: false
-  //       },
-  //       {
-  //         model: context.models.Company,
-  //         as: "customer",
-  //         attributes: [],
-  //         required: false
-  //       },
-  //       {
-  //         model: context.models.Company,
-  //         as: "contractor",
-  //         attributes: [],
-  //         required: false
-  //       },
-  //       {
-  //         model: context.models.TenderItem,
-  //         as: "items",
-  //         attributes: [],
-  //         required: false
-  //       }
-  //     ];
-
-  //     const fullIncludes = [
-  //       {
-  //         model: context.models.Task,
-  //         as: "tasks",
-  //         attributes: ["title"],
-  //         include: [
-  //           {
-  //             model: context.models.TaskColumn,
-  //             as: "column",
-  //             where: {
-  //               finished: false,
-  //             },
-  //             required: true
-  //           },
-  //           {
-  //             model: context.models.User,
-  //             as: "assignee",
-  //             attributes: ["name"],
-  //             include: [
-  //               {
-  //                 model: context.models.Document,
-  //                 attributes: ["id", "name", "mimeType", "type", "stored"],
-  //                 as: 'documents',
-  //                 required: false,
-  //                 where: {
-  //                   type: 'avatar',
-  //                 }
-  //               }
-  //             ],
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         model: context.models.Contact,
-  //         as: "contact",
-  //         attributes: ["name", "email"]
-  //       },
-  //       {
-  //         model: context.models.Location,
-  //         as: "location",
-  //         attributes: ["id", "city", "country", "zipCode", "address"]
-  //       },
-  //       {
-  //         model: context.models.Company,
-  //         as: "customer",
-  //         attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-  //       },
-  //       {
-  //         model: context.models.Company,
-  //         as: "contractor",
-  //         attributes: ["id", "prefix", "email", "name", "address", "city", "zipCode", "taxNumber", "bankAccount"],
-  //         include: [
-  //           {
-  //             model: context.models.Document,
-  //             as: "documents",
-  //             attributes: ["id", "name", "type", "mimeType", "stored"]
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         model: context.models.TenderItem,
-  //         as: "items",
-  //         required: false,
-  //         order: [["num", "ASC"]]
-  //       }
-  //     ];
-
-  //     // Use a consistent approach for both count and data
-  //     // First get all matching tender IDs to ensure consistency
-  //     const allMatchingTenders = await context.models.Tender.findAll({
-  //       where: whereClause,
-  //       include: baseIncludes,
-  //       attributes: ['id'],
-  //       order: orderClause,
-  //       subQuery: false
-  //     });
-
-  //     // Get unique tender IDs and total count
-  //     const uniqueTenderIds = [...new Set(allMatchingTenders.map(t => t.id))];
-  //     const total = uniqueTenderIds.length;
-
-  //     // Apply pagination to the unique IDs
-  //     const paginatedIds = uniqueTenderIds.slice(offset, offset + limit);
-
-  //     // Get full data for the paginated IDs
-  //     const data = await context.models.Tender.findAll({
-  //       where: {
-  //         id: { [Op.in]: paginatedIds },
-  //         tenantId
-  //       },
-  //       include: fullIncludes as any,
-  //       order: orderClause,
-  //       subQuery: false
-  //     });
-
-  //     return {
-  //       data: data as any,
-  //       total,
-  //       page,
-  //       limit
-  //     };
-  //   } catch (error) {
-  //     context.logger.error(error);
-
-  //     if (error instanceof Error) {
-  //       context.logger.error(error.stack);
-  //     }
-  //     throw error;
-  //   }
-  // };
 
   const getTenders = async (
     context: Context,
@@ -906,6 +597,8 @@ export const tenderService = (): TenderService => {
         activity: "The tender have been successfully created.",
       }, tender.id, "tender");
 
+      await refreshTenderSearch(context);
+
       return tender;
     } catch (error) {
       context.logger.error(error);
@@ -938,6 +631,8 @@ export const tenderService = (): TenderService => {
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender have been successfully copied.",
       }, tenderId, "tender", t);
+
+      await refreshTenderSearch(context);
 
       await t.commit();
       return newTender;
@@ -1051,6 +746,8 @@ export const tenderService = (): TenderService => {
       await t.rollback();
       context.logger.error(error);
       throw error;
+    } finally {
+      await refreshTenderSearch(context);
     }
   };
 
@@ -1058,6 +755,7 @@ export const tenderService = (): TenderService => {
     try {
       await context.models.Tender.destroy({ where: { id, tenantId }, force: true });
 
+      await refreshTenderSearch(context);
       return { success: true };
     } catch (error) {
       context.logger.error(error);
@@ -1068,6 +766,7 @@ export const tenderService = (): TenderService => {
   const deleteTenders = async (context: Context, tenantId: number, body: { ids: number[] }): Promise<{ success: boolean }> => {
     try {
       await context.models.Tender.destroy({ where: { id: { [Op.in]: body.ids }, tenantId }, force: true });
+      await refreshTenderSearch(context);
       return { success: true };
     } catch (error) {
       context.logger.error(error);
@@ -1097,6 +796,8 @@ export const tenderService = (): TenderService => {
       } catch (syncError) {
         context.logger.warn(`Failed to sync tender item ${tenderItem.id} to search table:`, syncError);
       }
+
+      await refreshTenderSearch(context);
 
       return tenderItem;
 
@@ -1130,6 +831,8 @@ export const tenderService = (): TenderService => {
       } catch (syncError) {
         context.logger.warn(`Failed to sync tender item ${tenderItem.id} to search table:`, syncError);
       }
+
+      await refreshTenderSearch(context);
 
       return tenderItem;
     } catch (error) {
@@ -1172,6 +875,8 @@ export const tenderService = (): TenderService => {
 
       await t.commit();
 
+      await refreshTenderSearch(context);
+
       return { success: true };
     } catch (error) {
       await t.rollback();
@@ -1208,6 +913,8 @@ export const tenderService = (): TenderService => {
         activity: "The tender item have been successfully removed.",
       }, tenderId, "tender");
 
+      await refreshTenderSearch(context);
+
       return { success: true };
     } catch (error) {
       context.logger.error(error);
@@ -1241,6 +948,8 @@ export const tenderService = (): TenderService => {
       await context.services.journey.addSimpleLog(context, user, {
         activity: "The tender items have been successfully copied.",
       }, targetId, "tender");
+
+      await refreshTenderSearch(context);
 
       return { success: true };
     } catch (error) {
@@ -1315,10 +1024,20 @@ export const tenderService = (): TenderService => {
         { where: { id, tenantId: user.tenant }, logging: console.log }
       );
 
+      await refreshTenderSearch(context);
+ 
       return { success: true };
     } catch (error) {
       context.logger.error(error);
       throw error;
+    }
+  };
+
+  const refreshTenderSearch = async (context: Context) => {
+    try {
+      await context.models.sequelize.query('REFRESH MATERIALIZED VIEW CONCURRENTLY tender_search');
+    } catch (error) {
+      context.logger.error('Error refreshing tender_search materialized view:', error);
     }
   };
 
@@ -1349,6 +1068,7 @@ export const tenderService = (): TenderService => {
     cleanupDuplicateTenderNumbers,
     getTenderNumberStats,
     getTenderStatusCounts,
-    updateTenderDateRange
+    updateTenderDateRange,
+    refreshTenderSearch
   }
 };

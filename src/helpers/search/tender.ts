@@ -176,52 +176,13 @@ export const buildKeywordSearchSql = (
         replacements.endDate = filters.endDate;
     }
 
-    conditions.push(`
-    (
-      (
-        immutable_unaccent(lower("TenderModel"."short_name")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."number")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."type")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."notes")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."inquiry")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."survey")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."location_description")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."tool_requirements")) || ' ' ||
-        immutable_unaccent(lower("TenderModel"."other_comment"))
-      ) LIKE :pattern ESCAPE '\\'
+    const normalized = replacements.normalizedKeyword || '';
+    const parts = normalized.split(/\s+/).filter((p: string) => p.length > 0);
 
-      OR EXISTS (
-        SELECT 1
-        FROM "companies" AS "customer"
-        WHERE "customer"."id" = "TenderModel"."customer_id"
-          AND (
-            immutable_unaccent(lower("customer"."name")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("customer"."address")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("customer"."city")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("customer"."zip_code")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("customer"."tax_number")) LIKE :pattern ESCAPE '\\'
-          )
-      )
-
-      OR EXISTS (
-        SELECT 1
-        FROM "contacts" AS "contact"
-        WHERE "contact"."id" = "TenderModel"."contact_id"
-          AND (
-            immutable_unaccent(lower("contact"."name")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("contact"."email")) LIKE :pattern ESCAPE '\\'
-            OR immutable_unaccent(lower("contact"."phone_number")) LIKE :pattern ESCAPE '\\'
-          )
-      )
-
-      OR EXISTS (
-        SELECT 1
-        FROM "tender_items" AS "items"
-        WHERE "items"."tender_id" = "TenderModel"."id"
-          AND immutable_unaccent(lower("items"."name")) LIKE :pattern ESCAPE '\\'
-      )
-    )
-  `);
+    if (parts.length > 0) {
+        const keywordConditions = parts.map((_: string, i: number) => `"TenderModel"."search_text" LIKE :pattern${i} ESCAPE '\\'`).join(' OR ');
+        conditions.push(`(${keywordConditions})`);
+    }
 
     return conditions.join('\nAND ');
 };
@@ -237,31 +198,35 @@ export const searchTenderIdsByKeyword = async (
     const sequelize = context.models.sequelize;
 
     const normalized = normalizeKeyword(filters.keyword || '');
-    const pattern = `%${escapeLikePattern(normalized)}%`;
+    const parts = normalized.split(/\s+/).filter(p => p.length > 0);
 
     const replacements: Record<string, any> = {
         tenantId,
-        pattern,
+        normalizedKeyword: normalized,
         offset,
         limit
     };
+
+    parts.forEach((part, i) => {
+        replacements[`pattern${i}`] = `%${escapeLikePattern(part)}%`;
+    });
 
     const whereSql = buildKeywordSearchSql(filters, replacements);
 
     const joinSql = sqlOrderBy.includes('"customer"."name"')
         ? 'LEFT JOIN "companies" AS "customer" ON "customer"."id" = "TenderModel"."customer_id"'
         : '';
-    
+
     const countSql = `
     SELECT COUNT(*)::int AS "count"
-    FROM "tenders" AS "TenderModel"
+    FROM "tender_search" AS "TenderModel"
     WHERE "TenderModel"."tenant_id" = :tenantId
       AND ${whereSql}
   `;
 
     const idsSql = `
     SELECT "TenderModel"."id"
-    FROM "tenders" AS "TenderModel"
+    FROM "tender_search" AS "TenderModel"
     ${joinSql}
     WHERE "TenderModel"."tenant_id" = :tenantId
       AND ${whereSql}
