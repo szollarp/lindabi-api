@@ -26,9 +26,13 @@ export class AzureServiceBus {
   public async send(queueName: string, message: ServiceBusMessage): Promise<void> {
     const sender = this.instance.createSender(queueName);
 
-    await sender.sendMessages({
-      ...message,
-      messageId: this.createUniqueMessageId(queueName, message)
-    });
+    try {
+      await sender.sendMessages({
+        ...message,
+        messageId: this.createUniqueMessageId(queueName, message)
+      });
+    } finally {
+      await sender.close();
+    }
   }
 };
