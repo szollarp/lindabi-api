@@ -192,7 +192,7 @@ export const buildKeywordSearchSql = (
     const parts = normalized.split(/\s+/).filter((p: string) => p.length > 0);
 
     if (parts.length > 0) {
-        const keywordConditions = parts.map((_: string, i: number) => `"TenderModel"."search_text" LIKE :pattern${i} ESCAPE '\\'`).join(' OR ');
+        const keywordConditions = parts.map((_: string, i: number) => `"TenderModel"."search_text" LIKE :pattern${i} ESCAPE '\\'`).join(' AND ');
         conditions.push(`(${keywordConditions})`);
     }
 
