@@ -223,6 +223,16 @@ export const searchTenderIdsByKeyword = async (
         replacements[`pattern${i}`] = `%${escapeLikePattern(part)}%`;
     });
 
+    // Relevance: rows that contain the full normalized keyword as a contiguous
+    // substring rank above rows where only the individual tokens (AND-matched) appear.
+    const hasPhraseRanking = parts.length > 1 && normalized.length > 0;
+    if (hasPhraseRanking) {
+        replacements.fullPattern = `%${escapeLikePattern(normalized)}%`;
+    }
+    const relevanceOrderBy = hasPhraseRanking
+        ? `(CASE WHEN "TenderModel"."search_text" LIKE :fullPattern ESCAPE '\\' THEN 0 ELSE 1 END) ASC, `
+        : '';
+
     const whereSql = buildKeywordSearchSql(filters, replacements);
 
     const joinSql = sqlOrderBy.includes('"customer"."name"')
@@ -242,7 +252,7 @@ export const searchTenderIdsByKeyword = async (
     ${joinSql}
     WHERE "TenderModel"."tenant_id" = :tenantId
       AND ${whereSql}
-    ORDER BY ${sqlOrderBy}
+    ORDER BY ${relevanceOrderBy}${sqlOrderBy}
     LIMIT :limit OFFSET :offset
   `;
 
