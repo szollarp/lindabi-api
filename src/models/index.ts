@@ -42,6 +42,7 @@ import { NotificationFactory, type NotificationModel } from "./notification";
 import { AnalyticsFactory, type AnalyticsModel } from "./analytics";
 import { TenderItemsSearchFactory, type TenderItemsSearchModel } from "./tender-items-search";
 import { TrackingEventFactory, TrackingEventModel } from "./tracking-event";
+import { TenderRatingFactory, type TenderRatingModel } from "./tender-rating";
 
 import { AzureStorageService } from "../helpers/azure-storage";
 
@@ -90,6 +91,7 @@ export interface Models {
   Analytics: typeof AnalyticsModel
   TenderItemsSearch: typeof TenderItemsSearchModel
   TrackingEvent: typeof TrackingEventModel
+  TenderRating: typeof TenderRatingModel
 };
 
 export const createModels = async (databaseConfig: Options, benchmark: boolean = false, logging: boolean = false, storage: AzureStorageService): Promise<Models> => {
@@ -139,6 +141,7 @@ export const createModels = async (databaseConfig: Options, benchmark: boolean =
     Analytics: AnalyticsFactory(sequelize),
     TenderItemsSearch: TenderItemsSearchFactory(sequelize),
     TrackingEvent: TrackingEventFactory(sequelize),
+    TenderRating: TenderRatingFactory(sequelize),
     sequelize
   };
 

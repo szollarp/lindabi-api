@@ -208,6 +208,19 @@ export const projectService = (): ProjectService => {
         }
       }
 
+      // When project is completed, set the associated tender to completed as well
+      if (data.status === PROJECT_STATUS.COMPLETED && project.tenderId) {
+        const tender = await context.models.Tender.findByPk(project.tenderId);
+
+        if (tender && tender.status !== TENDER_STATUS.COMPLETED) {
+          await tender.update({ status: TENDER_STATUS.COMPLETED, updatedBy: user.id }, { transaction: t });
+
+          await context.services.journey.addSimpleLog(context, user, {
+            activity: "Tender status set to completed (project completed).",
+          }, tender.id, "tender", t);
+        }
+      }
+
       await t.commit();
       return { updated: true };
     } catch (error) {

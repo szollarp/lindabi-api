@@ -6,6 +6,7 @@ export interface EmailService {
   sendForgottenPasswordEmail: (context: Context, user: User) => void;
   sendTenderPdfEmail: (context: Context, tenderId: number, htmlBody: string, name: string) => void;
   sendTemplatedEmail: (context: Context, to: string, subject: string, htmlBody: string) => void;
+  sendSurveyEmail: (context: Context, tenderId: number, token: string) => void;
 }
 
 export const emailService = (): EmailService => {
@@ -29,10 +30,16 @@ export const emailService = (): EmailService => {
     await context.helpers.serviceBus.send("email-queue", { body });
   }
 
+  const sendSurveyEmail = async (context: Context, tenderId: number, token: string): Promise<void> => {
+    const body = JSON.stringify({ template: "send-survey", tender: tenderId, token });
+    await context.helpers.serviceBus.send("email-queue", { body });
+  }
+
   return {
     sendTemplatedEmail,
     sendWelcomeNewUserEmail,
     sendForgottenPasswordEmail,
-    sendTenderPdfEmail
+    sendTenderPdfEmail,
+    sendSurveyEmail
   }
 };

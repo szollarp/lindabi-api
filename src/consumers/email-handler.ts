@@ -7,6 +7,7 @@ import getPasswordResetTemplate from "../helpers/email-template/password-reset";
 import type { Context } from "../types";
 import { generatePdfFilename } from "../helpers/tender";
 import { AzureStorageService } from '../helpers/azure-storage';
+import getSurveyInvitationTemplate from "../helpers/email-template/survey-invitation";
 
 export type Message = {
   template?: string;
@@ -16,6 +17,7 @@ export type Message = {
   tender?: number;
   htmlBody?: string;
   name?: string;
+  token?: string;
 }
 
 const fetchConfigHostname = (context: Context): string => {
@@ -114,6 +116,40 @@ const handleSendTender = async (context: Context, tenderId: number, htmlBody: st
   await context.helpers.postmark.sendEmail(message);
 }
 
+const handleSendSurvey = async (context: Context, tenderId: number, token: string) => {
+  const tender = await context.models.Tender.findOne({
+    where: { id: tenderId },
+    include: [
+      {
+        model: context.models.Contact,
+        as: "contact",
+        attributes: ["name", "email"]
+      }
+    ],
+    attributes: ["id", "type"]
+  });
+
+  if (!tender || !tender.contact?.email) {
+    return;
+  }
+
+  const hostname = fetchConfigHostname(context);
+  const surveyUrl = `${hostname}/survey/${token}`;
+  const htmlBody = getSurveyInvitationTemplate(
+    tender.contact.name ?? "Tisztelt Ügyfelünk",
+    tender.type ?? "",
+    surveyUrl
+  );
+
+  const message: SendEmailOptions = {
+    to: tender.contact.email,
+    subject: "Kérjük, értékelje munkánkat!",
+    htmlBody
+  };
+
+  await context.helpers.postmark.sendEmail(message);
+};
+
 export const handleEmailEvent = async (context: Context, eventMessage: ServiceBusReceivedMessage): Promise<void> => {
   const data: Message = JSON.parse(eventMessage.body.toString() as string);
 
@@ -135,6 +171,10 @@ export const handleEmailEvent = async (context: Context, eventMessage: ServiceBu
 
     case "send-tender":
       await handleSendTender(context, data.tender!, data.htmlBody!, data.name!);
+      break;
+
+    case "send-survey":
+      await handleSendSurvey(context, data.tender!, data.token!);
       break;
 
     default:

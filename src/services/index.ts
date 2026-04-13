@@ -32,6 +32,7 @@ import { type ItemMovementService, itemMovementService } from "./item-movement";
 import { type SchedulerService, schedulerService } from "./scheduler";
 import { type TenderItemsSearchService, tenderItemsSearchService } from "./tender-items-search";
 import { type TrackingEventService, trackingEventService } from "./tracking-event";
+import { type TenderRatingService, tenderRatingService } from "./tender-rating";
 
 export interface Services {
   version: VersionService
@@ -68,6 +69,7 @@ export interface Services {
   scheduler: SchedulerService
   tenderItemsSearch: TenderItemsSearchService
   trackingEvent: TrackingEventService
+  tenderRating: TenderRatingService
 }
 
 const createServices = (): Services => ({
@@ -104,7 +106,8 @@ const createServices = (): Services => ({
   itemMovement: itemMovementService(),
   scheduler: schedulerService(),
   tenderItemsSearch: tenderItemsSearchService(),
-  trackingEvent: trackingEventService()
+  trackingEvent: trackingEventService(),
+  tenderRating: tenderRatingService()
 });
 
 export { createServices };

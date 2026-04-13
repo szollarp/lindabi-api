@@ -48,7 +48,8 @@ export enum TENDER_STATUS {
   ORDERED = "ordered",
   INVALID = "invalid",
   UNDER_SURVEY = "under survey",
-  ARCHIVED = "archived"
+  ARCHIVED = "archived",
+  COMPLETED = "completed"
 };
 
 export enum PROJECT_STATUS {

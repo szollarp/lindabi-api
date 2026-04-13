@@ -1342,7 +1342,8 @@
 					"ordered",
 					"invalid",
 					"under survey",
-					"archived"
+					"archived",
+					"completed"
 				],
 				"type": "string"
 			},
@@ -4878,6 +4879,102 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"Partial_TenderRating_": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenderId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tenantId": {
+						"type": "number",
+						"format": "double"
+					},
+					"token": {
+						"type": "string"
+					},
+					"quality": {
+						"type": "number",
+						"format": "double"
+					},
+					"accuracy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tidiness": {
+						"type": "number",
+						"format": "double"
+					},
+					"flexibility": {
+						"type": "number",
+						"format": "double"
+					},
+					"attitude": {
+						"type": "number",
+						"format": "double"
+					},
+					"feedback": {
+						"type": "string"
+					},
+					"submittedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"sentAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedOn": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"SubmitSurveyData": {
+				"properties": {
+					"quality": {
+						"type": "number",
+						"format": "double"
+					},
+					"accuracy": {
+						"type": "number",
+						"format": "double"
+					},
+					"tidiness": {
+						"type": "number",
+						"format": "double"
+					},
+					"flexibility": {
+						"type": "number",
+						"format": "double"
+					},
+					"attitude": {
+						"type": "number",
+						"format": "double"
+					},
+					"feedback": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"quality",
+					"accuracy",
+					"tidiness",
+					"flexibility",
+					"attitude"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"TenderItemsSearchResult": {
 				"properties": {
@@ -12640,6 +12737,197 @@
 								],
 								"type": "object",
 								"description": "An object containing the start and end dates of the tender."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/tender-ratings/{tenderId}/send": {
+			"post": {
+				"operationId": "SendSurvey",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Sends a survey invitation email to the tender's contact.\nOnly allowed when the tender is in \"ordered\" or \"completed\" status.",
+				"tags": [
+					"TenderRating"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Tender:Admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "tenderId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tender-ratings/{tenderId}": {
+			"get": {
+				"operationId": "GetSurveyResults",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Partial_TenderRating_"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets the survey results for a specific tender (authenticated).",
+				"tags": [
+					"TenderRating"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Tenant",
+							"Tender:Get"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "tenderId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/tender-ratings/public/{token}": {
+			"get": {
+				"operationId": "GetSurvey",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"googleReviewUrl": {
+											"type": "string",
+											"nullable": true
+										},
+										"rating": {
+											"allOf": [
+												{
+													"$ref": "#/components/schemas/Partial_TenderRating_"
+												}
+											],
+											"nullable": true
+										}
+									},
+									"required": [
+										"googleReviewUrl",
+										"rating"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets the survey data for a public survey form (no authentication required).",
+				"tags": [
+					"TenderRating"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "SubmitSurvey",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a survey response (no authentication required).",
+				"tags": [
+					"TenderRating"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SubmitSurveyData"
 							}
 						}
 					}
