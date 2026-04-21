@@ -536,6 +536,10 @@
 					"enableLogin": {
 						"type": "boolean"
 					},
+					"expoPushToken": {
+						"type": "string",
+						"nullable": true
+					},
 					"identifier": {
 						"type": "string",
 						"nullable": true
@@ -3190,6 +3194,9 @@
 					"enableLogin": {
 						"type": "boolean"
 					},
+					"expoPushToken": {
+						"type": "string"
+					},
 					"identifier": {
 						"type": "string"
 					},
@@ -3447,6 +3454,9 @@
 					"enableLogin": {
 						"type": "boolean"
 					},
+					"expoPushToken": {
+						"type": "string"
+					},
 					"identifier": {
 						"type": "string"
 					},
@@ -3661,6 +3671,9 @@
 					},
 					"enableLogin": {
 						"type": "boolean"
+					},
+					"expoPushToken": {
+						"type": "string"
 					},
 					"identifier": {
 						"type": "string"
@@ -3879,6 +3892,9 @@
 					},
 					"enableLogin": {
 						"type": "boolean"
+					},
+					"expoPushToken": {
+						"type": "string"
 					},
 					"identifier": {
 						"type": "string"
@@ -15619,6 +15635,73 @@
 						}
 					}
 				]
+			},
+			"put": {
+				"operationId": "UpdateSchedule",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Partial_EmployeeSchedule_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update an existing schedule. Requires authentication.",
+				"tags": [
+					"Schedule"
+				],
+				"security": [
+					{
+						"authentication": [
+							"Schedule:Create",
+							"Tenant"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"description": "The ID of the schedule to update.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Partial schedule properties to update (plus employeeId for scoping).",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"allOf": [
+									{
+										"properties": {
+											"employeeId": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"employeeId"
+										],
+										"type": "object"
+									},
+									{
+										"$ref": "#/components/schemas/Partial_EmployeeSchedule_"
+									}
+								],
+								"description": "Partial schedule properties to update (plus employeeId for scoping)."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/schedules/employee": {
@@ -22253,6 +22336,61 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/auth/push-token": {
+			"put": {
+				"operationId": "RegisterPushToken",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Register an Expo push token for the authenticated user.\nCalled by the mobile app after login to enable push notifications.",
+				"tags": [
+					"Authentication"
+				],
+				"security": [
+					{
+						"authentication": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"description": "Object containing the Expo push token string.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"token": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"token"
+								],
+								"type": "object",
+								"description": "Object containing the Expo push token string."
+							}
+						}
+					}
+				}
 			}
 		},
 		"/employees": {

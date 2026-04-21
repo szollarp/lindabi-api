@@ -65,6 +65,7 @@ export interface User {
   entity?: string;
   inSchedule?: boolean;
   enableLogin?: boolean;
+  expoPushToken?: string | null;
   identifier?: string | null;
   employeeType?: string | null;
   notes?: string | null;

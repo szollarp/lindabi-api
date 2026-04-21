@@ -42,6 +42,10 @@ const list = async (context: Context, user: DecodedUser, query: ScheduleQueryPar
             [Op.or]: [
               { startDate: { [Op.between]: [query.startDate, query.endDate] } },
               { endDate: { [Op.between]: [query.startDate, query.endDate] } },
+              {
+                startDate: { [Op.lte]: query.endDate },
+                endDate: { [Op.gte]: query.startDate }
+              },
             ]
           },
           required: false,

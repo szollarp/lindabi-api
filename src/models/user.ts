@@ -324,6 +324,12 @@ export const UserFactory = (sequelize: Sequelize): typeof UserModel => {
         allowNull: true,
         defaultValue: false
       },
+      expoPushToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null,
+        field: 'expo_push_token'
+      },
       enableLogin: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

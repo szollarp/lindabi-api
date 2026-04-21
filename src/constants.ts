@@ -259,4 +259,4 @@ export enum NOTIFICATION_PRIORITY {
   URGENT = "urgent"
 }
 
-export const BANNED_MOBILE_ROLES = [1, 2, 7, 8, 9];
+export const BANNED_MOBILE_ROLES = [7, 8, 9];

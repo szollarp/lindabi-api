@@ -1,6 +1,6 @@
 import {
   Controller, Route, Request, SuccessResponse,
-  Body, Post, Query, Get, Tags, Security
+  Body, Post, Put, Query, Get, Tags, Security
 } from "tsoa";
 import type {
   ForgottenPasswordRequest, ForgottenPasswordResponse, LoginRequest, LoginResponse, LogoutResponse,
@@ -195,5 +195,24 @@ export class AuthenticationController extends Controller {
   public async getMe(@Request() request: ContextualRequest): Promise<Partial<User | null>> {
     const { context, user } = request;
     return await context.services.user.get(context, user.tenant, user.id);
+  }
+
+  /**
+   * Register an Expo push token for the authenticated user.
+   * Called by the mobile app after login to enable push notifications.
+   *
+   * @param body Object containing the Expo push token string.
+   */
+  @Tags("Authentication")
+  @SuccessResponse("200", "OK")
+  @Put("push-token")
+  @Security("authentication", [])
+  public async registerPushToken(
+    @Request() request: ContextualRequest,
+    @Body() body: { token: string }
+  ): Promise<{ success: boolean }> {
+    const { context, user } = request;
+    await context.services.user.update(context, null, user.id, { expoPushToken: body.token }, user.id);
+    return { success: true };
   }
 };

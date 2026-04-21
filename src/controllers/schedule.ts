@@ -3,6 +3,7 @@ import type { User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
 import { USER_TYPE } from "../constants";
 import { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule, Workspace } from "../models/interfaces/employee-schedule";
+import { sendExpoPushNotification } from "../helpers/expo-push";
 
 @Route("schedules")
 export class ScheduleController extends Controller {
@@ -36,7 +37,9 @@ export class ScheduleController extends Controller {
   @Security("authentication", ["Schedule:Create", "Tenant"])
   public async createSchedule(@Request() request: ContextualRequest, @Body() body: CreateEmployeeScheduleProperties): Promise<Partial<EmployeeSchedule>> {
     const { context, user } = request;
-    return await context.services.employeeSchedule.create(context, user, body);
+    const result = await context.services.employeeSchedule.create(context, user, body);
+    this.notifyEmployee(context, Number(body.employeeId), "Új beosztás", "Új beosztást kaptál. Nyisd meg az alkalmazást a részletekért.");
+    return result;
   }
 
   /**
@@ -52,13 +55,15 @@ export class ScheduleController extends Controller {
   @Security("authentication", ["Schedule:Create", "Tenant"])
   public async addHoliday(@Request() request: ContextualRequest, @Body() body: CreateHolidayScheduleProperties): Promise<Partial<EmployeeSchedule>> {
     const { context, user } = request;
-    return await context.services.employeeSchedule.createHoliday(context, user, body);
+    const result = await context.services.employeeSchedule.createHoliday(context, user, body);
+    this.notifyEmployee(context, Number(body.employeeId), "Új beosztás", "Szabadnapot kaptál a beosztásodba.");
+    return result;
   }
 
   /**
    * Remove an existing schedule. This endpoint requires authentication and specific permissions.
    * It utilizes the user's tenant and ID from the JWT token for removing the schedule in the correct context.
-   * 
+   *
    * @param id  The ID of the schedule to remove.
    */
   @Tags("Schedule")
@@ -67,7 +72,34 @@ export class ScheduleController extends Controller {
   @Security("authentication", ["Schedule:Delete", "Tenant"])
   public async removeSchedule(@Request() request: ContextualRequest, @Path() id: number): Promise<{ removed: boolean }> {
     const { context } = request;
-    return context.services.employeeSchedule.remove(context, id);
+    const schedule = await context.models.EmployeeSchedule.findByPk(id);
+    const result = await context.services.employeeSchedule.remove(context, id);
+    if (schedule?.employeeId) {
+      this.notifyEmployee(context, schedule.employeeId, "Beosztás törölve", "Egy beosztásod törölve lett. Nyisd meg az alkalmazást a részletekért.");
+    }
+    return result;
+  }
+
+  /**
+   * Update an existing schedule. Requires authentication.
+   *
+   * @param id The ID of the schedule to update.
+   * @param body Partial schedule properties to update (plus employeeId for scoping).
+   */
+  @Tags("Schedule")
+  @SuccessResponse("200", "OK")
+  @Put("/{id}")
+  @Security("authentication", ["Schedule:Create", "Tenant"])
+  public async updateSchedule(
+    @Request() request: ContextualRequest,
+    @Path() id: number,
+    @Body() body: { employeeId: number } & Partial<EmployeeSchedule>
+  ): Promise<Partial<EmployeeSchedule>> {
+    const { context, user } = request;
+    const { employeeId, ...data } = body;
+    const result = await context.services.employeeSchedule.update(context, user, id, employeeId, data);
+    this.notifyEmployee(context, employeeId, "Beosztás módosítva", "A beosztásod módosult. Nyisd meg az alkalmazást a részletekért.");
+    return result;
   }
 
   /**
@@ -115,5 +147,20 @@ export class ScheduleController extends Controller {
     const { context, user } = request;
     await context.services.user.update(context, user.tenant, id, { inSchedule: false }, user.id);
     return await context.services.employeeSchedule.removeByEmployee(context, id);
+  }
+
+  /**
+   * Send a push notification to an employee (fire-and-forget, never blocks the response).
+   */
+  private notifyEmployee(context: ContextualRequest["context"], employeeId: number, title: string, body: string): void {
+    context.models.User.findByPk(employeeId, { attributes: ["id", "expoPushToken"] })
+      .then((employee) => {
+        if (employee?.expoPushToken) {
+          sendExpoPushNotification(employee.expoPushToken, title, body, { type: "schedule_change" });
+        }
+      })
+      .catch((err) => {
+        console.error("[schedule] Failed to send push notification:", err);
+      });
   }
 };
