@@ -41,7 +41,7 @@ export async function sendExpoPushNotification(
             body: JSON.stringify(message),
         });
 
-        const result = await response.json();
+        const result = (await response.json()) as { data?: { status?: string } };
         return result?.data?.status === "ok";
     } catch (error) {
         console.error("[expo-push] Failed to send notification:", error);

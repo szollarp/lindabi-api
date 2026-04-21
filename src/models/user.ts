@@ -71,6 +71,8 @@ export class UserModel extends Model<User, CreateUserProperties> implements User
 
   public enableLogin!: boolean;
 
+  public expoPushToken!: string | null;
+
   public identifier!: string | null;
 
   public employeeType!: string | null;

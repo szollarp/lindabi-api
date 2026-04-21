@@ -1,7 +1,6 @@
 import { Controller, Route, Request, SuccessResponse, Get, Tags, Security, Query, Post, Body, Put, Delete, Path } from "tsoa";
 import type { User } from "../models/interfaces/user";
 import type { ContextualRequest } from "../types";
-import { USER_TYPE } from "../constants";
 import { CreateEmployeeScheduleProperties, CreateHolidayScheduleProperties, EmployeeSchedule, Workspace } from "../models/interfaces/employee-schedule";
 import { sendExpoPushNotification } from "../helpers/expo-push";
 
