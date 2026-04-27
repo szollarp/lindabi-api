@@ -1,10 +1,8 @@
-import * as dotenv from "dotenv";
+import "dotenv/config";
 import logger from "./helpers/logger";
 import { create as createContext } from "./context";
 import { runServer } from "./server";
 import { initConsumers } from "./consumers";
-
-dotenv.config();
 
 createContext()
   .then((context) => {
