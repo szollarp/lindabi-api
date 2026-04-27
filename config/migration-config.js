@@ -32,7 +32,7 @@ module.exports = {
     host: process.env.DATABASE_HOST,
     password: process.env.DATABASE_PASSWORD,
     username: 'lindabi',
-    database: process.env.DATABASE,
+    database: process.env.DATABASE || 'lindabi',
     dialect: "postgres",
     ssl: true,
     dialectOptions: {
