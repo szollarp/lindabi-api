@@ -8,5 +8,10 @@
   },
   "database": {
     "password": "DATABASE_PASSWORD"
+  },
+  "serviceBus": {
+    "queues": {
+      "email": "SERVICE_BUS_EMAIL_QUEUE"
+    }
   }
 }

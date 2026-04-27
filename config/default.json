@@ -37,7 +37,10 @@
     "level": "debug"
   },
   "serviceBus": {
-    "namespace": "lindabi.servicebus.windows.net"
+    "namespace": "lindabi.servicebus.windows.net",
+    "queues": {
+      "email": "email-queue"
+    }
   },
   "postmark": {
     "from": "noreply@lindabi.com",

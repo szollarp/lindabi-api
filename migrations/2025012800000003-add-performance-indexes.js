@@ -4,6 +4,29 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     console.log('Adding performance indexes...');
 
+    const tableExists = async (tableName) => {
+      const rows = await queryInterface.sequelize.query(
+        `SELECT to_regclass(:tableName) AS reg`,
+        {
+          replacements: { tableName },
+          type: queryInterface.sequelize.QueryTypes.SELECT,
+        }
+      );
+      return rows[0] && rows[0].reg !== null;
+    };
+
+    const columnsExist = async (tableName, columns) => {
+      const rows = await queryInterface.sequelize.query(
+        `SELECT column_name FROM information_schema.columns WHERE table_name = :tableName`,
+        {
+          replacements: { tableName },
+          type: queryInterface.sequelize.QueryTypes.SELECT,
+        }
+      );
+      const present = new Set(rows.map((r) => r.column_name));
+      return columns.every((c) => present.has(c));
+    };
+
     const createIndex = async (tableName, columns, options, description = '') => {
       const indexName = options.name;
       console.log(`Creating index: ${indexName}${description ? ` - ${description}` : ''}`);
@@ -16,6 +39,16 @@ module.exports = {
 
         if (existingIndexes.length > 0) {
           console.log(`⚠ Index already exists: ${indexName} - skipping`);
+          return;
+        }
+
+        if (!(await tableExists(tableName))) {
+          console.log(`⚠ Skipping ${indexName} - table missing: ${tableName}`);
+          return;
+        }
+
+        if (!(await columnsExist(tableName, columns))) {
+          console.log(`⚠ Skipping ${indexName} - one or more columns missing on ${tableName}: ${columns.join(', ')}`);
           return;
         }
 
@@ -38,6 +71,12 @@ module.exports = {
 
         if (existingIndexes.length > 0) {
           console.log(`⚠ Index already exists: ${indexName} - skipping`);
+          return;
+        }
+
+        const tableMatch = sql.match(/\bON\s+([a-zA-Z_][a-zA-Z0-9_]*)/i);
+        if (tableMatch && !(await tableExists(tableMatch[1]))) {
+          console.log(`⚠ Skipping ${indexName} - table missing: ${tableMatch[1]}`);
           return;
         }
 

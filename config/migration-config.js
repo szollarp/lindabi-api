@@ -1,7 +1,7 @@
 module.exports = {
   local: {
     "username": "lindabi",
-    "database": "development",
+    "database": "test",
     "password": "juzbiq-fyhby7-megrYx",
     port: 5432,
     host: 'lindabi-production-db.postgres.database.azure.com',
@@ -32,7 +32,7 @@ module.exports = {
     host: process.env.DATABASE_HOST,
     password: process.env.DATABASE_PASSWORD,
     username: 'lindabi',
-    database: 'lindabi',
+    database: process.env.DATABASE,
     dialect: "postgres",
     ssl: true,
     dialectOptions: {
