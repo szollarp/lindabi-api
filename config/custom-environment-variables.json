@@ -1,5 +1,11 @@
 {
   "env": "NODE_ENV",
+  "server": {
+    "port": {
+      "__name": "PORT",
+      "__format": "number"
+    }
+  },
   "postmark": {
     "token": "POSTMARK_TOKEN"
   },
